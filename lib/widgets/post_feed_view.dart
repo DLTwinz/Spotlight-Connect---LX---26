@@ -1,0 +1,52 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:spotlight_connect/services/post_service.dart';
+import 'package:spotlight_connect/pages/dashboards/widgets/post_card.dart';
+
+class PostFeedView extends StatefulWidget {
+  const PostFeedView({super.key, required this.role});
+  final String role;
+
+  @override
+  State<PostFeedView> createState() => _PostFeedViewState();
+}
+
+class _PostFeedViewState extends State<PostFeedView> {
+  bool _isLoading = false;
+
+  Future<void> _loadMore() async {
+    if (_isLoading) return;
+    setState(() => _isLoading = true);
+    // Assumes your service has a loadMore() or fetchNextPage() method
+    await context.read<PostService>().loadMore(); 
+    if (mounted) setState(() => _isLoading = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final posts = context.watch<PostService>().items;
+
+    if (posts.isEmpty) {
+      return const Center(child: Text('No posts yet.'));
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: posts.length + 1,
+      itemBuilder: (context, index) {
+        if (index == posts.length) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : ElevatedButton(
+                    onPressed: _loadMore,
+                    child: const Text('Load More'),
+                  ),
+          );
+        }
+        return PostCard(post: posts[index]);
+      },
+    );
+  }
+}

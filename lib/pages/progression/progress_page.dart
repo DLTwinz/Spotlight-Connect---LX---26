@@ -1,0 +1,296 @@
+import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:spotlight_connect/pages/shared/feature_disabled_page.dart';
+import 'package:spotlight_connect/pages/progression/widgets/progression_states.dart';
+import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+import 'package:spotlight_connect/services/progression_service.dart';
+import 'package:spotlight_connect/theme.dart';
+
+class ProgressPage extends StatelessWidget {
+  const ProgressPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final policy = context.watch<ProgressionFeaturePolicyProvider>().policy;
+    if (!policy.progressionEnabled) {
+      return const FeatureDisabledPage(
+        title: 'Progress is disabled',
+        message: 'Progression is currently unavailable. Please check back later.',
+        icon: Icons.insights_outlined,
+      );
+    }
+    return Scaffold(
+      appBar: AppBar(title: const Text('Progress')),
+      body: SafeArea(
+        child: Consumer<ProgressionService>(
+          builder: (context, svc, _) {
+            if (!svc.isInitialized) {
+              unawaited(svc.ensureInitialized().catchError((e, st) => debugPrint('ProgressPage ensureInitialized failed: $e\n$st')));
+            }
+            final prog = svc.progression;
+            if (svc.isLoading && prog == null) {
+              return ListView(
+                padding: AppSpacing.paddingLg,
+                children: const [
+                  ProgressionSkeletonCard(height: 28),
+                  SizedBox(height: AppSpacing.lg),
+                  ProgressionSkeletonCard(height: 210),
+                  SizedBox(height: AppSpacing.lg),
+                  ProgressionSkeletonCard(height: 180),
+                ],
+              );
+            }
+
+            final prestige = prog?.prestigeTotal ?? 0;
+            final required = prog?.nextTierPrestigeRequired;
+            final pct = (required == null || required <= 0) ? 0.0 : (prestige / required).clamp(0, 1).toDouble();
+
+            return RefreshIndicator(
+              onRefresh: svc.refreshHome,
+              child: ListView(
+                padding: AppSpacing.paddingLg,
+                children: [
+                  if (svc.lastError != null) ...[
+                    ProgressionInlineErrorBanner(message: svc.lastError!, onRetry: () => unawaited(svc.refreshHome())),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
+                  Text('Your momentum', style: theme.textTheme.titleMedium?.bold),
+                  const SizedBox(height: AppSpacing.sm),
+                  Container(
+                    padding: AppSpacing.paddingLg,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surface,
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(child: Text('Tier: ${prog?.currentTier ?? 'Starter'}', style: theme.textTheme.titleLarge?.bold)),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(999),
+                                border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.22)),
+                              ),
+                              child: Text('Momentum ${prog?.momentumScore ?? 0}', style: theme.textTheme.labelSmall?.bold.withColor(theme.colorScheme.primary)),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          'Prestige: $prestige',
+                          style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+                        ),
+                        if (required != null && required > 0) ...[
+                          const SizedBox(height: AppSpacing.sm),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(999),
+                            child: LinearProgressIndicator(
+                              value: pct,
+                              minHeight: 10,
+                              backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '$prestige / $required to next tier',
+                            style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant),
+                          ),
+                        ],
+                        const SizedBox(height: AppSpacing.md),
+                        Text('Missions completed: ${prog?.missionsCompleted ?? 0}', style: theme.textTheme.bodyMedium),
+                        Text('Milestones completed: ${prog?.milestonesCompleted ?? 0}', style: theme.textTheme.bodyMedium),
+                        Text('Campaigns participated: ${prog?.campaignsParticipated ?? 0}', style: theme.textTheme.bodyMedium),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          'Momentum reflects your activity over the last 30 days.',
+                          style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Text('Milestones', style: theme.textTheme.titleMedium?.bold),
+                  const SizedBox(height: AppSpacing.sm),
+                  _MilestonesPanel(),
+                  const SizedBox(height: AppSpacing.lg),
+                  Text('Campaign participation', style: theme.textTheme.titleMedium?.bold),
+                  const SizedBox(height: AppSpacing.sm),
+                  _CampaignParticipationPanel(),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _MilestonesPanel extends StatelessWidget {
+  const _MilestonesPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final svc = context.watch<ProgressionService>();
+    final completed = svc.userMilestones;
+    final all = svc.allMilestones;
+    final completedIds = completed.map((e) => e.milestoneId).toSet();
+    final upcoming = all.where((m) => !completedIds.contains(m.id)).take(6).toList(growable: false);
+
+    return Container(
+      padding: AppSpacing.paddingLg,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (completed.isEmpty)
+            Text(
+              'No milestones recorded yet. As you complete key actions, milestones will appear here automatically.',
+              style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+            )
+          else ...[
+            Text('Completed', style: theme.textTheme.labelLarge?.bold),
+            const SizedBox(height: AppSpacing.sm),
+            ...completed.take(5).map((m) => Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                  child: _MilestoneTile(
+                    title: 'Milestone',
+                    subtitle: m.achievedAt == null ? '' : 'Achieved ${m.achievedAt!.month}/${m.achievedAt!.day}/${m.achievedAt!.year}',
+                    trailing: m.prestigeEarned > 0 ? '+${m.prestigeEarned} prestige' : null,
+                    icon: Icons.verified_outlined,
+                  ),
+                )),
+          ],
+          if (upcoming.isNotEmpty) ...[
+            if (completed.isNotEmpty) const SizedBox(height: AppSpacing.md),
+            Text('Upcoming', style: theme.textTheme.labelLarge?.bold),
+            const SizedBox(height: AppSpacing.sm),
+            ...upcoming.map((m) => Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                  child: _MilestoneTile(
+                    title: m.title,
+                    subtitle: m.description,
+                    trailing: m.prestigeReward > 0 ? '+${m.prestigeReward} prestige' : null,
+                    icon: Icons.flag_outlined,
+                  ),
+                )),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _MilestoneTile extends StatelessWidget {
+  const _MilestoneTile({required this.title, required this.subtitle, required this.icon, this.trailing});
+
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final String? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.18)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: theme.colorScheme.primary),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: theme.textTheme.labelLarge?.bold, maxLines: 1, overflow: TextOverflow.ellipsis),
+                if (subtitle.trim().isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(subtitle, style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant), maxLines: 2, overflow: TextOverflow.ellipsis),
+                ],
+              ],
+            ),
+          ),
+          if (trailing != null) ...[
+            const SizedBox(width: AppSpacing.sm),
+            Text(trailing!, style: theme.textTheme.labelSmall?.bold.withColor(theme.colorScheme.onSurfaceVariant)),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _CampaignParticipationPanel extends StatelessWidget {
+  const _CampaignParticipationPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final svc = context.watch<ProgressionService>();
+    final joined = svc.campaignSections['Your participation'] ?? const [];
+    final count = svc.progression?.campaignsParticipated ?? joined.length;
+
+    return Container(
+      padding: AppSpacing.paddingLg,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('$count campaigns participated', style: theme.textTheme.titleMedium?.bold),
+          const SizedBox(height: AppSpacing.sm),
+          if (joined.isEmpty)
+            Text('Join a campaign to start tracking participation and deliverables.', style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant))
+          else
+            ...joined.take(6).map((c) => Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                  child: InkWell(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    onTap: () => context.push('/campaigns/${c.campaign.id}'),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.16),
+                        borderRadius: BorderRadius.circular(AppRadius.lg),
+                        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.18)),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.campaign_outlined, color: theme.colorScheme.primary),
+                          const SizedBox(width: AppSpacing.sm),
+                          Expanded(child: Text(c.campaign.title, style: theme.textTheme.labelLarge?.bold, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                          Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
+                        ],
+                      ),
+                    ),
+                  ),
+                )),
+        ],
+      ),
+    );
+  }
+}

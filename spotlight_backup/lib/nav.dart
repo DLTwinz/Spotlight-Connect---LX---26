@@ -1,0 +1,832 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
+import 'package:spotlight_connect/models/user_model.dart';
+import 'package:spotlight_connect/models/studio_session_model.dart';
+import 'package:spotlight_connect/backend/backend_mode.dart';
+import 'package:spotlight_connect/providers/feature_flag_provider.dart';
+
+import 'providers/app_auth_provider.dart';
+import 'pages/auth/landing_auth_page.dart';
+import 'pages/auth/early_access_gate_page.dart';
+import 'pages/auth/auth_callback_page.dart';
+import 'pages/auth/onboarding_page.dart';
+import 'pages/auth/reset_password_page.dart';
+import 'pages/auth/permission_denied_page.dart';
+import 'pages/auth/waiting_approval_page.dart';
+import 'pages/dashboards/audience_dashboard.dart';
+import 'pages/dashboards/admin_dashboard.dart';
+import 'pages/dashboards/talent_business_dashboards.dart';
+import 'pages/debug/qa_harness_page.dart';
+import 'pages/studio/livekit_room_page.dart';
+import 'pages/progression/missions_page.dart';
+import 'pages/progression/mission_detail_page.dart';
+import 'pages/progression/rewards_page.dart';
+import 'pages/progression/campaigns_page.dart';
+import 'pages/progression/campaign_detail_page.dart';
+import 'pages/progression/progress_page.dart';
+import 'pages/progression/admin/admin_missions_page.dart';
+import 'pages/progression/admin/admin_campaigns_page.dart';
+import 'pages/shared/feature_disabled_page.dart';
+
+import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+
+class AppRoutes {
+  static const String root = '/';
+  static const String earlyAccess = '/early-access';
+  static const String login = '/login';
+  static const String onboarding = '/onboarding';
+  static const String authCallback = '/auth/callback';
+  static const String resetPassword = '/reset-password';
+  static const String waitingApproval = '/waiting-approval';
+  // Keep legacy path for backwards compatibility.
+  static const String accessDenied = '/access';
+  // Launch/docs-aligned path.
+  static const String permissionDenied = '/permission-denied';
+  static const String audience = '/audience';
+  static const String talent = '/talent';
+  static const String business = '/business';
+  static const String admin = '/admin';
+
+  // Progression system
+  static const String missions = '/missions';
+  static const String rewards = '/rewards';
+  static const String campaigns = '/campaigns';
+  static const String progress = '/progress';
+
+  // Admin progression tooling
+  static const String adminMissions = '/admin/missions';
+  static const String adminCampaigns = '/admin/campaigns';
+
+  // Policy-blocked fallback
+  static const String featureDisabled = '/feature-disabled';
+
+  // Docs-aligned aliases.
+  static const String audienceDashboard = '/audience/dashboard';
+  static const String talentDashboard = '/talent/dashboard';
+  static const String businessDashboard = '/business/dashboard';
+
+  static const String livekit = '/livekit';
+
+  /// Debug-only QA harness route. Not intended for production navigation.
+  static const String qa = '/__qa';
+}
+
+class AppRouter {
+  static GoRouter createRouter(AppAuthProvider authProvider) {
+    final fallback = BackendConfig.prelaunchGateEnabled ? AppRoutes.earlyAccess : AppRoutes.login;
+    final initial = _computeInitialLocation(fallback: fallback);
+    
+    // TEMPORARY OVERRIDE FOR TESTING: Force admin dashboard to test new analytics UI
+    // Remove this line once you're satisfied with the admin dashboard design
+    final finalInitialLocation = initial; // Set to 'initial' to revert
+    
+    return GoRouter(
+      // During beta: start on Early Access gate. When launch is enabled, logged-out users can access /login.
+      initialLocation: finalInitialLocation,
+      refreshListenable: authProvider,
+      errorPageBuilder: (context, state) {
+        // If a user enters an unknown URL (common with token-style links),
+        // ensure we can always recover.
+        //
+        // IMPORTANT: Some Supabase email-link flows can land on an opaque URL
+        // (or a host that drops the route match) while keeping auth params in
+        // query/fragment. If we always bounce to '/', we can lose the params.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+          try {
+            final baseUri = Uri.base;
+            final fragRaw = baseUri.fragment;
+            final qp = <String, String>{...state.uri.queryParameters, ...baseUri.queryParameters};
+            final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+            final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+            final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+            final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+            final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+            if (hasSupabaseAuthParams) {
+              context.go(Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString());
+              return;
+            }
+          } catch (e) {
+            debugPrint('AppRouter: errorPageBuilder recovery failed: $e');
+          }
+          context.go(AppRoutes.root);
+        });
+        return _fadeSlidePage(
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
+          state,
+        );
+      },
+      redirect: (context, state) {
+        final isLoggedIn = authProvider.isLoggedIn;
+        final user = authProvider.currentUser;
+        final isAuthLoading = authProvider.isLoading;
+
+        // On web, `matchedLocation` can be surprising when using NoTransitionPage.
+        // Use the resolved URI path to make redirects deterministic.
+        final location = state.uri.path;
+        final isAuthRoute = location == AppRoutes.login;
+        final isAuthCallbackRoute = location == AppRoutes.authCallback;
+        final isEarlyAccessRoute = location == AppRoutes.earlyAccess;
+        final isOnboardingRoute = location == AppRoutes.onboarding;
+        final isResetPasswordRoute = location == AppRoutes.resetPassword;
+        final isAccessDeniedRoute = location == AppRoutes.accessDenied || location == AppRoutes.permissionDenied;
+        final isWaitingApprovalRoute = location == AppRoutes.waitingApproval;
+        final isLiveKitRoute = location == AppRoutes.livekit;
+        final isFeatureDisabledRoute = location == AppRoutes.featureDisabled;
+
+        bool canAccessQaHarness() {
+          if (kReleaseMode) return false;
+          if (authProvider.isAdmin) return true;
+          try {
+            final flags = context.read<FeatureFlagProvider>();
+            return flags.isEnabled(AppFeature.qaHarness);
+          } catch (_) {
+            return false;
+          }
+        }
+
+        bool liveKitConfigured() {
+          // Feature flags are not a security boundary, but we use them to avoid
+          // routing users into incomplete experiences.
+          try {
+            final flags = context.read<FeatureFlagProvider>();
+            if (!flags.isEnabled(AppFeature.streams)) return false;
+          } catch (_) {
+            // If flags provider isn't ready, default to allowing the route and
+            // let the page show a config error.
+          }
+
+          const liveKitUrl = String.fromEnvironment('SPOTLIGHT_LIVEKIT_URL');
+          return liveKitUrl.trim().isNotEmpty;
+        }
+
+
+        // Launch gate: when prelaunch is enabled, funnel logged-out users to Early Access.
+        // When disabled, funnel logged-out users to Login.
+        final launchEnabled = !BackendConfig.prelaunchGateEnabled;
+        // NOTE: we previously extracted an `email` query param here for early-access flows,
+        // but redirects now rely on providers + dedicated pages. Keep redirect logic simple.
+
+        void logRedirect(String target) {
+          if (!kDebugMode) return;
+          debugPrint(
+            'Router redirect: $location -> $target (loggedIn=$isLoggedIn loading=$isAuthLoading onboarding=${user?.onboardingComplete} role=${user?.activeRole} launch=$launchEnabled)',
+          );
+        }
+
+        // Supabase recovery / magic-link params can arrive on *any* route depending
+        // on hosting and browser behavior (often even on /login). If we see them,
+        // immediately funnel into /auth/callback so the app can consume the
+        // fragment tokens or PKCE `code`.
+        // IMPORTANT (web): some email clients / hosts keep Supabase tokens in the
+        // URL fragment (/#access_token=...). GoRouter's `state.uri` does not
+        // always preserve the fragment consistently, but `Uri.base` does.
+        final baseUri = Uri.base;
+        final fragRaw = baseUri.fragment.isNotEmpty ? baseUri.fragment : state.uri.fragment;
+        final qp = <String, String>{...state.uri.queryParameters, ...baseUri.queryParameters};
+        final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+        // Supabase uses `#error=...&error_code=...&error_description=...` for certain link failures.
+        // We must funnel these into /auth/callback too, otherwise users see a cryptic hash URL.
+        final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+        final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+        final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+        final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+
+        if (kDebugMode && location == AppRoutes.login) {
+          debugPrint(
+            'Router at /login: stateUri=${state.uri} basePath=${baseUri.path} baseQueryKeys=${baseUri.queryParameters.keys.toList()} fragmentLen=${baseUri.fragment.length} hasSupabaseAuthParams=$hasSupabaseAuthParams',
+          );
+        }
+        if (hasSupabaseAuthParams && !isAuthCallbackRoute && !isResetPasswordRoute) {
+          final target = Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString();
+          logRedirect(target);
+          return target;
+        }
+
+        // While auth/profile is bootstrapping, avoid redirect loops.
+        // NOTE: we handle Supabase email-link params above before returning.
+        if (isAuthLoading) return null;
+
+        // Supabase email links enter via /auth/callback and must never be
+        // redirected away before the page can consume tokens / PKCE codes.
+        if (isAuthCallbackRoute) return null;
+
+        // Password recovery must be allowed even if a session is established but
+        // the user profile hasn't loaded yet (common on web after
+        // `getSessionFromUrl`). If we redirect away, users can never set a new
+        // password.
+        if (isResetPasswordRoute) return null;
+
+        String accessDenied({required String missing, String? requiredRole}) {
+          final qp = <String, String>{'missing': missing, 'from': location};
+          if (requiredRole != null) qp['role'] = requiredRole;
+          return Uri(path: AppRoutes.permissionDenied, queryParameters: qp).toString();
+        }
+
+        String featureDisabled({required String featureKey, required String title, required String message}) {
+          return Uri(
+            path: AppRoutes.featureDisabled,
+            queryParameters: <String, String>{
+              'feature': featureKey,
+              'title': title,
+              'message': message,
+              'from': location,
+            },
+          ).toString();
+        }
+
+        // QA harness gating (admin OR feature flag) in non-release builds.
+        if (location == AppRoutes.qa) {
+          if (kReleaseMode) {
+            logRedirect(AppRoutes.login);
+            return AppRoutes.login;
+          }
+          if (canAccessQaHarness()) return null;
+
+          // Non-admin / flag-disabled access is blocked.
+          if (isLoggedIn) {
+            final target = Uri(
+              path: AppRoutes.accessDenied,
+              queryParameters: <String, String>{'missing': 'qa', 'from': location, 'role': 'admin'},
+            ).toString();
+            logRedirect(target);
+            return target;
+          }
+          logRedirect(AppRoutes.login);
+          return AppRoutes.login;
+        }
+
+        // If we have a valid auth session but the profile hasn't loaded yet,
+        // keep the user on a neutral splash route until it resolves.
+        if (isLoggedIn && user == null) {
+          // If the user is on /login, don't bounce them to /. A profile fetch
+          // failure (e.g., RLS recursion) can otherwise result in a blank screen
+          // on web/iPhone Safari.
+          if (isAuthRoute) return null;
+          if (location == AppRoutes.root) return null;
+          logRedirect(AppRoutes.root);
+          return AppRoutes.root;
+        }
+
+        if (!isLoggedIn) {
+          // Beta gate: keep users in /early-access, but allow visiting /login to sign in.
+          if (!launchEnabled) {
+            if (isEarlyAccessRoute) return null;
+            if (isAuthRoute) return null;
+            logRedirect(AppRoutes.earlyAccess);
+            return AppRoutes.earlyAccess;
+          }
+
+          // Launch enabled: logged-out users can access /login.
+          // IMPORTANT: never land logged-out users on protected routes.
+          // Allow only explicitly-public auth routes.
+          // NOTE: /early-access is a beta-only surface; when launch is enabled,
+          // it should not be reachable.
+          if (isEarlyAccessRoute) {
+            logRedirect(AppRoutes.login);
+            return AppRoutes.login;
+          }
+
+          if (isAuthRoute || isResetPasswordRoute || isAccessDeniedRoute) return null;
+          logRedirect(AppRoutes.login);
+          return AppRoutes.login;
+        }
+
+        // Logged in but hasn't completed onboarding
+        if (!user!.onboardingComplete) {
+          if (isOnboardingRoute) return null;
+          logRedirect(AppRoutes.onboarding);
+          return AppRoutes.onboarding;
+        }
+
+
+        // Post-onboarding gating states must never silently fall through into a
+        // normal dashboard.
+        // - pending review -> waiting approval
+        // - rejected/restricted/suspended -> permission denied
+        if (user.isPendingReview) {
+          if (isWaitingApprovalRoute || isAccessDeniedRoute) return null;
+          logRedirect(AppRoutes.waitingApproval);
+          return AppRoutes.waitingApproval;
+        }
+        if (user.isRejected || user.isRestricted || user.isSuspended) {
+          if (isAccessDeniedRoute) return null;
+          final target = accessDenied(missing: user.isRejected ? 'rejected' : (user.isSuspended ? 'suspended' : 'restricted'));
+          logRedirect(target);
+          return target;
+        }
+
+        // LiveKit route guard: avoid deep-linking into a misconfigured build.
+        if (isLiveKitRoute && !liveKitConfigured()) {
+          if (isAccessDeniedRoute) return null;
+          final target = accessDenied(missing: 'livekit');
+          logRedirect(target);
+          return target;
+        }
+
+        bool isKnownRole(String? r) => r == 'audience' || r == 'talent' || r == 'business' || r == 'admin';
+
+        // Launch-grade invariants: if the profile is malformed or role state is
+        // unresolved, we must not silently route the user into Audience.
+        final approved = user.approvedRoles;
+        final active = user.activeRole;
+        final profileMalformed = user.userId.isEmpty || approved.isEmpty || !approved.contains('audience') || !isKnownRole(active);
+        if (profileMalformed) {
+          // Allow staying on /access to view the message, otherwise route there.
+          if (isAccessDeniedRoute) return null;
+          final target = accessDenied(missing: 'profile');
+          logRedirect(target);
+          return target;
+        }
+
+        // If the user is trying to operate as a gated role but is not approved,
+        // this is a resolved denial state and must go to the blocked screen.
+        if (active == 'talent' && !approved.contains('talent')) {
+          if (isAccessDeniedRoute) return null;
+          final target = accessDenied(missing: 'approval', requiredRole: 'talent');
+          logRedirect(target);
+          return target;
+        }
+        if (active == 'business' && !approved.contains('business')) {
+          if (isAccessDeniedRoute) return null;
+          final target = accessDenied(missing: 'approval', requiredRole: 'business');
+          logRedirect(target);
+          return target;
+        }
+
+        String defaultDashboardRouteFor(UserModel u) {
+          // Primary invariant: prefer the user's *active* role when it is valid.
+          // Admin approval should not automatically override an explicitly active
+          // non-admin role (e.g., QA can approve multiple roles but set active
+          // role to talent).
+          if (u.activeRole == 'admin' && u.approvedRoles.contains('admin')) return AppRoutes.admin;
+
+          // If activeRole is approved and is a pro role, go there.
+          // If not approved, force Audience. Otherwise allow the requested route.
+          if (!u.approvedRoles.contains("talent") && u.activeRole == "talent") return AppRoutes.audience;
+          if (!u.approvedRoles.contains("business") && u.activeRole == "business") return AppRoutes.audience;
+          return AppRoutes.audience;
+        }
+
+        // Onboarding complete, should not be on login or onboarding.
+        // IMPORTANT: do NOT auto-redirect away from /reset-password.
+        // Supabase recovery links establish a session, and users must stay on
+        // the reset password screen long enough to set a new password.
+        if (isEarlyAccessRoute) {
+          final target = defaultDashboardRouteFor(user);
+          logRedirect(target);
+          return target;
+        }
+
+        if (isAuthRoute) {
+          if (user.onboardingComplete) {
+            final target = defaultDashboardRouteFor(user);
+            if (target != AppRoutes.login) {
+              logRedirect(target);
+              return target;
+            }
+          }
+          return null;
+        }
+
+        if (isOnboardingRoute) {
+          final target = defaultDashboardRouteFor(user);
+          logRedirect(target);
+          return target;
+        }
+
+        // At root, redirect to active role dashboard
+        if (location == AppRoutes.root) {
+          final target = defaultDashboardRouteFor(user);
+          logRedirect(target);
+          return target;
+        }
+
+        // If the user is already on a role dashboard but the active role changed,
+        // keep navigation deterministic by always routing to the resolved
+        // dashboard for the current profile.
+        final roleDashPaths = <String>{AppRoutes.audience, AppRoutes.talent, AppRoutes.business, AppRoutes.admin};
+        if (roleDashPaths.contains(location)) {
+          final target = defaultDashboardRouteFor(user);
+          if (target != location) {
+            logRedirect(target);
+            return target;
+          }
+        }
+
+        // If the app is entered via an opaque top-level path (some email link
+        // flows / hosts), ensure we don't strand the user on an unknown route.
+        // Once authenticated + onboarded, always funnel to the proper dashboard.
+        final knownPaths = <String>{
+          AppRoutes.root,
+          AppRoutes.earlyAccess,
+          AppRoutes.login,
+          AppRoutes.onboarding,
+          AppRoutes.authCallback,
+          AppRoutes.resetPassword,
+          AppRoutes.waitingApproval,
+          AppRoutes.accessDenied,
+          AppRoutes.permissionDenied,
+          AppRoutes.audience,
+          AppRoutes.talent,
+          AppRoutes.business,
+          AppRoutes.admin,
+          AppRoutes.audienceDashboard,
+          AppRoutes.talentDashboard,
+          AppRoutes.businessDashboard,
+          AppRoutes.livekit,
+          AppRoutes.missions,
+          AppRoutes.rewards,
+          AppRoutes.campaigns,
+          AppRoutes.progress,
+          AppRoutes.adminMissions,
+          AppRoutes.adminCampaigns,
+          AppRoutes.featureDisabled,
+          if (!kReleaseMode) AppRoutes.qa,
+        };
+        final knownPrefixes = <String>{
+          '${AppRoutes.missions}/',
+          '${AppRoutes.campaigns}/',
+        };
+        final isKnownByPrefix = knownPrefixes.any((p) => location.startsWith(p));
+        if (!knownPaths.contains(location) && !isKnownByPrefix) {
+          final target = defaultDashboardRouteFor(user);
+          logRedirect(target);
+          return target;
+        }
+
+        // Role guards
+        if (location == AppRoutes.talent && !user.approvedRoles.contains('talent')) {
+          final target = accessDenied(missing: 'role', requiredRole: 'talent');
+          logRedirect(target);
+          return target;
+        }
+        if (location == AppRoutes.business && !user.approvedRoles.contains('business')) {
+          final target = accessDenied(missing: 'role', requiredRole: 'business');
+          logRedirect(target);
+          return target;
+        }
+        if (location == AppRoutes.admin && !user.approvedRoles.contains('admin')) {
+          final target = accessDenied(missing: 'role', requiredRole: 'admin');
+          logRedirect(target);
+          return target;
+        }
+
+        // Admin tooling guards
+        final isAdminTooling = location == AppRoutes.adminMissions || location == AppRoutes.adminCampaigns;
+        if (isAdminTooling && !user.approvedRoles.contains('admin')) {
+          final target = accessDenied(missing: 'role', requiredRole: 'admin');
+          logRedirect(target);
+          return target;
+        }
+
+        // Progression route guards (server-authoritative feature policy).
+        // Prevent deep links / refreshes into disabled modules.
+        final isProgressionRoute = location == AppRoutes.missions ||
+            location.startsWith('${AppRoutes.missions}/') ||
+            location == AppRoutes.rewards ||
+            location == AppRoutes.campaigns ||
+            location.startsWith('${AppRoutes.campaigns}/') ||
+            location == AppRoutes.progress;
+        if (isProgressionRoute && !isFeatureDisabledRoute) {
+          try {
+            final policyProvider = context.read<ProgressionFeaturePolicyProvider>();
+            if (!policyProvider.isLoading) {
+              final policy = policyProvider.policy;
+              final roleKey = policyProvider.roleKey;
+
+              bool blocked = false;
+              String feature = 'progression';
+              String title = 'Feature unavailable';
+              String message = 'This feature is currently unavailable.';
+
+              if (!policy.progressionEnabled) {
+                blocked = true;
+                title = 'Progression is disabled';
+                message = 'Progression is currently turned off.';
+              } else if (location == AppRoutes.missions || location.startsWith('${AppRoutes.missions}/')) {
+                if (!policy.missionsEnabled || !policy.roleMissionsEnabled(roleKey)) {
+                  blocked = true;
+                  feature = 'missions';
+                  title = 'Missions are disabled';
+                  message = 'Missions are currently unavailable for your role.';
+                }
+              } else if (location == AppRoutes.campaigns || location.startsWith('${AppRoutes.campaigns}/')) {
+                if (!policy.campaignsEnabled) {
+                  blocked = true;
+                  feature = 'campaigns';
+                  title = 'Campaigns are disabled';
+                  message = 'Campaigns are currently unavailable.';
+                }
+              } else if (location == AppRoutes.rewards) {
+                if (!policy.redemptionsEnabled) {
+                  blocked = true;
+                  feature = 'rewards';
+                  title = 'Rewards are disabled';
+                  message = 'Rewards are currently unavailable.';
+                }
+              } else if (location == AppRoutes.progress) {
+                // Progress is a read surface; guard only when progression is disabled.
+                if (!policy.progressionEnabled) {
+                  blocked = true;
+                  feature = 'progress';
+                  title = 'Progress is disabled';
+                  message = 'Progress tracking is currently unavailable.';
+                }
+              }
+
+              if (blocked) {
+                final target = featureDisabled(featureKey: feature, title: title, message: message);
+                logRedirect(target);
+                return target;
+              }
+            }
+          } catch (e) {
+            debugPrint('AppRouter: progression route guard failed open: $e');
+          }
+        }
+
+        return null;
+      },
+      routes: [
+        GoRoute(
+          path: AppRoutes.root,
+          builder: (context, state) => const Scaffold(
+            body: Center(child: CircularProgressIndicator()), // Splash / loading
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.authCallback,
+          pageBuilder: (context, state) => _fadeSlidePage(const AuthCallbackPage(), state),
+        ),
+        GoRoute(
+          path: AppRoutes.earlyAccess,
+          pageBuilder: (context, state) => _fadeSlidePage(const EarlyAccessGatePage(), state),
+        ),
+        GoRoute(
+          path: AppRoutes.login,
+          pageBuilder: (context, state) {
+            final email = state.uri.queryParameters['email'];
+            final ea = state.uri.queryParameters['ea'] == '1';
+            return _fadeSlidePage(LandingAuthPage(initialEmail: email, earlyAccessFlow: ea), state);
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.onboarding,
+          pageBuilder: (context, state) => _fadeSlidePage(const OnboardingPage(), state),
+        ),
+        GoRoute(
+          path: AppRoutes.waitingApproval,
+          pageBuilder: (context, state) => _fadeSlidePage(const WaitingApprovalPage(), state),
+        ),
+        GoRoute(
+          path: AppRoutes.resetPassword,
+          pageBuilder: (context, state) {
+            final email = state.uri.queryParameters['email'];
+            final step = state.uri.queryParameters['step'];
+            return _fadeSlidePage(ResetPasswordPage(initialEmail: email, initialStep: step), state);
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.accessDenied,
+          pageBuilder: (context, state) => _fadeSlidePage(PermissionDeniedPage(uri: state.uri), state),
+        ),
+        GoRoute(
+          path: AppRoutes.permissionDenied,
+          pageBuilder: (context, state) => _fadeSlidePage(PermissionDeniedPage(uri: state.uri), state),
+        ),
+        GoRoute(
+          path: AppRoutes.audience,
+          pageBuilder: (context, state) => _fadeSlidePage(const AudienceDashboard(), state),
+        ),
+        GoRoute(path: AppRoutes.audienceDashboard, redirect: (context, state) => AppRoutes.audience),
+        GoRoute(
+          path: AppRoutes.talent,
+          pageBuilder: (context, state) => _fadeSlidePage(const TalentDashboard(), state),
+        ),
+        GoRoute(path: AppRoutes.talentDashboard, redirect: (context, state) => AppRoutes.talent),
+        GoRoute(
+          path: AppRoutes.business,
+          pageBuilder: (context, state) => _fadeSlidePage(const BusinessDashboard(), state),
+        ),
+        GoRoute(path: AppRoutes.businessDashboard, redirect: (context, state) => AppRoutes.business),
+        GoRoute(
+          path: AppRoutes.admin,
+          pageBuilder: (context, state) => _fadeSlidePage(const AdminDashboard(), state),
+        ),
+
+        GoRoute(
+          path: AppRoutes.featureDisabled,
+          pageBuilder: (context, state) {
+            final title = (state.uri.queryParameters['title'] ?? 'Feature unavailable').trim();
+            final message = (state.uri.queryParameters['message'] ?? 'This feature is currently unavailable.').trim();
+            final feature = (state.uri.queryParameters['feature'] ?? '').trim();
+            final icon = switch (feature) {
+              'missions' => Icons.task_alt,
+              'campaigns' => Icons.campaign,
+              'rewards' => Icons.card_giftcard,
+              'progress' => Icons.insights,
+              _ => Icons.lock_outline,
+            };
+            return _fadeSlidePage(FeatureDisabledPage(title: title, message: message, icon: icon), state);
+          },
+        ),
+
+        // Progression system routes
+        GoRoute(
+          path: AppRoutes.missions,
+          pageBuilder: (context, state) => _fadeSlidePage(const MissionsPage(), state),
+          routes: [
+            GoRoute(
+              path: ':id',
+              pageBuilder: (context, state) {
+                final id = state.pathParameters['id'] ?? '';
+                return _fadeSlidePage(MissionDetailPage(missionId: id), state);
+              },
+            ),
+          ],
+        ),
+        GoRoute(
+          path: AppRoutes.rewards,
+          pageBuilder: (context, state) => _fadeSlidePage(const RewardsPage(), state),
+        ),
+        GoRoute(
+          path: AppRoutes.campaigns,
+          pageBuilder: (context, state) => _fadeSlidePage(const CampaignsPage(), state),
+          routes: [
+            GoRoute(
+              path: ':campaignId',
+              pageBuilder: (context, state) {
+                final id = (state.pathParameters['campaignId'] ?? '').trim();
+                return _fadeSlidePage(CampaignDetailPage(campaignId: id), state);
+              },
+            ),
+          ],
+        ),
+        GoRoute(
+          path: AppRoutes.progress,
+          pageBuilder: (context, state) => _fadeSlidePage(const ProgressPage(), state),
+        ),
+
+        // Admin progression tooling
+        GoRoute(
+          path: AppRoutes.adminMissions,
+          pageBuilder: (context, state) => _fadeSlidePage(const AdminMissionsPage(), state),
+        ),
+        GoRoute(
+          path: AppRoutes.adminCampaigns,
+          pageBuilder: (context, state) => _fadeSlidePage(const AdminCampaignsPage(), state),
+        ),
+
+        GoRoute(
+          path: AppRoutes.livekit,
+          pageBuilder: (context, state) {
+            final extra = state.extra;
+            if (extra is Map) {
+              final session = extra['session'];
+              final hostMode = extra['hostMode'] == true;
+              if (session is StudioSessionModel) {
+                return _fadeSlidePage(LiveKitRoomPage(session: session, hostMode: hostMode), state);
+              }
+            }
+            return _fadeSlidePage(const Scaffold(body: Center(child: Text('Missing LiveKit session.'))), state);
+          },
+        ),
+
+        // Debug-only QA harness route.
+        // IMPORTANT: This must be declared *before* the opaque fallback routes,
+        // otherwise '/:opaque' will capture '/__qa' and the harness becomes
+        // unreachable during development.
+        if (!kReleaseMode)
+          GoRoute(
+            path: AppRoutes.qa,
+            pageBuilder: (context, state) => _fadeSlidePage(const QAHarnessPage(), state),
+          ),
+
+        // Fallback routes: some hosts land on opaque token-like paths.
+        // GoRouter must have a concrete route match, otherwise it throws
+        // "no routes for location" *before* our redirect can recover.
+        //
+        // 1) Single segment token: /<opaque>
+        GoRoute(
+          path: '/:opaque',
+          redirect: (context, state) {
+            // IMPORTANT: Some Supabase email links arrive as an opaque top-level
+            // path (e.g. /VTSOCzrI5tVtgHJItw2z) with auth params in the fragment
+            // or query. If we naively redirect to '/', we lose those params.
+            //
+            // Preserve auth params and funnel into /auth/callback.
+            try {
+              final baseUri = Uri.base;
+              final fragRaw = baseUri.fragment.isNotEmpty ? baseUri.fragment : state.uri.fragment;
+              final qp = <String, String>{...state.uri.queryParameters, ...baseUri.queryParameters};
+              final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+              final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+              final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+              final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+              final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+              if (hasSupabaseAuthParams) {
+                return Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString();
+              }
+            } catch (e) {
+              debugPrint('AppRouter: opaque-path redirect failed to preserve auth params: $e');
+            }
+            return AppRoutes.root;
+          },
+        ),
+
+        // 2) Any deeper unknown path.
+        GoRoute(
+          path: '/:opaque/:rest(.*)',
+          redirect: (context, state) {
+            try {
+              final baseUri = Uri.base;
+              final fragRaw = baseUri.fragment.isNotEmpty ? baseUri.fragment : state.uri.fragment;
+              final qp = <String, String>{...state.uri.queryParameters, ...baseUri.queryParameters};
+              final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+              final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+              final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+              final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+              final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+              if (hasSupabaseAuthParams) {
+                return Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString();
+              }
+            } catch (e) {
+              debugPrint('AppRouter: deep-opaque redirect failed to preserve auth params: $e');
+            }
+            return AppRoutes.root;
+          },
+        ),
+
+      ],
+    );
+  }
+
+  static String _computeInitialLocation({required String fallback}) {
+    // If the browser loads a deep link (e.g. /reset-password), we must respect it.
+    // When using hash URL strategies, some hosts put the route in the fragment.
+    // Supabase also uses the fragment for tokens, so we only treat the fragment
+    // as a route when it starts with '/'.
+    try {
+      final uri = Uri.base;
+      final path = uri.path;
+      if (path.isNotEmpty && path != '/' && path.startsWith('/')) {
+        return _pathWithQuery(path: path, queryParameters: uri.queryParameters);
+      }
+
+      // Supabase can open the app at the root URL with auth params in the fragment,
+      // e.g. `https://host/#access_token=...&type=recovery`.
+      // In that case, the router would otherwise fall back to /login and never
+      // consume the session. Boot into /auth/callback so AuthCallbackPage can
+      // parse and exchange the tokens/code.
+      final fragRaw = uri.fragment;
+      final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+      final hasSupabaseFragmentError = fragRaw.contains('error=');
+      final hasSupabaseQueryCode = (uri.queryParameters['code'] ?? '').isNotEmpty;
+      final hasSupabaseQueryRecoveryType = (uri.queryParameters['type'] ?? '').toLowerCase() == 'recovery';
+      if ((path.isEmpty || path == '/') && (hasSupabaseFragmentTokens || hasSupabaseFragmentError || hasSupabaseQueryCode || hasSupabaseQueryRecoveryType)) {
+        debugPrint('AppRouter: detected Supabase email-link params at root; booting to ${AppRoutes.authCallback}');
+        return AppRoutes.authCallback;
+      }
+
+      final frag = uri.fragment;
+      if (frag.startsWith('/')) {
+        final parts = frag.split('?');
+        final routeOnly = parts.first;
+        if (routeOnly.isEmpty) return fallback;
+        if (parts.length == 1) return routeOnly;
+        // Preserve deep-link query params encoded into the fragment route.
+        return '$routeOnly?${parts.sublist(1).join('?')}';
+      }
+    } catch (e) {
+      debugPrint('AppRouter: failed to compute initialLocation from Uri.base: $e');
+    }
+    return fallback;
+  }
+
+  static String _pathWithQuery({required String path, required Map<String, String> queryParameters}) {
+    if (queryParameters.isEmpty) return path;
+    final query = Uri(queryParameters: queryParameters).query;
+    if (query.isEmpty) return path;
+    return '$path?$query';
+  }
+
+  static Page<void> _fadeSlidePage(Widget child, GoRouterState state) {
+    return CustomTransitionPage<void>(
+      key: state.pageKey,
+      child: child,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final fade = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+        final slide = Tween<Offset>(begin: const Offset(0.04, 0), end: Offset.zero)
+            .chain(CurveTween(curve: Curves.easeOutCubic))
+            .animate(animation);
+        return FadeTransition(
+          opacity: fade,
+          child: SlideTransition(position: slide, child: child),
+        );
+      },
+    );
+  }
+}

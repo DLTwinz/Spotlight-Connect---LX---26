@@ -1,0 +1,675 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:spotlight_connect/pages/dashboards/widgets/post_card.dart';
+import 'package:spotlight_connect/services/post_service.dart';
+import 'package:spotlight_connect/storage/key_value_store.dart';
+import 'package:spotlight_connect/theme.dart';
+import 'package:spotlight_connect/widgets/viewport_constrained_sheet.dart';
+import 'package:spotlight_connect/services/progression_service.dart';
+import 'package:spotlight_connect/providers/app_auth_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+/// A lightweight profile viewer used in local/mock mode.
+///
+/// This is intentionally a bottom sheet (not a full page) so it can be opened
+/// from anywhere (feed, comments, repost cards) without changing app routing.
+class ProfileSheet extends StatefulWidget {
+  const ProfileSheet({
+    super.key,
+    required this.userId,
+    required this.displayName,
+    required this.primaryRole,
+  });
+
+  final String userId;
+  final String displayName;
+  final String primaryRole;
+
+  static Future<void> show(
+    BuildContext context, {
+    required String userId,
+    required String displayName,
+    required String primaryRole,
+  }) {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => ViewportConstrainedSheet(child: ProfileSheet(userId: userId, displayName: displayName, primaryRole: primaryRole)),
+    );
+  }
+
+  @override
+  State<ProfileSheet> createState() => _ProfileSheetState();
+}
+
+class _ProfileSheetState extends State<ProfileSheet> {
+  static const _followKey = 'followed_user_ids';
+  final KeyValueStore _store = createKeyValueStore();
+  bool _busy = true;
+  bool _isFollowing = false;
+
+  SupabaseClient get _db => Supabase.instance.client;
+  String? get _uid => _db.auth.currentUser?.id;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final uid = _uid;
+
+      // Prefer Supabase when authenticated.
+      if (uid != null) {
+        final rows = await _db.from('user_follows').select('following_user_id').eq('follower_user_id', uid);
+        final ids = (rows as List)
+            .map((e) => (e is Map ? e['following_user_id'] : null)?.toString())
+            .whereType<String>()
+            .toSet();
+        if (!mounted) return;
+        setState(() {
+          _isFollowing = ids.contains(widget.userId);
+          _busy = false;
+        });
+        return;
+      }
+
+      final raw = await _store.getString(_followKey);
+      final ids = _decodeIds(raw);
+      if (!mounted) return;
+      setState(() {
+        _isFollowing = ids.contains(widget.userId);
+        _busy = false;
+      });
+    } catch (e) {
+      debugPrint('ProfileSheet follow load failed: $e');
+      if (!mounted) return;
+      setState(() => _busy = false);
+    }
+  }
+
+  Set<String> _decodeIds(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return <String>{};
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is List) return decoded.whereType<String>().toSet();
+    } catch (_) {
+      // Corrupted entry; ignore.
+    }
+    return <String>{};
+  }
+
+  Future<void> _toggleFollow() async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      final uid = _uid;
+
+      // Prefer Supabase when authenticated.
+      if (uid != null) {
+        if (_isFollowing) {
+          await _db.from('user_follows').delete().eq('follower_user_id', uid).eq('following_user_id', widget.userId);
+        } else {
+          await _db.from('user_follows').insert({'follower_user_id': uid, 'following_user_id': widget.userId});
+        }
+      } else {
+        final raw = await _store.getString(_followKey);
+        final ids = _decodeIds(raw);
+        if (_isFollowing) {
+          ids.remove(widget.userId);
+        } else {
+          ids.add(widget.userId);
+        }
+        await _store.setString(_followKey, jsonEncode(ids.toList()..sort()));
+      }
+
+      if (!mounted) return;
+      setState(() {
+        _isFollowing = !_isFollowing;
+        _busy = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_isFollowing ? 'Following ${widget.displayName}' : 'Unfollowed ${widget.displayName}')),
+      );
+    } catch (e) {
+      debugPrint('ProfileSheet toggle follow failed: $e');
+      if (!mounted) return;
+      setState(() => _busy = false);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not update follow. Please try again.')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final posts = context.watch<PostService>().posts.where((p) => p.authorId == widget.userId).toList(growable: false);
+    final isSelf = widget.userId == _uid;
+    final progSvc = isSelf ? context.watch<ProgressionService>() : null;
+    final progression = progSvc?.progression;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35)),
+      ),
+      child: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: _Header(
+                displayName: widget.displayName,
+                primaryRole: widget.primaryRole,
+                showProgress: isSelf && progression != null,
+                tierName: progression?.currentTier,
+                prestige: progression?.prestigeTotal,
+                momentum: progression?.momentumScore,
+                badges: progSvc?.badges ?? const [],
+                proofEvents: progSvc?.proofEvents ?? const [],
+                isFollowing: _isFollowing,
+                busy: _busy,
+                onToggleFollow: _toggleFollow,
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.lg),
+              sliver: posts.isEmpty
+                  ? SliverToBoxAdapter(child: _EmptyState(displayName: widget.displayName))
+                  : SliverList.separated(
+                      itemCount: posts.length,
+                      itemBuilder: (context, i) => PostCard(post: posts[i]),
+                      separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  const _Header({
+    required this.displayName,
+    required this.primaryRole,
+    required this.showProgress,
+    required this.tierName,
+    required this.prestige,
+    required this.momentum,
+    required this.badges,
+    required this.proofEvents,
+    required this.isFollowing,
+    required this.busy,
+    required this.onToggleFollow,
+  });
+
+  final String displayName;
+  final String primaryRole;
+  final bool showProgress;
+  final String? tierName;
+  final int? prestige;
+  final int? momentum;
+  final List<UserBadgeView> badges;
+  final List<ProofEventView> proofEvents;
+  final bool isFollowing;
+  final bool busy;
+  final VoidCallback onToggleFollow;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final viewerUser = context.watch<AppAuthProvider>().currentUser;
+    final (IconData icon, Color tint) = switch (primaryRole) {
+      'talent' => (Icons.mic_none, theme.colorScheme.primary),
+      'business' => (Icons.handshake_outlined, theme.colorScheme.secondary),
+      'admin' => (Icons.shield_outlined, theme.colorScheme.tertiary),
+      _ => (Icons.person_outline, theme.colorScheme.primaryContainer),
+    };
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(child: Text('Profile', style: theme.textTheme.titleLarge?.bold)),
+              IconButton(
+                onPressed: () => context.pop(),
+                icon: Icon(Icons.close, color: theme.colorScheme.onSurfaceVariant),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Container(
+            padding: AppSpacing.paddingMd,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.18),
+              border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: tint.withValues(alpha: 0.16),
+                    border: Border.all(color: tint.withValues(alpha: 0.35)),
+                  ),
+                  child: Icon(icon, color: tint),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(displayName, style: theme.textTheme.titleLarge?.bold, overflow: TextOverflow.ellipsis),
+                      const SizedBox(height: 2),
+                      Text(
+                        _roleLabel(primaryRole),
+                        style: theme.textTheme.labelMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                OutlinedButton.icon(
+                  onPressed: busy ? null : onToggleFollow,
+                  icon: busy
+                      ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: theme.colorScheme.onSurfaceVariant))
+                      : Icon(isFollowing ? Icons.check : Icons.add, color: theme.colorScheme.onSurfaceVariant),
+                  label: Text(isFollowing ? 'Following' : 'Follow', style: theme.textTheme.labelLarge?.withColor(theme.colorScheme.onSurfaceVariant)),
+                ),
+              ],
+            ),
+          ),
+
+          // Restore role navigation surfaces (launch-critical): if the user is approved
+          // for Admin, ensure they can always reach the Admin console.
+          if (viewerUser?.approvedRoles.contains('admin') ?? false) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Container(
+              padding: AppSpacing.paddingMd,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                color: theme.colorScheme.surface,
+                border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.admin_panel_settings_outlined, color: theme.colorScheme.primary),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Admin Console', style: theme.textTheme.labelLarge?.bold),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Switch into Admin and open approvals + operations tools.',
+                          style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  FilledButton.tonal(
+                    onPressed: () async {
+                      final auth = context.read<AppAuthProvider>();
+                      try {
+                        await auth.setActiveRole('admin');
+                      } catch (e) {
+                        debugPrint('ProfileSheet: failed to setActiveRole(admin): $e');
+                      }
+                      if (context.mounted) context.go('/admin');
+                    },
+                    child: Text('Open', style: theme.textTheme.labelLarge?.bold.withColor(theme.colorScheme.onSurface)),
+                  ),
+                ],
+              ),
+            ),
+          ],
+
+          if (showProgress) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Container(
+              padding: AppSpacing.paddingMd,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                color: theme.colorScheme.surface,
+                border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.workspace_premium_outlined, color: theme.colorScheme.primary),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      '${tierName ?? 'Starter'} • Prestige ${prestige ?? 0} • Momentum ${momentum ?? 0}',
+                      style: theme.textTheme.labelLarge?.bold,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  TextButton(onPressed: () => context.push('/progress'), child: const Text('View')),
+                ],
+              ),
+            ),
+              const SizedBox(height: AppSpacing.md),
+              _ProfileProofCardsRow(
+                tier: tierName ?? 'Starter',
+                prestige: prestige ?? 0,
+                momentum: momentum ?? 0,
+                badgesEarned: badges.length,
+              ),
+              const SizedBox(height: AppSpacing.md),
+              _ProfileBadgesPanel(badges: badges),
+              const SizedBox(height: AppSpacing.md),
+              _ProfileProofHistoryPanel(events: proofEvents),
+          ],
+          const SizedBox(height: AppSpacing.lg),
+          Text('Recent posts', style: theme.textTheme.titleMedium?.bold),
+          const SizedBox(height: AppSpacing.md),
+        ],
+      ),
+    );
+  }
+
+  String _roleLabel(String role) => switch (role) {
+    'talent' => 'Talent',
+    'business' => 'Business',
+    'admin' => 'Admin',
+    _ => 'Audience',
+  };
+}
+
+class _ProfileBadgesPanel extends StatelessWidget {
+  const _ProfileBadgesPanel({required this.badges});
+  final List<UserBadgeView> badges;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    if (badges.isEmpty) {
+      return Container(
+        padding: AppSpacing.paddingMd,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.18),
+          border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.emoji_events_outlined, color: theme.colorScheme.onSurfaceVariant),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Text(
+                'No badges yet — your earned proof will show here as you complete missions and campaigns.',
+                style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      padding: AppSpacing.paddingMd,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.18),
+        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.emoji_events_outlined, color: theme.colorScheme.primary),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(child: Text('Badges', style: theme.textTheme.labelLarge?.bold)),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final b in badges.take(10)) _ProfileBadgeChip(name: b.name),
+            ],
+          ),
+          if (badges.length > 10) ...[
+            const SizedBox(height: 6),
+            Text(
+              '+${badges.length - 10} more',
+              style: theme.textTheme.labelSmall?.withColor(theme.colorScheme.onSurfaceVariant),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileBadgeChip extends StatelessWidget {
+  const _ProfileBadgeChip({required this.name});
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(999),
+        color: theme.colorScheme.surface,
+        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.verified, size: 16, color: theme.colorScheme.primary),
+          const SizedBox(width: 8),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 180),
+            child: Text(name, style: theme.textTheme.labelMedium?.bold, overflow: TextOverflow.ellipsis),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileProofCardsRow extends StatelessWidget {
+  const _ProfileProofCardsRow({required this.tier, required this.prestige, required this.momentum, required this.badgesEarned});
+
+  final String tier;
+  final int prestige;
+  final int momentum;
+  final int badgesEarned;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          _ProfileProofCard(label: 'Tier', value: tier, icon: Icons.workspace_premium_outlined),
+          const SizedBox(width: AppSpacing.sm),
+          _ProfileProofCard(label: 'Prestige', value: prestige.toString(), icon: Icons.auto_graph),
+          const SizedBox(width: AppSpacing.sm),
+          _ProfileProofCard(label: 'Momentum', value: momentum.toString(), icon: Icons.bolt),
+          const SizedBox(width: AppSpacing.sm),
+          _ProfileProofCard(label: 'Badges', value: badgesEarned.toString(), icon: Icons.verified),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileProofCard extends StatelessWidget {
+  const _ProfileProofCard({required this.label, required this.value, required this.icon});
+
+  final String label;
+  final String value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      width: 140,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        color: theme.colorScheme.surface,
+        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: theme.colorScheme.primary),
+          const SizedBox(height: 8),
+          Text(value, style: theme.textTheme.titleMedium?.bold, maxLines: 1, overflow: TextOverflow.ellipsis),
+          const SizedBox(height: 2),
+          Text(label, style: theme.textTheme.labelSmall?.withColor(theme.colorScheme.onSurfaceVariant)),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileProofHistoryPanel extends StatelessWidget {
+  const _ProfileProofHistoryPanel({required this.events});
+  final List<ProofEventView> events;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: AppSpacing.paddingMd,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.18),
+        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.history, color: theme.colorScheme.primary),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(child: Text('Proof history', style: theme.textTheme.labelLarge?.bold)),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          if (events.isEmpty)
+            Text(
+              'Completed missions and campaign participation will appear here as verifiable proof.',
+              style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant),
+            )
+          else
+            Column(
+              children: [
+                for (final e in events.take(6)) ...[
+                  _ProfileProofHistoryRow(event: e),
+                  const SizedBox(height: 8),
+                ],
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileProofHistoryRow extends StatelessWidget {
+  const _ProfileProofHistoryRow({required this.event});
+  final ProofEventView event;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final icon = switch (event.kind) {
+      ProofEventKind.mission => Icons.task_alt,
+      ProofEventKind.campaign => Icons.campaign_outlined,
+    };
+    final tint = switch (event.kind) {
+      ProofEventKind.mission => theme.colorScheme.primary,
+      ProofEventKind.campaign => theme.colorScheme.secondary,
+    };
+
+    return Row(
+      children: [
+        Container(
+          width: 34,
+          height: 34,
+          decoration: BoxDecoration(color: tint.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(AppRadius.md)),
+          alignment: Alignment.center,
+          child: Icon(icon, color: tint, size: 18),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(event.title, style: theme.textTheme.labelMedium?.bold, overflow: TextOverflow.ellipsis),
+              const SizedBox(height: 2),
+              Text(event.subtitle, style: theme.textTheme.labelSmall?.withColor(theme.colorScheme.onSurfaceVariant), overflow: TextOverflow.ellipsis),
+            ],
+          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Text(_format(event.at), style: theme.textTheme.labelSmall?.withColor(theme.colorScheme.onSurfaceVariant)),
+      ],
+    );
+  }
+
+  static String _format(DateTime dt) {
+    final mm = dt.month.toString().padLeft(2, '0');
+    final dd = dt.day.toString().padLeft(2, '0');
+    return '$mm/$dd';
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({required this.displayName});
+  final String displayName;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: AppSpacing.paddingLg,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.18),
+        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.auto_awesome, color: theme.colorScheme.onSurfaceVariant),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Text(
+              '$displayName hasn\'t posted yet.',
+              style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
