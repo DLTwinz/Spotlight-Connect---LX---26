@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spotlight_connect/providers/app_auth_provider.dart';
-import 'package:spotlight_connect/config/supabase_config.dart';
+import 'package:spotlight_connect/supabase/supabase_config.dart';
 
 class SupabaseAuthProvider extends AppAuthProvider {
   bool _isLoading = false;
