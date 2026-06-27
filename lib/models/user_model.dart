@@ -73,7 +73,28 @@ class UserModel {
       applicationStatusSummary: applicationStatusSummary ?? this.applicationStatusSummary,
     );
   }
-    UserRole get parsedBaseRole => _parseRole(baseRole);
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      userId: (json['userId'] ?? json['id'] ?? '').toString(),
+      email: (json['email'] ?? '').toString(),
+      displayName: (json['displayName'] ?? json['display_name'] ?? '').toString(),
+      username: (json['username'] ?? '').toString(),
+      profilePhoto: json['profilePhoto'] ?? json['profile_photo'],
+      coverPhoto: json['coverPhoto'] ?? json['cover_photo'],
+      baseRole: (json['baseRole'] ?? json['base_role'] ?? 'audience').toString(),
+      approvedRoles: json['approvedRoles'] != null 
+          ? List<String>.from(json['approvedRoles'])
+          : json['approved_roles'] != null 
+              ? List<String>.from(json['approved_roles'])
+              : ['audience'],
+      activeRole: (json['activeRole'] ?? json['active_role'] ?? 'audience').toString(),
+      onboardingComplete: json['onboardingComplete'] ?? json['onboarding_complete'] ?? false,
+      applicationStatusSummary: (json['applicationStatusSummary'] ?? json['application_status_summary'] ?? 'none').toString(),
+    );
+  }
+
+  UserRole get parsedBaseRole => _parseRole(baseRole);
 
   UserRole get parsedActiveRole => _parseRole(activeRole);
 
@@ -150,8 +171,8 @@ class RoleApplication {
   final String userId;
   final String applicantEmail;
   final String applicantName;
-  final String requestedRole; // 'talent' or 'business'
-  final String status; // 'draft', 'submitted', 'pending_review', 'approved', 'rejected'
+  final String requestedRole; 
+  final String status; 
   final DateTime submittedAt;
   final DateTime? reviewedAt;
   final String? reviewNote;

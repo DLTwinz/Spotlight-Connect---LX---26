@@ -513,7 +513,7 @@ class _CommentsSheetState extends State<CommentsSheet> {
                   padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.lg),
                   shrinkWrap: true,
                   itemCount: comments.isEmpty ? 1 : comments.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
+                  separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
                   itemBuilder: (context, i) {
                     if (comments.isEmpty) {
                       return _EmptyComments();
