@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:spotlight_connect/nav.dart';
 import 'package:spotlight_connect/providers/app_auth_provider.dart';
@@ -19,7 +20,18 @@ import 'package:spotlight_connect/services/studio_service.dart';
 import 'package:spotlight_connect/services/monetization_service.dart';
 import 'package:spotlight_connect/services/progression_service.dart';
 import 'package:spotlight_connect/storage/key_value_store.dart';
-import 'supabase/supabase_config.dart';
+
+// Configuration interface for secure env injection
+abstract class EnvConfig {
+  static const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+  static const String supabaseKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+
+  static void validate() {
+    if (supabaseUrl.isEmpty || supabaseKey.isEmpty) {
+      throw Exception('CRITICAL: SUPABASE_URL or SUPABASE_ANON_KEY not found in environment.');
+    }
+  }
+}
 
 final ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
@@ -34,7 +46,16 @@ final ThemeData darkTheme = ThemeData(
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SupabaseConfig.initialize();
+  
+  // Validate presence of credentials
+  EnvConfig.validate();
+
+  // Initialize Supabase using the validated environment variables
+  await Supabase.initialize(
+    url: EnvConfig.supabaseUrl,
+    publishableKey: EnvConfig.supabaseKey,
+  );
+  
   runApp(const MyApp());
 }
 

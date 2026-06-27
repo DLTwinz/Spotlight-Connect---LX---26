@@ -16,16 +16,16 @@ class _AuthPageState extends State<AuthPage> {
   bool _isLogin = true;
 
 Future<void> _submit() async {
-    print("Submit button pressed!"); // New debug print
+    debugPrint("Submit button pressed!"); // New debug print
     
     final authProvider = Provider.of<SupabaseAuthProvider>(context, listen: false);
     final email = _emailCtrl.text.trim();
     final password = _passCtrl.text.trim();
 
-    print("Attempting to login with: $email"); // New debug print
+    debugPrint("Attempting to login with: $email"); // New debug print
 
     if (email.isEmpty || password.isEmpty) {
-      print("Email or password empty!");
+      debugPrint("Email or password empty!");
       return;
     }
 
@@ -35,10 +35,10 @@ Future<void> _submit() async {
       } else {
         await authProvider.signup(email, password);
       }
-      print("Login request successful!");
+      debugPrint("Login request successful!");
       if (mounted) Navigator.pushReplacementNamed(context, '/dashboard');
     } catch (e) {
-      print("CAUGHT ERROR: $e"); // New debug print
+      debugPrint("CAUGHT ERROR: $e"); // New debug print
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: ${e.toString()}')),

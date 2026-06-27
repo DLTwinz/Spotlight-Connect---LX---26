@@ -1,4 +1,13 @@
 {
-    "editor.accessibilityPageSize": 2000,
-    "editor.bracketPairColorization.independentColorPoolPerBracketType": true
+  "terminal.integrated.shellIntegration.enabled": false,
+  "terminal.integrated.suggest.enabled": false,
+  "remote.portsAttributes": {
+    "8080": {
+      "label": "Spotlight Web App",
+      "onAutoForward": "notify"
+    },
+    "default": {
+      "onAutoForward": "ignore"
+    }
+  }
 }

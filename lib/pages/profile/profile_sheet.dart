@@ -186,7 +186,7 @@ class _ProfileSheetState extends State<ProfileSheet> {
                   : SliverList.separated(
                       itemCount: posts.length,
                       itemBuilder: (context, i) => PostCard(post: posts[i]),
-                      separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
+                      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
                     ),
             ),
           ],
