@@ -1,36 +1,63 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter/foundation.dart';
-import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+
+// Your existing project imports (Keep these below the Flutter ones)
+import 'package:spotlight_connect/services/auth_provider.dart';
+import 'package:spotlight_connect/providers/app_auth_provider.dart';
+import 'package:spotlight_connect/providers/feature_flag_provider.dart';
+import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
 import 'package:spotlight_connect/models/user_model.dart';
 import 'package:spotlight_connect/models/studio_session_model.dart';
-import 'package:spotlight_connect/backend/backend_mode.dart';
-import 'package:spotlight_connect/providers/feature_flag_provider.dart';
+// ... Add any other necessary project-specific imports here ...
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
-import 'providers/app_auth_provider.dart';
-import 'pages/auth/landing_auth_page.dart';
-import 'pages/auth/early_access_gate_page.dart';
+// --- YOUR LOCAL PROJECT IMPORTS BELOW THIS LINE ---
+import 'package:spotlight_connect/services/auth_provider.dart';
+import 'package:spotlight_connect/providers/app_auth_provider.dart';
+import 'package:spotlight_connect/providers/feature_flag_provider.dart';
+import 'package:spotlight_connect/models/user_model.dart';
+// Add any other specific files that were showing "Target of URI doesn't exist" here
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:go_router/go_router.dart';
+
+// Your existing project imports (Keep these below the Flutter ones)
+import 'package:spotlight_connect/services/auth_provider.dart';
+import 'package:spotlight_connect/providers/app_auth_provider.dart';
+import 'package:spotlight_connect/providers/feature_flag_provider.dart';
+import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+import 'package:spotlight_connect/models/user_model.dart';
+import 'package:spotlight_connect/models/studio_session_model.dart';
+
 import 'pages/auth/auth_callback_page.dart';
+import 'pages/auth/early_access_gate_page.dart';
+import 'pages/auth/landing_auth_page.dart';
 import 'pages/auth/onboarding_page.dart';
-import 'pages/auth/reset_password_page.dart';
 import 'pages/auth/permission_denied_page.dart';
+import 'pages/auth/permission_denied_page.dart';
+import 'pages/auth/reset_password_page.dart';
 import 'pages/auth/waiting_approval_page.dart';
-import 'pages/dashboards/audience_dashboard.dart';
+import 'pages/auth/waiting_approval_page.dart';
 import 'pages/dashboards/admin_dashboard.dart';
+import 'pages/dashboards/audience_dashboard.dart';
 import 'pages/dashboards/talent_business_dashboards.dart';
 import 'pages/debug/qa_harness_page.dart';
-import 'pages/studio/livekit_room_page.dart';
-import 'pages/progression/missions_page.dart';
-import 'pages/progression/mission_detail_page.dart';
-import 'pages/progression/rewards_page.dart';
-import 'pages/progression/campaigns_page.dart';
-import 'pages/progression/campaign_detail_page.dart';
-import 'pages/progression/progress_page.dart';
-import 'pages/progression/admin/admin_missions_page.dart';
 import 'pages/progression/admin/admin_campaigns_page.dart';
+import 'pages/progression/admin/admin_missions_page.dart';
+import 'pages/progression/campaign_detail_page.dart';
+import 'pages/progression/campaigns_page.dart';
+import 'pages/progression/mission_detail_page.dart';
+import 'pages/progression/missions_page.dart';
+import 'pages/progression/progress_page.dart';
+import 'pages/progression/rewards_page.dart';
 import 'pages/shared/feature_disabled_page.dart';
+import 'pages/studio/livekit_room_page.dart';
+// ... Add any other necessary project-specific imports here ...
 
-import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
 
 class AppRoutes {
   static const String root = '/';
@@ -40,9 +67,7 @@ class AppRoutes {
   static const String authCallback = '/auth/callback';
   static const String resetPassword = '/reset-password';
   static const String waitingApproval = '/waiting-approval';
-  // Keep legacy path for backwards compatibility.
   static const String accessDenied = '/access';
-  // Launch/docs-aligned path.
   static const String permissionDenied = '/permission-denied';
   static const String audience = '/audience';
   static const String talent = '/talent';
@@ -68,14 +93,22 @@ class AppRoutes {
   static const String businessDashboard = '/business/dashboard';
 
   static const String livekit = '/livekit';
-
-  /// Debug-only QA harness route. Not intended for production navigation.
   static const String qa = '/__qa';
+} // <--- THIS BRACE IS THE FIX
+
+class EnvConfig {
+  static const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+  static const String supabaseKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+
+  static void validate() {
+    if (supabaseUrl.isEmpty || supabaseKey.isEmpty) {
+      throw Exception('Missing required environment variables: SUPABASE_URL or SUPABASE_ANON_KEY');
+    }
+  }
 }
 
 class AppRouter {
   static GoRouter createRouter(AppAuthProvider authProvider) {
-    final fallback = BackendConfig.prelaunchGateEnabled ? AppRoutes.earlyAccess : AppRoutes.login;
     final initial = _computeInitialLocation(fallback: fallback);
     
     // TEMPORARY OVERRIDE FOR TESTING: Force admin dashboard to test new analytics UI
@@ -162,12 +195,6 @@ class AppRouter {
           return liveKitUrl.trim().isNotEmpty;
         }
 
-
-        // Launch gate: when prelaunch is enabled, funnel logged-out users to Early Access.
-        // When disabled, funnel logged-out users to Login.
-        final launchEnabled = !BackendConfig.prelaunchGateEnabled;
-        // NOTE: we previously extracted an `email` query param here for early-access flows,
-        // but redirects now rely on providers + dedicated pages. Keep redirect logic simple.
 
         void logRedirect(String target) {
           if (!kDebugMode) return;
@@ -295,8 +322,26 @@ class AppRouter {
         }
 
         // Logged in but hasn't completed onboarding
+        // Admin redirect
+        if (user!.activeRole == "admin") {
+          if (location.startsWith("/admin")) return null;
+          logRedirect(AppRoutes.admin);
+          return AppRoutes.admin;
+        }
         if (!user!.onboardingComplete) {
+        // Admin redirect
+        if (user!.activeRole == "admin") {
+          if (location.startsWith("/admin")) return null;
+          logRedirect(AppRoutes.admin);
+          return AppRoutes.admin;
+        }
           if (isOnboardingRoute) return null;
+        // Admin redirect
+        if (user!.activeRole == "admin") {
+          if (location.startsWith("/admin")) return null;
+          logRedirect(AppRoutes.admin);
+          return AppRoutes.admin;
+        }
           logRedirect(AppRoutes.onboarding);
           return AppRoutes.onboarding;
         }
@@ -357,16 +402,18 @@ class AppRouter {
         }
 
         String defaultDashboardRouteFor(UserModel u) {
-          // Primary invariant: prefer the user's *active* role when it is valid.
-          // Admin approval should not automatically override an explicitly active
-          // non-admin role (e.g., QA can approve multiple roles but set active
-          // role to talent).
-          if (u.activeRole == 'admin' && u.approvedRoles.contains('admin')) return AppRoutes.admin;
-
-          // If activeRole is approved and is a pro role, go there.
-          // If not approved, force Audience. Otherwise allow the requested route.
-          if (!u.approvedRoles.contains("talent") && u.activeRole == "talent") return AppRoutes.audience;
-          if (!u.approvedRoles.contains("business") && u.activeRole == "business") return AppRoutes.audience;
+          if (u.approvedRoles.contains('admin')) {
+            if (u.activeRole == 'talent') return AppRoutes.talent;
+            if (u.activeRole == 'business') return AppRoutes.business;
+            if (u.activeRole == 'audience') return AppRoutes.audience;
+            return AppRoutes.admin;
+          }
+          if (u.activeRole == 'talent' && u.approvedRoles.contains('talent')) {
+            return AppRoutes.talent;
+          }
+          if (u.activeRole == 'business' && u.approvedRoles.contains('business')) {
+            return AppRoutes.business;
+          }
           return AppRoutes.audience;
         }
 

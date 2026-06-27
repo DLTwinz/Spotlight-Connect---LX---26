@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../theme.dart';
 
 class LandingAuthPage extends StatefulWidget {
   final String? initialEmail;
@@ -64,16 +66,19 @@ class _LandingAuthPageState extends State<LandingAuthPage> {
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
-        // Close the auth bottom sheet after a successful login so the route
-        // redirect can show the authenticated app state.
-        if (mounted && Navigator.of(context).canPop()) {
-          Navigator.of(context).pop();
+
+        if (mounted) {
+          // Explicitly redirect using GoRouter to bypass the loop
+          // Swap '/' for your actual dashboard route if different in nav.dart
+          context.go('/');
         }
       }
     } on AuthException catch (error) {
       if (mounted) _showErrorSnackBar(error.message);
     } catch (error) {
-      if (mounted) _showErrorSnackBar('An unexpected authentication error occurred.');
+      if (mounted) {
+        _showErrorSnackBar('An unexpected authentication error occurred.');
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -85,109 +90,297 @@ class _LandingAuthPageState extends State<LandingAuthPage> {
     );
   }
 
-  void _showAuthFormSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: const Color(0xFF0A0A0A),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setModalState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-                left: 24, right: 24, top: 24,
-              ),
-              child: Form(
-                key: _formKey,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        _isSignUpMode ? 'CREATE ACCOUNT' : 'SECURE SIGN IN',
-                        style: const TextStyle(
-                          color: Color(0xFF39FF14),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        controller: _emailController,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: _buildInputDecoration(hint: 'Email', icon: Icons.email_outlined),
-                        validator: (val) => (val == null || !val.contains('@')) ? 'Invalid email' : null,
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: _obscurePassword,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: _buildInputDecoration(hint: 'Password', icon: Icons.lock_outline).copyWith(
-                          suffixIcon: IconButton(
-                            icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
-                            onPressed: () => setModalState(() => _obscurePassword = !_obscurePassword),
-                          ),
-                        ),
-                        validator: (val) => (val == null || val.length < 6) ? 'Min 6 characters' : null,
-                      ),
-                      const SizedBox(height: 24),
-                      FilledButton(
-                        style: FilledButton.styleFrom(backgroundColor: const Color(0xFF39FF14), foregroundColor: Colors.black),
-                        onPressed: _isLoading ? null : () async {
-                          setModalState(() => _isLoading = true);
-                          await _handleAuthentication();
-                          if (mounted) setModalState(() => _isLoading = false);
-                        },
-                        child: _isLoading ? const CircularProgressIndicator() : Text(_isSignUpMode ? 'REGISTER' : 'LOGIN'),
-                      ),
-                      TextButton(
-                        onPressed: () => setModalState(() => _isSignUpMode = !_isSignUpMode),
-                        child: Text(_isSignUpMode ? 'LOGIN INSTEAD' : 'CREATE ACCOUNT'),
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  InputDecoration _buildInputDecoration({required String hint, required IconData icon}) {
+  InputDecoration _buildInputDecoration(
+    BuildContext context, {
+    required String hint,
+    required IconData icon,
+  }) {
+    final theme = Theme.of(context);
     return InputDecoration(
       hintText: hint,
-      prefixIcon: Icon(icon, color: const Color(0xFFD4AF37)),
+      hintStyle: context.textStyles.labelSmall?.copyWith(
+        color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+        letterSpacing: 1.0,
+      ),
+      prefixIcon: Icon(icon, color: const Color(0xFFD4AF37), size: 18),
       filled: true,
-      fillColor: const Color(0xFF111111),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+      fillColor: const Color(0xFF020204),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.md,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        borderSide: BorderSide(
+          color: theme.colorScheme.outline.withValues(alpha: 0.15),
+          width: 1,
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        borderSide: BorderSide(
+          color: theme.colorScheme.outline.withValues(alpha: 0.15),
+          width: 1,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        borderSide: BorderSide(color: theme.colorScheme.primary, width: 1.0),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textStyles = context.textStyles;
+
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: SizedBox(
-        width: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      backgroundColor: const Color(0xFF000105),
+      body: SafeArea(
+        child: Stack(
           children: [
-            const Text('SPOTLIGHT', style: TextStyle(color: Color(0xFF39FF14), fontSize: 32, fontWeight: FontWeight.bold)),
-            const Text('CONNECT', style: TextStyle(color: Color(0xFFD4AF37), letterSpacing: 4)),
-            const SizedBox(height: 60),
-            ElevatedButton(
-              onPressed: () => _showAuthFormSheet(context),
-              child: const Text('INITIALIZE ACCESS'),
+            // Top Status Bar
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg,
+                  vertical: AppSpacing.sm,
+                ),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: const Color(0xFF1E1E1E).withValues(alpha: 0.4),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Text(
+                          'NODE NETWORK: ACTIVE',
+                          style: textStyles.labelSmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant
+                                .withValues(alpha: 0.6),
+                            letterSpacing: 1.5,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      'v1.0.10 // CORE',
+                      style: textStyles.labelSmall?.copyWith(
+                        color: const Color(0xFFD4AF37).withValues(alpha: 0.6),
+                        letterSpacing: 1.0,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Main Web Split/Centered Content
+            Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 60),
+                    Text(
+                      'SPOTLIGHT',
+                      style: textStyles.displayMedium?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -1.0,
+                        height: 1.1,
+                      ),
+                    ),
+                    Text(
+                      'CONNECT',
+                      style: textStyles.labelLarge?.copyWith(
+                        color: const Color(0xFFD4AF37),
+                        letterSpacing: 8.0,
+                        fontWeight: FontWeight.w500,
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xxl),
+
+                    // Embedded Form Container (Matches Clean Web SaaS Layout)
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 460),
+                      padding: const EdgeInsets.all(AppSpacing.xl),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF09090B),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        border: Border.all(
+                          color: const Color(0xFF1C1C1E),
+                          width: 1.0,
+                        ),
+                      ),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              _isSignUpMode
+                                  ? 'INITIALIZE NODE REGISTRATION'
+                                  : 'SECURE SYSTEM AUTHORIZATION',
+                              style: context.textStyles.labelMedium?.copyWith(
+                                color: theme.colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 2.0,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: AppSpacing.xl),
+
+                            // Email Input Field Inline
+                            TextFormField(
+                              controller: _emailController,
+                              style: TextStyle(
+                                color: theme.colorScheme.onSurface,
+                                fontFamily: 'Inter',
+                              ),
+                              decoration: _buildInputDecoration(
+                                context,
+                                hint: 'IDENTITY REQUEST (EMAIL)',
+                                icon: Icons.alternate_email,
+                              ),
+                              validator: (val) =>
+                                  (val == null || !val.contains('@'))
+                                  ? 'Invalid entry token'
+                                  : null,
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+
+                            // Password Input Field Inline
+                            TextFormField(
+                              controller: _passwordController,
+                              obscureText: _obscurePassword,
+                              style: TextStyle(
+                                color: theme.colorScheme.onSurface,
+                                fontFamily: 'Inter',
+                              ),
+                              decoration:
+                                  _buildInputDecoration(
+                                    context,
+                                    hint: 'ACCESS KEY (PASSWORD)',
+                                    icon: Icons.key_outlined,
+                                  ).copyWith(
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _obscurePassword
+                                            ? Icons.visibility_off_outlined
+                                            : Icons.visibility_outlined,
+                                        color: theme
+                                            .colorScheme
+                                            .onSurfaceVariant
+                                            .withValues(alpha: 0.4),
+                                        size: 20,
+                                      ),
+                                      onPressed: () => setState(
+                                        () => _obscurePassword =
+                                            !_obscurePassword,
+                                      ),
+                                    ),
+                                  ),
+                              validator: (val) =>
+                                  (val == null || val.length < 6)
+                                  ? 'Insecure key size (Min 6)'
+                                  : null,
+                            ),
+                            const SizedBox(height: AppSpacing.xl),
+
+                            // Submit Button Inline
+                            SizedBox(
+                              height: 48,
+                              child: FilledButton(
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: theme.colorScheme.primary,
+                                  foregroundColor: theme.colorScheme.onPrimary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      AppRadius.sm,
+                                    ),
+                                    side: BorderSide(
+                                      color: theme.colorScheme.primary
+                                          .withValues(alpha: 0.5),
+                                      width: 1,
+                                    ),
+                                  ),
+                                ),
+                                onPressed: _isLoading
+                                    ? null
+                                    : _handleAuthentication,
+                                child: _isLoading
+                                    ? SizedBox(
+                                        height: 18,
+                                        width: 18,
+                                        child: CircularProgressIndicator(
+                                          color: theme.colorScheme.onPrimary,
+                                          strokeWidth: 1.5,
+                                        ),
+                                      )
+                                    : Text(
+                                        _isSignUpMode
+                                            ? 'EXECUTE SIGN UP'
+                                            : 'ESTABLISH SESSION',
+                                        style: context
+                                            .textStyles
+                                            .labelLarge
+                                            ?.bold
+                                            .copyWith(letterSpacing: 1.0),
+                                      ),
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.sm),
+
+                            // Context Mode Switcher Inline
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                foregroundColor: theme.colorScheme.secondary,
+                              ),
+                              onPressed: () => setState(
+                                () => _isSignUpMode = !_isSignUpMode,
+                              ),
+                              child: Text(
+                                _isSignUpMode
+                                    ? 'RETURN TO LOGIN PREROUTE'
+                                    : 'REQUEST INFRASTRUCTURE HANDSHAKE',
+                                style: context.textStyles.labelSmall?.copyWith(
+                                  letterSpacing: 0.5,
+                                  color: const Color(0xFFD4AF37),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

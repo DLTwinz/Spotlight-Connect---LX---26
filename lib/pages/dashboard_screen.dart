@@ -1,146 +1,125 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:provider/provider.dart';
+import '../providers/supabase_auth_provider.dart';
+import '../models/user_model.dart';
+import 'dashboards/talent_business_dashboards.dart';
 
-class DashboardScreen extends StatefulWidget {
+class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
   @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
-}
-
-class _DashboardScreenState extends State<DashboardScreen> {
-  final _supabase = Supabase.instance.client;
-  String _profileName = "OPERATOR";
-  String _profileRole = "SYSTEM SYSTEM";
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUserMetadata();
-  }
-
-  Future<void> _loadUserMetadata() async {
-    try {
-      final user = _supabase.auth.currentUser;
-      if (user == null) {
-        setState(() => _isLoading = false);
-        return;
-      }
-
-      final profile = await _supabase
-          .from('user_profiles')
-          .select()
-          .eq('id', user.id)
-          .maybeSingle();
-
-      if (profile != null && mounted) {
-        setState(() {
-          _profileName = (profile['display_name'] ?? 'SYSTEM NODE').toString().toUpperCase();
-          _profileRole = (profile['role'] ?? 'GUEST PREVIEW').toString().toUpperCase();
-          _isLoading = false;
-        });
-      } else {
-        setState(() => _isLoading = false);
-      }
-    } catch (_) {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    // 1. Reactively listen to the single source of truth
+    final authProvider = Provider.of<SupabaseAuthProvider>(context);
+    final UserModel? user = authProvider.currentUser;
+
+    // 2. Handle global bootstrap loading state cleanly
+    if (authProvider.isLoading || user == null) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF39FF14)),
+        ),
+      );
+    }
+
+    // 3. Dynamic Structural HUD Swapping based on Active Role
+    final activeRole = user.activeRole.trim().toLowerCase();
+    if (activeRole == 'talent') {
+      return const TalentDashboard();
+    } else if (activeRole == 'business') {
+      return const BusinessDashboard();
+    }
+
+    // 4. Fallback Admin / Core System Console Layout
     return Scaffold(
       backgroundColor: Colors.black,
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF39FF14)))
-          : SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // ================= TOP MATRIX HEADER =================
+              _buildConsoleHeader(context, user, authProvider),
+              const SizedBox(height: 32),
+
+              // ================= SYSTEM METRICS CARDS =================
+              Row(
+                children: [
+                  Expanded(child: _buildMetricTile('VERIFIED FANS', '1,429', const Color(0xFF39FF14))),
+                  const SizedBox(width: 16),
+                  Expanded(child: _buildMetricTile('ACTIVE NODES', '98.4%', const Color(0xFFD4AF37))),
+                ],
+              ),
+              const SizedBox(height: 32),
+
+              Text(
+                'CORE SYSTEM APPLICATIONS',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.4),
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.5,
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // ================= FUNCTIONAL MODULE GRID =================
+              Expanded(
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
                   children: [
-                    // ================= TOP MATRIX HEADER =================
-                    _buildConsoleHeader(),
-                    const SizedBox(height: 32),
-
-                    // ================= SYSTEM METRICS CARDS =================
-                    Row(
-                      children: [
-                        Expanded(child: _buildMetricTile('VERIFIED FANS', '1,429', const Color(0xFF39FF14))),
-                        const SizedBox(width: 16),
-                        Expanded(child: _buildMetricTile('ACTIVE NODES', '98.4%', const Color(0xFFD4AF37))),
-                      ],
+                    _buildConsoleMenuCard(
+                      title: 'ECOSYSTEM ENGINE',
+                      subtitle: 'Feeds & Missions Log',
+                      icon: Icons.layers_outlined,
+                      accentColor: const Color(0xFF39FF14),
+                      onTap: () => context.push('/ecosystem'),
                     ),
-                    const SizedBox(height: 32),
-
-                    Text(
-                      'CORE SYSTEM APPLICATIONS',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.4),
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                      ),
+                    _buildConsoleMenuCard(
+                      title: 'MESSAGING PIPELINE',
+                      subtitle: 'Twilio Telemetry Matrix',
+                      icon: Icons.dns_outlined,
+                      accentColor: const Color(0xFFD4AF37),
+                      onTap: () => context.push('/messaging'),
                     ),
-                    const SizedBox(height: 16),
-
-                    // ================= FUNCTIONAL MODULE GRID =================
-                    Expanded(
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        children: [
-                          _buildConsoleMenuCard(
-                            title: 'ECOSYSTEM ENGINE',
-                            subtitle: 'Feeds & Missions Log',
-                            icon: Icons.layers_outlined,
-                            accentColor: const Color(0xFF39FF14),
-                            onTap: () => context.push('/ecosystem'),
-                          ),
-                          _buildConsoleMenuCard(
-                            title: 'MESSAGING PIPELINE',
-                            subtitle: 'Twilio Telemetry Matrix',
-                            icon: Icons.dns_outlined,
-                            accentColor: const Color(0xFFD4AF37),
-                            onTap: () => context.push('/messaging'),
-                          ),
-                          _buildConsoleMenuCard(
-                            title: 'FANDOM HUB',
-                            subtitle: 'Community Core Group',
-                            icon: Icons.groups_2_outlined,
-                            accentColor: Colors.purpleAccent,
-                            // 🎯 FIXED: Connected natively to the new '/fandom' routing path
-                            onTap: () => context.push('/fandom'),
-                          ),
-                          _buildConsoleMenuCard(
-                            title: 'SECURITY GATE',
-                            subtitle: 'RLS & Token Claims',
-                            icon: Icons.gpp_good_outlined,
-                            accentColor: Colors.tealAccent,
-                            onTap: () => _showDevelopmentToast('TOKEN CLAIMS & AUDIT LOGS SECURE'),
-                          ),
-                        ],
-                      ),
+                    _buildConsoleMenuCard(
+                      title: 'FANDOM HUB',
+                      subtitle: 'Community Core Group',
+                      icon: Icons.groups_2_outlined,
+                      accentColor: Colors.purpleAccent,
+                      onTap: () => context.push('/fandom'),
                     ),
-
-                    // ================= SYSTEM FOOTER DISCHARGE =================
-                    Center(
-                      child: Text(
-                        'SPOTLIGHT CONNECT OS v1.0.0 // SECURE RUNTIME ENABLED',
-                        style: TextStyle(color: Colors.white.withValues(alpha: 0.2), fontSize: 9, letterSpacing: 1),
-                      ),
+                    _buildConsoleMenuCard(
+                      title: 'SECURITY GATE',
+                      subtitle: 'RLS & Token Claims',
+                      icon: Icons.gpp_good_outlined,
+                      accentColor: Colors.tealAccent,
+                      onTap: () => _showDevelopmentToast(context, 'TOKEN CLAIMS & AUDIT LOGS SECURE'),
                     ),
                   ],
                 ),
               ),
-            ),
+
+              // ================= SYSTEM FOOTER DISCHARGE =================
+              Center(
+                child: Text(
+                  'SPOTLIGHT CONNECT OS v1.0.0 // SECURE RUNTIME ENABLED',
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.2), fontSize: 9, letterSpacing: 1),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
-  Widget _buildConsoleHeader() {
+  Widget _buildConsoleHeader(BuildContext context, UserModel user, SupabaseAuthProvider auth) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -148,7 +127,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              _profileName,
+              user.displayName.toUpperCase(),
               style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 1),
             ),
             const SizedBox(height: 4),
@@ -161,7 +140,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  'ACCESS PRIVILEGE LEVEL: $_profileRole',
+                  'ACCESS PRIVILEGE LEVEL: ${user.activeRole.toUpperCase()}',
                   style: const TextStyle(color: Color(0xFF39FF14), fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
                 ),
               ],
@@ -171,8 +150,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         IconButton(
           icon: const Icon(Icons.power_settings_new, color: Colors.redAccent, size: 22),
           onPressed: () async {
-            await _supabase.auth.signOut();
-            if (mounted) context.go('/');
+            await auth.logout();
+            if (context.mounted) context.go('/');
           },
         ),
       ],
@@ -246,7 +225,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  void _showDevelopmentToast(String message) {
+  void _showDevelopmentToast(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12)),

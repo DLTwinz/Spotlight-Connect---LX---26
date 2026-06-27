@@ -251,7 +251,7 @@ class _AdminMissionsPageState extends State<AdminMissionsPage> {
                         ),
                       );
                     },
-                    separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
+                    separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
                     itemCount: _missions.length,
                   ),
       ),
