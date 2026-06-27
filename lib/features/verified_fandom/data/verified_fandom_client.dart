@@ -40,7 +40,7 @@ class VerifiedFandomClient {
         payload: {
           'policy_key': policyKey,
           'enabled': enabled,
-          if (reason != null) 'reason': reason,
+          'reason': ?reason,
         },
       );
 
@@ -54,7 +54,7 @@ class VerifiedFandomClient {
         payload: {
           'switch_key': switchKey,
           'enabled': enabled,
-          if (reason != null) 'reason': reason,
+          'reason': ?reason,
         },
       );
 
@@ -68,7 +68,7 @@ class VerifiedFandomClient {
         payload: {
           'control_key': controlKey,
           'state': state,
-          if (reason != null) 'reason': reason,
+          'reason': ?reason,
         },
       );
 
@@ -80,7 +80,7 @@ class VerifiedFandomClient {
         action: 'replay_event',
         payload: {
           'raw_event_id': rawEventId,
-          if (reason != null) 'reason': reason,
+          'reason': ?reason,
         },
       );
 
@@ -97,8 +97,8 @@ class VerifiedFandomClient {
           'user_id': userId,
           'points': points,
           'reason_code': reasonCode,
-          if (missionId != null) 'mission_id': missionId,
-          if (sourceEventId != null) 'source_event_id': sourceEventId,
+          'mission_id': ?missionId,
+          'source_event_id': ?sourceEventId,
         },
       );
 

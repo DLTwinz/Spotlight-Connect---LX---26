@@ -270,7 +270,7 @@ class OpportunityService extends ChangeNotifier {
           .from('opportunity_applications')
           .update({
             'status': status,
-            if (businessNote != null) 'business_note': businessNote,
+            'business_note': ?businessNote,
           })
           .eq('id', applicationId)
           .select('id,opportunity_id,applicant_user_id,pitch,portfolio_links,availability,business_note,status,created_at,updated_at')

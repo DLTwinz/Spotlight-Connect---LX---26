@@ -228,7 +228,7 @@ class _AdminCampaignsPageState extends State<AdminCampaignsPage> {
                         ),
                       );
                     },
-                    separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
+                    separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
                     itemCount: _campaigns.length,
                   ),
       ),
