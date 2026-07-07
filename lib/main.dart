@@ -103,7 +103,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => PortfolioService(client: _dbClient, localCache: createKeyValueStore())),
         ChangeNotifierProvider(create: (_) => StoryService(client: _dbClient, localCache: createKeyValueStore())),
         ChangeNotifierProvider(create: (_) => OpportunityService(client: _dbClient, localCache: createKeyValueStore())),  
-        ChangeNotifierProvider(create: (_) => MonetizationService(client: client)),
+        ChangeNotifierProvider(create: (_) => MonetizationService(client: _dbClient)),
         ChangeNotifierProvider(create: (_) => ProgressionService(client: _dbClient)),
         
         // Stateless Operational Engine Services
@@ -117,7 +117,7 @@ class _MyAppState extends State<MyApp> {
           brightness: Brightness.dark,
           scaffoldBackgroundColor: Colors.black,
           primaryColor: const Color(0xFF39FF14), // Spotlight Cyber Green
-          colorScheme: const ColorScheme.dark( y
+          colorScheme: const ColorScheme.dark(
             primary: Color(0xFF39FF14),
             secondary: Color(0xFFD4AF37), // Brand Impact Gold
             surface: Color(0xFF1A1A1A),
