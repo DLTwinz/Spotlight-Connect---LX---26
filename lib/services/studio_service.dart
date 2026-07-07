@@ -55,8 +55,22 @@ class StudioService extends ChangeNotifier {
     required String room,
     required String participant,
   }) async {
-    // Implement token creation via RPC/function or server API.
-    return null;
+    try {
+      final resp = await Supabase.instance.client.functions.invoke('livekit_token', body: {
+        'room': room,
+        'participant': participant,
+      });
+      final data = resp.data;
+      if (data is Map && data['token'] is String) {
+        return data['token'] as String;
+      }
+      // Some functions return the raw string
+      if (data is String) return data;
+      return null;
+    } catch (e) {
+      debugPrint('createLiveKitToken failed: $e');
+      return null;
+    }
   }
 
   // ignore: unused_element
