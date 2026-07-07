@@ -1,50 +1,43 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MonetizationService extends ChangeNotifier {
-  List<dynamic> _cachedPlans = [];
-  List<dynamic> get plans => _cachedPlans;
-  Future<void> loadPlans() async {
-    _cachedPlans = await Supabase.instance.client.from('plans').select();
+  final SupabaseClient _client;
+  List<Map<String, dynamic>> _transactions = [];
+  bool _isLoading = false;
+
+  MonetizationService({required SupabaseClient client}) : _client = client;
+
+  List<Map<String, dynamic>> get transactions => _transactions;
+  bool get isLoading => _isLoading;
+
+  Future<void> fetchUserLedger(String profileId) async {
+    _isLoading = true;
     notifyListeners();
-  }
-  static const double platformFee = 0.05; 
-  static const double agencyFee = 0.15;
-
-  Future<void> ensureInitialized() async {}
-  
-  // Update these to accept the 'userId' or 'id' parameters the UI sends
-  double totalEarnedUsd({String? userId}) => 0.0;
-  double totalSpentUsd({String? userId}) => 0.0;
-  
-  List get transactions => [];
-  Future<List<dynamic>> fetchPlans() async {
-    final response = await Supabase.instance.client.from('plans').select();
-    return response as List<dynamic>;
+    try {
+      final data = await _client
+          .from('monetization_ledger')
+          .select()
+          .or('recipient_id.eq.$profileId,sender_id.eq.$profileId')
+          .order('created_at', ascending: false);
+      _transactions = List<Map<String, dynamic>>.from(data);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
-  // Match the named parameters used in monetization_sheets.dart
-  bool isSubscribed({String? subscriberUserId, String? creatorUserId}) => false;
-  
-  Future<void> subscribe({String? subscriberUserId, String? creatorUserId, String? planId}) async {}
-  Future<void> cancelSubscription({String? subscriberUserId, String? creatorUserId}) async {}
-  
-  Future<void> tipCreator({
-    required String fromUserId, 
-    required String toUserId, 
-    required double amountUsd, 
-    String? note
-  }) async {}
-
-  // Payout profile methods
-  Future<dynamic> getOrCreatePayoutProfile({String? userId, String? displayName}) async { return null; }
-  Future<void> updatePayoutProfile({String? userId, String? displayName, String? payoutMethod, String? payoutHandle}) async {}
-
-  static Map<String, double> calculateSplit(double totalAmount) {
-    double spotlightCut = totalAmount * platformFee;
-    double agencyCut = totalAmount * agencyFee;
-  return {
-      'talent_net': totalAmount - (spotlightCut + agencyCut),
-    };
+  Future<void> recordTransaction({required String recipientId, required String senderId, required int amountCents, required String type}) async {
+    try {
+      await _client.from('monetization_ledger').insert({
+        'recipient_id': recipientId,
+        'sender_id': senderId,
+        'amount_cents': amountCents,
+        'transaction_type': type,
+      });
+    } catch (e) {
+      debugPrint('❌ ESCROW/LEDGER TRANSMISSION ERROR: $e');
+      rethrow;
+    }
   }
 }

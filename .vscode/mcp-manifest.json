@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "local-filesystem": {
+      "command": "node",
+      "args": [
+        "-e",
+        "require('fs')"
+      ],
+      "env": {},
+      "disabled": false
+    }
+  }
+}

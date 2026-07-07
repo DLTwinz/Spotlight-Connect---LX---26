@@ -877,3 +877,6 @@ class AppRouter {
     );
   }
 }
+
+final launchEnabled = true;
+const fallback = "/";
