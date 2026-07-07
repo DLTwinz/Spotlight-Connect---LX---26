@@ -57,3 +57,8 @@ key.properties
 # ----- IOS SENSITIVE -----
 **/ios/**/*.p12
 **/ios/**/*.mobileprovision
+
+# Environment secrets
+.env
+.env.local
+.env.*.local
