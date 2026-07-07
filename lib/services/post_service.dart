@@ -1,31 +1,46 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:spotlight_connect/models/comment_model.dart';
+import 'package:spotlight_connect/models/post_model.dart';
 
 class PostService extends ChangeNotifier {
   PostService({required SupabaseClient client}) : _client = client;
 
   final SupabaseClient _client;
-  final List<Map<String, dynamic>> _items = [];
   bool _isLoading = false;
+  List<PostModel> _posts = [];
 
-  SupabaseClient get client => _client;
-  List<Map<String, dynamic>> get posts => List.unmodifiable(_items);
-  List<Map<String, dynamic>> get items => List.unmodifiable(_items);
   bool get isLoading => _isLoading;
+  List<PostModel> get posts => _posts;
+  List<PostModel> get items => _posts;
+
+  bool isLiked(String id) => false;
+  bool isReposted(String id) => false;
+  bool isSaved(String id) => false;
+
+  Future<void> toggleLike(String id) async { notifyListeners(); }
+  
+  Future<void> toggleRepost({required String postId, required String reposterId, required String reposterDisplayName, required String reposterPrimaryRole}) async { 
+    notifyListeners(); 
+  }
+
+  Future<void> toggleSave(String id) async { notifyListeners(); }
+
+  List<CommentModel> commentsFor(String id) => [];
+  
+  Future<void> addComment({required String postId, required String authorId, required String authorDisplayName, required String authorPrimaryRole, required String text}) async { 
+    notifyListeners(); 
+  }
 
   Future<void> ensureInitialized() async {
     if (_isLoading) return;
     _isLoading = true;
     notifyListeners();
     try {
-      final rows = await _client
-          .from('posts')
-          .select('*')
-          .order('created_at', ascending: false)
-          .limit(50);
-      _items
-        ..clear()
-        ..addAll(List<Map<String, dynamic>>.from(rows as List));
+      final rows = await _client.from('posts').select('*').order('created_at', ascending: false).limit(50);
+      _posts = (rows as List).map((row) => PostModel.fromJson(row as Map<String, dynamic>)).toList();
+    } catch (e) {
+      debugPrint('PostService ensureInitialized failed: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -37,13 +52,11 @@ class PostService extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      final rows = await _client
-          .from('posts')
-          .select('*')
-          .order('created_at', ascending: false)
-          .limit(50)
-          .offset(_items.length);
-      _items.addAll(List<Map<String, dynamic>>.from(rows as List));
+      final rows = await _client.from('posts').select('*').order('created_at', ascending: false).range(_posts.length, _posts.length + 20 - 1);
+      final more = (rows as List).map((row) => PostModel.fromJson(row as Map<String, dynamic>)).toList();
+      _posts = [..._posts, ...more];
+    } catch (e) {
+      debugPrint('PostService loadMore failed: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
