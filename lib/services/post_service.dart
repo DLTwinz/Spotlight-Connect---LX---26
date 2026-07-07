@@ -1,7 +1,7 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:spotlight_connect/models/comment_model.dart';
 import 'package:spotlight_connect/models/post_model.dart';
+import 'package:spotlight_connect/models/comment_model.dart';
 
 class PostService extends ChangeNotifier {
   PostService({required SupabaseClient client}) : _client = client;
@@ -18,18 +18,26 @@ class PostService extends ChangeNotifier {
   bool isReposted(String id) => false;
   bool isSaved(String id) => false;
 
-  Future<void> toggleLike(String id) async { notifyListeners(); }
-  
-  Future<void> toggleRepost({required String postId, required String reposterId, required String reposterDisplayName, required String reposterPrimaryRole}) async { 
-    notifyListeners(); 
+  Future<void> toggleLike(String id) async {
+    // TODO: Implement like behavior
+    notifyListeners();
   }
 
-  Future<void> toggleSave(String id) async { notifyListeners(); }
+  Future<void> toggleRepost({required String postId, required String reposterId, required String reposterDisplayName, required String reposterPrimaryRole}) async {
+    // TODO: Implement repost behavior
+    notifyListeners();
+  }
+
+  Future<void> toggleSave(String id) async {
+    // TODO: Implement save behavior
+    notifyListeners();
+  }
 
   List<CommentModel> commentsFor(String id) => [];
-  
-  Future<void> addComment({required String postId, required String authorId, required String authorDisplayName, required String authorPrimaryRole, required String text}) async { 
-    notifyListeners(); 
+
+  Future<void> addComment({required String postId, required String authorId, required String authorDisplayName, required String authorPrimaryRole, required String text}) async {
+    // TODO: Implement add comment
+    notifyListeners();
   }
 
   Future<void> ensureInitialized() async {
