@@ -13,6 +13,13 @@ build/
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
+.flutter-plugins-dependencies
+
+# ----- FLUTTER COMPILER CACHE (LARGE FILES ~70MB each) -----
+*.dill
+*.dill.track.dill
+*.cache.dill.track.dill
+*.incremental.dill
 
 # ----- FLUTTER LOGS -----
 flutter_*.log
