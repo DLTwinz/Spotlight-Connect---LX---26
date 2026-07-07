@@ -90,32 +90,10 @@ class Campaign {
 // ---------------------------------------------------------------------------
 
 class ProgressionService extends ChangeNotifier {
-<<<<<<< HEAD
-=======
-  final SupabaseClient _client; // ignore: unused_field
-  bool _isLoading = false; // ignore: prefer_final_fields // ignore: prefer_final_fields
-  bool _isInitialized = false;
-  String? _lastError;
-
-  ProgressionData progression = ProgressionData();
-
-  List<UserBadgeView> badges = [];
-  List<ProofEventView> proofEvents = [];
-  List<dynamic> campaigns = [];
-  List<dynamic> campaignSections = [];
-  
-  // The UI expects missions to be an iterable Map (.entries)
-  Map<String, dynamic> missions = {}; 
-  
-  List<dynamic> missionSections = [];
-  List<dynamic> userMilestones = [];
-  List<dynamic> allMilestones = [];
-
->>>>>>> de0a337 (fix: resolve all 20 compile errors and 30+ static analysis warnings)
   ProgressionService({required SupabaseClient client}) : _client = client;
 
-  final SupabaseClient _client; // ignore: unused_field
-  bool _isLoading = false; // ignore: prefer_final_fields
+  final SupabaseClient _client;
+  bool _isLoading = false;
   final List<Mission> _missions = [];
   final List<Campaign> _campaigns = [];
 
