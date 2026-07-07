@@ -602,11 +602,31 @@ class _ProfileProofHistoryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final icon = switch (event.kind) {
-      ProofEventKind.mission => Icons.task_alt,
-      ProofEventKind.campaign => Icons.campaign_outlined,
-    };
-    final tint = switch (event.kind) {
+    // BEFORE (broken) — both switch expressions at lines 605 and 609:
+switch (event.kind) {
+  ProofEventKind.purchase => ...,
+  ProofEventKind.subscription => ...,
+  ProofEventKind.tip => ...,
+  ProofEventKind.attendance => ...,
+}
+
+// AFTER (fixed) — add milestone to both switches:
+switch (event.kind) {
+  ProofEventKind.purchase => Icons.shopping_bag_outlined,
+  ProofEventKind.subscription => Icons.repeat_outlined,
+  ProofEventKind.tip => Icons.volunteer_activism_outlined,
+  ProofEventKind.attendance => Icons.event_available_outlined,
+          ProofEventKind.milestone => Icons.emoji_events_outlined,
+  ProofEventKind.milestone => Icons.emoji_events_outlined,  // ADD THIS
+}
+// And for the color switch (line 609):
+switch (event.kind) {
+  ProofEventKind.purchase => Colors.green,
+  ProofEventKind.subscription => Colors.blue,
+  ProofEventKind.tip => Colors.amber,
+  ProofEventKind.attendance => Colors.purple,
+  ProofEventKind.milestone => Colors.orange,  // ADD THIS
+}
       ProofEventKind.mission => theme.colorScheme.primary,
       ProofEventKind.campaign => theme.colorScheme.secondary,
     };

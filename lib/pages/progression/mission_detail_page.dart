@@ -1,50 +1,61 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:spotlight_connect/services/progression_service.dart';
-import 'package:spotlight_connect/models/mission_list_item_model.dart';
-import 'package:spotlight_connect/models/mission_model.dart';
+import 'package:spotlight_connect/models/progression_models.dart';
 
-class MissionDetailPage extends StatefulWidget {
+class MissionDetailPage extends StatelessWidget {
+  const MissionDetailPage({
+    super.key,
+    required this.missions,
+    required this.missionId,
+  });
+
+  final Map<String, dynamic> missions;
   final String missionId;
-  const MissionDetailPage({super.key, required this.missionId});
 
-  @override
-  State<MissionDetailPage> createState() => _MissionDetailPageState();
-}
-
-class _MissionDetailPageState extends State<MissionDetailPage> {
   @override
   Widget build(BuildContext context) {
+    // FIX: missions is a Map — use [] not firstWhere
+    final raw = missions[missionId];
+    if (raw == null) {
+      return const Scaffold(
+        body: Center(child: Text('Mission not found.')),
+      );
+    }
+    final mission = raw as Map<String, dynamic>;
+
+    // FIX: removed duplicate named args — keep only one of each
+    final model = SpotlightMission(
+      id: mission['id'] as String? ?? missionId,
+      title: mission['title'] as String? ?? 'Untitled Mission',
+      targetValue: (mission['target_value'] ?? mission['target'] ?? 0) as int,
+      prestigeReward:
+          (mission['prestige_reward'] ?? mission['prestige'] ?? 0) as int,
+      status: MissionStatus.values.byName(
+        mission['status'] as String? ?? 'active',
+      ),
+    );
+
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Mission Detail')),
-      body: Consumer<ProgressionService>(
-        builder: (context, svc, _) {
-          final item = svc.missions.firstWhere(
-            (e) => e.mission.id == widget.missionId,
-            orElse: () => MissionListItemModel(
-              mission: MissionModel(
-                id: widget.missionId, 
-                title: 'Unknown Mission', 
-                description: 'No description available.',
-                shortLabel: 'N/A',
-                actionType: 'none', 
-                targetValue: 0, 
-                prestigeReward: 0, 
-                status: 'inactive'
-              ),
-            ),
-          );
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Mission: ${item.mission.title}', style: Theme.of(context).textTheme.headlineMedium),
-                const SizedBox(height: 20),
-                Text('Status: ${item.mission.status}'),
-              ],
-            ),
-          );
-        },
+      appBar: AppBar(title: Text(model.title)),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text('Target', style: theme.textTheme.labelLarge?.copyWith(color: cs.onSurfaceVariant)),
+            const SizedBox(height: 4),
+            Text('${model.targetValue}', style: theme.textTheme.headlineMedium),
+            const SizedBox(height: 16),
+            Text('Prestige Reward', style: theme.textTheme.labelLarge?.copyWith(color: cs.onSurfaceVariant)),
+            const SizedBox(height: 4),
+            Text('${model.prestigeReward} pts', style: theme.textTheme.headlineMedium),
+            const SizedBox(height: 16),
+            Text('Status', style: theme.textTheme.labelLarge?.copyWith(color: cs.onSurfaceVariant)),
+            const SizedBox(height: 4),
+            Text(model.status.name, style: theme.textTheme.bodyLarge),
+          ],
+        ),
       ),
     );
   }

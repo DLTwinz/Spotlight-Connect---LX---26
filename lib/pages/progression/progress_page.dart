@@ -246,8 +246,7 @@ class _CampaignParticipationPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final svc = context.watch<ProgressionService>();
-    final joined = svc.campaignSections['Your participation'] ?? const [];
-    final count = svc.progression?.campaignsParticipated ?? joined.length;
+ProgressBar(value: int.tryParse(someStringValue.toString()) ?? 0)    final count = svc.progression?.campaignsParticipated ?? joined.length;
 
     return Container(
       padding: AppSpacing.paddingLg,

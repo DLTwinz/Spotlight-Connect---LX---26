@@ -338,20 +338,32 @@ class _QAHarnessPageState extends State<QAHarnessPage> {
 
     // Uses existing service method(s) to avoid duplicating logic.
     final thread = await _messages.getOrCreateThread(
-      participantUserIds: [me.id, peerUserId],
-      participantNames: {me.id: 'Me', peerUserId: 'Peer'},
-      participantEmails: {me.id: _sb.auth.currentUser?.email ?? '', peerUserId: ''},
-      opportunityId: null,
-    );
-    _log('Thread ready: ${thread.threadId}');
+      // BEFORE (broken):
+final thread = await _messages.getOrCreateThread(
+  participantUserIds: [...],
+  participantNames: [...],
+  participantEmails: [...],
+  opportunityId: null,
+);
+... thread.threadId ...
+await _messages.sendMessage(
+  threadId: thread.threadId,
+  senderUserId: uid,
+  senderName: name,
+  body: 'QA smoke test message',
+);
+... thread.threadId ...
 
-    await _messages.sendMessage(
-      threadId: thread.threadId,
-      senderUserId: me.id,
-      senderName: 'Me',
-      body: '[QA] message smoke ${DateTime.now().toIso8601String()}',
-    );
-    _log('Sent QA message into ${thread.threadId}');
+// AFTER (fixed) — positional args, thread is a String id:
+final threadId = await _messages.getOrCreateThread(
+  _peerUserIdController.text.trim(),
+);
+_log('Thread id: $threadId', status: _QaStatus.pass);
+await _messages.sendMessage(
+  threadId,
+  'QA smoke test message',
+);
+_log('Message sent to thread $threadId', status: _QaStatus.pass);
   }
 
   Future<void> _qaApproveRole(String role) async {

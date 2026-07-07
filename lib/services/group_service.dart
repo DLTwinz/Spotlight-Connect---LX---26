@@ -2,24 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class GroupService extends ChangeNotifier {
-  GroupService({required SupabaseClient client}) : _client = client;
+  final SupabaseClient _client; // ignore: unused_field
+  final dynamic _localCache; // ignore: unused_field
+  List<Map<String, dynamic>> _joinedGroups = [];
 
-  final SupabaseClient _client;
-  final List<Map<String, dynamic>> _localCache = [];
+  GroupService({required SupabaseClient client, required dynamic localCache}) 
+      : _client = client, 
+        _localCache = localCache;
 
-  SupabaseClient get client => _client;
-  List<Map<String, dynamic>> get groups => List.unmodifiable(_localCache);
+  List<Map<String, dynamic>> get joinedGroups => _joinedGroups;
 
-  Future<void> ensureInitialized() async {
-    final me = _client.auth.currentUser;
-    if (me == null) return;
-    final rows = await _client
-        .from('groups')
-        .select('*')
-        .limit(50);
-    _localCache
-      ..clear()
-      ..addAll(List<Map<String, dynamic>>.from(rows as List));
-    notifyListeners();
+  Future<void> fetchGroupsForUser(String userId) async {
+    try {
+      final data = await _client
+          .from('group_members')
+          .select('groups(*)')
+          .eq('user_id', userId);
+      _joinedGroups = List<Map<String, dynamic>>.from(data);
+      notifyListeners();
+    } catch (e) {
+      debugPrint('❌ GROUP RECOVERY FAILURE: $e');
+    }
   }
 }

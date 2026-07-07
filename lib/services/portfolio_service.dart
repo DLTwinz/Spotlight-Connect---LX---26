@@ -2,25 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PortfolioService extends ChangeNotifier {
-  PortfolioService({required SupabaseClient client}) : _client = client;
+  final SupabaseClient _client; // ignore: unused_field
+  final dynamic _localCache; // ignore: unused_field
+  Map<String, dynamic>? _activePortfolio;
 
-  final SupabaseClient _client;
-  final List<Map<String, dynamic>> _localCache = [];
+  PortfolioService({required SupabaseClient client, required dynamic localCache}) 
+      : _client = client, 
+        _localCache = localCache;
 
-  SupabaseClient get client => _client;
-  List<Map<String, dynamic>> get items => List.unmodifiable(_localCache);
+  Map<String, dynamic>? get activePortfolio => _activePortfolio;
 
-  Future<void> ensureInitialized() async {
-    final me = _client.auth.currentUser;
-    if (me == null) return;
-    final rows = await _client
-        .from('portfolio_items')
-        .select('*')
-        .eq('user_id', me.id)
-        .order('created_at', ascending: false);
-    _localCache
-      ..clear()
-      ..addAll(List<Map<String, dynamic>>.from(rows as List));
-    notifyListeners();
+  Future<void> loadCreatorPortfolio(String creatorId) async {
+    try {
+      final data = await _client
+          .from('portfolios')
+          .select('*, portfolio_items(*)')
+          .eq('creator_id', creatorId)
+          .maybeSingle();
+      _activePortfolio = data;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('❌ PORTFOLIO ATTR ENGINE ERROR: $e');
+    }
   }
 }

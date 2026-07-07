@@ -76,13 +76,13 @@ class MissionsPage extends StatelessWidget {
                     ProgressionInlineErrorBanner(message: svc.lastError!, onRetry: () => unawaited(svc.refreshHome())),
                   ],
                   const SizedBox(height: AppSpacing.lg),
-                  for (final entry in sections.entries) ...[
-                    Row(
-                      children: [
-                        Expanded(child: Text(entry.key, style: theme.textTheme.titleMedium?.bold)),
-                        Text('${entry.value.length}', style: theme.textTheme.labelLarge?.withColor(theme.colorScheme.onSurfaceVariant)),
-                      ],
-                    ),
+                  final grouped = (missions as List<dynamic>)
+    .map((m) => m as Map<String, dynamic>)
+    .fold<Map<String, List<Map<String, dynamic>>>>({}, (acc, m) {
+      final key = m['category'] as String? ?? 'general';
+      (acc[key] ??= []).add(m);
+      return acc;
+    });
                     const SizedBox(height: AppSpacing.sm),
                     if (entry.value.isEmpty)
                       const ProgressionEmptyStateCard(
@@ -234,7 +234,7 @@ class _ErrorState extends StatelessWidget {
           children: [
             Icon(Icons.error_outline, color: theme.colorScheme.error),
             const SizedBox(height: AppSpacing.sm),
-            Text('Could not load missions', style: theme.textTheme.titleMedium?.bold),
+            Text('Could not load missions', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: AppSpacing.xs),
             Text(message, style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant), textAlign: TextAlign.center),
             const SizedBox(height: AppSpacing.md),
