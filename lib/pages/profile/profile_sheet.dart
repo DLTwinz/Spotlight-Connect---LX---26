@@ -602,33 +602,27 @@ class _ProfileProofHistoryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // BEFORE (broken) — both switch expressions at lines 605 and 609:
-switch (event.kind) {
-  ProofEventKind.purchase => ...,
-  ProofEventKind.subscription => ...,
-  ProofEventKind.tip => ...,
-  ProofEventKind.attendance => ...,
-}
 
-// AFTER (fixed) — add milestone to both switches:
-switch (event.kind) {
-  ProofEventKind.purchase => Icons.shopping_bag_outlined,
-  ProofEventKind.subscription => Icons.repeat_outlined,
-  ProofEventKind.tip => Icons.volunteer_activism_outlined,
-  ProofEventKind.attendance => Icons.event_available_outlined,
-          ProofEventKind.milestone => Icons.emoji_events_outlined,
-  ProofEventKind.milestone => Icons.emoji_events_outlined,  // ADD THIS
-}
-// And for the color switch (line 609):
-switch (event.kind) {
-  ProofEventKind.purchase => Colors.green,
-  ProofEventKind.subscription => Colors.blue,
-  ProofEventKind.tip => Colors.amber,
-  ProofEventKind.attendance => Colors.purple,
-  ProofEventKind.milestone => Colors.orange,  // ADD THIS
-}
+    final IconData icon = switch (event.kind) {
+      ProofEventKind.mission => Icons.task_alt,
+      ProofEventKind.campaign => Icons.campaign_outlined,
+      ProofEventKind.purchase => Icons.shopping_bag_outlined,
+      ProofEventKind.subscription => Icons.repeat_outlined,
+      ProofEventKind.tip => Icons.volunteer_activism_outlined,
+      ProofEventKind.attendance => Icons.event_available_outlined,
+      ProofEventKind.milestone => Icons.emoji_events_outlined,
+      _ => Icons.info_outline,
+    };
+
+    final Color tint = switch (event.kind) {
       ProofEventKind.mission => theme.colorScheme.primary,
       ProofEventKind.campaign => theme.colorScheme.secondary,
+      ProofEventKind.purchase => Colors.green,
+      ProofEventKind.subscription => Colors.blue,
+      ProofEventKind.tip => Colors.amber,
+      ProofEventKind.attendance => Colors.purple,
+      ProofEventKind.milestone => Colors.orange,
+      _ => theme.colorScheme.onSurfaceVariant,
     };
 
     return Row(
@@ -636,7 +630,10 @@ switch (event.kind) {
         Container(
           width: 34,
           height: 34,
-          decoration: BoxDecoration(color: tint.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(AppRadius.md)),
+          decoration: BoxDecoration(
+            color: tint.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(AppRadius.md),
+          ),
           alignment: Alignment.center,
           child: Icon(icon, color: tint, size: 18),
         ),

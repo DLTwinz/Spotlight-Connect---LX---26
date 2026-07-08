@@ -19,6 +19,7 @@ import 'package:spotlight_connect/services/story_service.dart';
 import 'package:spotlight_connect/services/studio_service.dart';
 import 'package:spotlight_connect/services/progression_service.dart';
 import 'package:spotlight_connect/storage/key_value_store.dart';
+import 'package:spotlight_connect/services/monetization_service.dart';
 
 // Production Environment Guard Rails
 abstract class EnvConfig {
@@ -78,7 +79,7 @@ class _MyAppState extends State<MyApp> {
 
     // Core Security & Routing Engine Architecture
     _authProvider = SupabaseAuthProvider();
-    _featureFlagProvider = FeatureFlagProvider(store: createKeyValueStore());
+    _featureFlag_provider = FeatureFlagProvider(store: createKeyValueStore());
     _progressionFeaturePolicyProvider = ProgressionFeaturePolicyProvider(authProvider: _authProvider);
     _router = AppRouter.createRouter(_authProvider);
 
