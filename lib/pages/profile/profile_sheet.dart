@@ -602,13 +602,27 @@ class _ProfileProofHistoryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final icon = switch (event.kind) {
+
+    final IconData icon = switch (event.kind) {
       ProofEventKind.mission => Icons.task_alt,
       ProofEventKind.campaign => Icons.campaign_outlined,
+      ProofEventKind.purchase => Icons.shopping_bag_outlined,
+      ProofEventKind.subscription => Icons.repeat_outlined,
+      ProofEventKind.tip => Icons.volunteer_activism_outlined,
+      ProofEventKind.attendance => Icons.event_available_outlined,
+      ProofEventKind.milestone => Icons.emoji_events_outlined,
+      _ => Icons.info_outline,
     };
-    final tint = switch (event.kind) {
+
+    final Color tint = switch (event.kind) {
       ProofEventKind.mission => theme.colorScheme.primary,
       ProofEventKind.campaign => theme.colorScheme.secondary,
+      ProofEventKind.purchase => Colors.green,
+      ProofEventKind.subscription => Colors.blue,
+      ProofEventKind.tip => Colors.amber,
+      ProofEventKind.attendance => Colors.purple,
+      ProofEventKind.milestone => Colors.orange,
+      _ => theme.colorScheme.onSurfaceVariant,
     };
 
     return Row(
@@ -616,7 +630,10 @@ class _ProfileProofHistoryRow extends StatelessWidget {
         Container(
           width: 34,
           height: 34,
-          decoration: BoxDecoration(color: tint.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(AppRadius.md)),
+          decoration: BoxDecoration(
+            color: tint.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(AppRadius.md),
+          ),
           alignment: Alignment.center,
           child: Icon(icon, color: tint, size: 18),
         ),

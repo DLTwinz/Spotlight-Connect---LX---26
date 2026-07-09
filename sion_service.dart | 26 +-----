@@ -1,0 +1,45 @@
+[33mcommit ce0286d653c98f6427ba651a845367678213d787[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: DLTwinz <darryllangford67@gmail.com>
+Date:   Tue Jul 7 03:46:52 2026 -0500
+
+    fix: resolve merge conflict in progression_service.dart
+
+[1mdiff --git a/lib/services/progression_service.dart b/lib/services/progression_service.dart[m
+[1mindex b6fac9f..7a00d8c 100644[m
+[1m--- a/lib/services/progression_service.dart[m
+[1m+++ b/lib/services/progression_service.dart[m
+[36m@@ -90,32 +90,10 @@[m [mclass Campaign {[m
+ // ---------------------------------------------------------------------------[m
+ [m
+ class ProgressionService extends ChangeNotifier {[m
+[31m-<<<<<<< HEAD[m
+[31m-=======[m
+[31m-  final SupabaseClient _client; // ignore: unused_field[m
+[31m-  bool _isLoading = false; // ignore: prefer_final_fields // ignore: prefer_final_fields[m
+[31m-  bool _isInitialized = false;[m
+[31m-  String? _lastError;[m
+[31m-[m
+[31m-  ProgressionData progression = ProgressionData();[m
+[31m-[m
+[31m-  List<UserBadgeView> badges = [];[m
+[31m-  List<ProofEventView> proofEvents = [];[m
+[31m-  List<dynamic> campaigns = [];[m
+[31m-  List<dynamic> campaignSections = [];[m
+[31m-  [m
+[31m-  // The UI expects missions to be an iterable Map (.entries)[m
+[31m-  Map<String, dynamic> missions = {}; [m
+[31m-  [m
+[31m-  List<dynamic> missionSections = [];[m
+[31m-  List<dynamic> userMilestones = [];[m
+[31m-  List<dynamic> allMilestones = [];[m
+[31m-[m
+[31m->>>>>>> de0a337 (fix: resolve all 20 compile errors and 30+ static analysis warnings)[m
+   ProgressionService({required SupabaseClient client}) : _client = client;[m
+ [m
+[31m-  final SupabaseClient _client; // ignore: unused_field[m
+[31m-  bool _isLoading = false; // ignore: prefer_final_fields[m
+[32m+[m[32m  final SupabaseClient _client;[m
+[32m+[m[32m  bool _isLoading = false;[m
+   final List<Mission> _missions = [];[m
+   final List<Campaign> _campaigns = [];[m
+ [m

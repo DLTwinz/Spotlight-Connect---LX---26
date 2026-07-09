@@ -105,6 +105,7 @@ class _LiveKitRoomPageState extends State<LiveKitRoomPage> {
         throw StateError('Failed to obtain LiveKit token.');
       }
 
+      // ignore: do_not_use_environment
       const liveKitUrl = String.fromEnvironment('SPOTLIGHT_LIVEKIT_URL');
       if (liveKitUrl.trim().isEmpty) throw StateError('Missing SPOTLIGHT_LIVEKIT_URL.');
 

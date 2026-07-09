@@ -1,180 +1,54 @@
-import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
-
-import 'package:spotlight_connect/backend/backend_mode.dart';
-import 'package:spotlight_connect/models/opportunity_application_model.dart';
-import 'package:spotlight_connect/models/opportunity_model.dart';
-import 'package:spotlight_connect/supabase/supabase_config.dart';
-import 'package:spotlight_connect/storage/key_value_store.dart';
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OpportunityService extends ChangeNotifier {
-  OpportunityService(this._store);
-
-  static const _kSavedKey = 'spotlight_saved_opportunities_v1';
-  final KeyValueStore _store;
-
+  final SupabaseClient _client; // ignore: unused_field
+  final dynamic _localCache; // ignore: unused_field
+  List<Map<String, dynamic>> _opportunities = [];
   bool _isLoading = false;
+
+  OpportunityService({required SupabaseClient client, required dynamic localCache}) 
+      : _client = client, 
+        _localCache = localCache {
+    fetchActiveOpportunities();
+  }
+
+  List<Map<String, dynamic>> get opportunities => _opportunities;
   bool get isLoading => _isLoading;
 
-  bool _initialized = false;
-
-  List<OpportunityModel> _opportunities = const [];
-  List<OpportunityModel> get opportunities => _opportunities;
-
-  OpportunityModel? getById(String id) {
-    final idx = _opportunities.indexWhere((o) => o.opportunityId == id);
-    if (idx == -1) return null;
-    return _opportunities[idx];
-  }
-
-  Set<String> _saved = <String>{};
-  bool isSaved(String id) => _saved.contains(id);
-  bool isApplied(String id) => _applications.any((a) => a.opportunityId == id);
-
-  List<OpportunityApplicationModel> _applications = const [];
-  List<OpportunityApplicationModel> get applications => _applications;
-
-  List<OpportunityApplicationModel> applicationsForOpportunity(String opportunityId) =>
-      _applications.where((a) => a.opportunityId == opportunityId).toList()..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-  OpportunityApplicationModel? applicationForUser(String opportunityId, String userId) {
-    try {
-      return _applications.firstWhere((a) => a.opportunityId == opportunityId && a.applicantUserId == userId);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  Future<void> ensureInitialized() async {
-    if (_initialized) return;
-    _initialized = true;
-    await _loadSaved();
-    await refresh();
-  }
-
-  Future<void> _loadSaved() async {
+  Future<void> fetchActiveOpportunities() async {
     _isLoading = true;
     notifyListeners();
     try {
-      final uid = _uid;
-
-      // Launch-critical behavior: when running in Supabase mode, we never fall
-      // back to local KeyValueStore persistence.
-      if (_isSupabaseMode) {
-        if (uid == null) {
-          _saved = <String>{};
-          return;
-        }
-        final rows = await SupabaseConfig.client.from('opportunity_saves').select('opportunity_id').eq('user_id', uid);
-        _saved = (rows as List)
-            .map((e) => (e is Map ? e['opportunity_id'] : null)?.toString())
-            .whereType<String>()
-            .toSet();
-        return;
-      }
-
-      // Mock/local mode: prefer Supabase when authenticated.
-      if (uid != null) {
-        try {
-          final rows = await SupabaseConfig.client.from('opportunity_saves').select('opportunity_id').eq('user_id', uid);
-          _saved = (rows as List)
-              .map((e) => (e is Map ? e['opportunity_id'] : null)?.toString())
-              .whereType<String>()
-              .toSet();
-          return;
-        } catch (e) {
-          debugPrint('OpportunityService: failed to load saved from Supabase: $e');
-        }
-      }
-
-      final rawSaved = await _store.getString(_kSavedKey);
-
-      Set<String> decodeIdSet(String? raw) {
-        if (raw == null || raw.trim().isEmpty) return <String>{};
-        try {
-          final decoded = jsonDecode(raw);
-          if (decoded is List) return decoded.map((e) => e.toString()).where((e) => e.isNotEmpty).toSet();
-        } catch (_) {
-          // Backward compatibility for previously stored List.toString() format.
-          final decoded = raw
-              .replaceAll('[', '')
-              .replaceAll(']', '')
-              .split(',')
-              .map((e) => e.trim().replaceAll('"', ''))
-              .where((e) => e.isNotEmpty)
-              .toSet();
-          if (decoded.isNotEmpty) return decoded;
-        }
-        return <String>{};
-      }
-
-      _saved = decodeIdSet(rawSaved);
-      await _persistSets();
-    } catch (e) {
-      debugPrint('OpportunityService: failed to load saved set: $e');
-      _opportunities = const [];
-      _saved = <String>{};
-      _applications = const [];
-      await _persistSets();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  String? get _uid => SupabaseConfig.client.auth.currentUser?.id;
-
-  bool get _isSupabaseMode => BackendConfig.mode == BackendMode.supabase;
-
-  /// Re-fetches opportunities and applications from Supabase.
-  ///
-  /// Note: business-side review of applications requires a policy that allows
-  /// the opportunity owner to read applications. With current RLS, applicants
-  /// (and admins) can read/write their own applications.
-  Future<void> refresh() async {
-    _isLoading = true;
-    notifyListeners();
-
-    try {
-      final uid = _uid;
-      if (uid == null) {
-        _opportunities = const [];
-        _applications = const [];
-        return;
-      }
-
-      final oppRows = await SupabaseConfig.client
+      final data = await _client
           .from('opportunities')
-          .select('id,business_user_id,title,description,category,location_type,compensation_type,status,created_at,updated_at')
+          .select('*, profiles(username, display_name, avatar_url)')
           .order('created_at', ascending: false);
-
-      final opps = <OpportunityModel>[];
-      for (final row in oppRows) {
-        final m = _opportunityFromRow(row.cast<String, dynamic>());
-        if (m.opportunityId.isNotEmpty && m.title.isNotEmpty) opps.add(m);
-      }
-      _opportunities = opps;
-
-      final appRows = await SupabaseConfig.client
-          .from('opportunity_applications')
-          .select('id,opportunity_id,applicant_user_id,pitch,portfolio_links,availability,business_note,status,created_at,updated_at')
-          .eq('applicant_user_id', uid)
-          .order('created_at', ascending: false);
-
-      final apps = <OpportunityApplicationModel>[];
-      for (final row in appRows) {
-        final m = _applicationFromRow(row.cast<String, dynamic>());
-        if (m.applicationId.isNotEmpty && m.opportunityId.isNotEmpty && m.applicantUserId.isNotEmpty) apps.add(m);
-      }
-      _applications = apps;
+      _opportunities = List<Map<String, dynamic>>.from(data);
     } catch (e) {
-      debugPrint('OpportunityService: refresh failed: $e');
+      debugPrint('❌ FAILED TO FETCH PRODUCTION CAMPAIGNS: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
+
+  Future<void> createCampaign({required String title, required String description, required int budgetCents, required String brandId}) async {
+    try {
+      await _client.from('opportunities').insert({
+        'brand_id': brandId,
+        'title': title,
+        'description': description,
+        'budget_cents': budgetCents,
+        'status': 'open',
+      });
+      await fetchActiveOpportunities();
+    } catch (e) {
+      debugPrint('❌ PRODUCTION CAMPAIGN CREATION FAILURE: $e');
+      rethrow;
+    }
+  }
+<<<<<<< HEAD
 
   Future<void> toggleSaved(String id) async {
     final uid = _uid;
@@ -391,4 +265,6 @@ class OpportunityService extends ChangeNotifier {
       updatedAt: parseDate(row['updated_at']),
     );
   }
+=======
+>>>>>>> 81660cde22d3d9f27f124e7fd2dc5e986e678991
 }

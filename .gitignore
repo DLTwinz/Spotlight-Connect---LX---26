@@ -1,0 +1,64 @@
+# ============================================
+# SPOTLIGHT CONNECT — Root .gitignore
+# ============================================
+
+# ----- SECRETS & ENVIRONMENT (NEVER COMMIT) -----
+.env
+.env.local
+.env.*.local
+*.env
+
+# ----- FLUTTER / DART BUILD ARTIFACTS -----
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.flutter-plugins-dependencies
+
+# ----- FLUTTER COMPILER CACHE (LARGE FILES ~70MB each) -----
+*.dill
+*.dill.track.dill
+*.cache.dill.track.dill
+*.incremental.dill
+
+# ----- FLUTTER LOGS -----
+flutter_*.log
+*.log
+
+# ----- SUPABASE LOCAL DEV -----
+supabase/.branches
+supabase/.temp
+
+# ----- IDE FILES -----
+.vscode/settings.json
+.idea/
+*.iml
+
+# ----- OS FILES -----
+.DS_Store
+Thumbs.db
+
+# ----- PYTHON TEMP SCRIPTS -----
+precise_fix.py
+__pycache__/
+*.pyc
+*.pyo
+
+# ----- DART/FLUTTER GENERATED -----
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+
+# ----- ANDROID KEYSTORE (NEVER COMMIT) -----
+*.jks
+*.keystore
+key.properties
+
+# ----- IOS SENSITIVE -----
+**/ios/**/*.p12
+**/ios/**/*.mobileprovision
+
+# Environment secrets
+.env
+.env.local
+.env.*.local

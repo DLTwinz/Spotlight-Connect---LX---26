@@ -17,9 +17,9 @@ import 'package:spotlight_connect/services/portfolio_service.dart';
 import 'package:spotlight_connect/services/post_service.dart';
 import 'package:spotlight_connect/services/story_service.dart';
 import 'package:spotlight_connect/services/studio_service.dart';
-import 'package:spotlight_connect/services/monetization_service.dart';
 import 'package:spotlight_connect/services/progression_service.dart';
 import 'package:spotlight_connect/storage/key_value_store.dart';
+<<<<<<< HEAD
 
 // Configuration interface for secure env injection
 abstract class EnvConfig {
@@ -32,25 +32,46 @@ abstract class EnvConfig {
     }
   }
 }
+=======
+import 'package:spotlight_connect/services/monetization_service.dart';
+>>>>>>> 81660cde22d3d9f27f124e7fd2dc5e986e678991
 
-final ThemeData darkTheme = ThemeData(
-  brightness: Brightness.dark,
-  scaffoldBackgroundColor: Colors.black,
-  primaryColor: const Color(0xFF39FF14),
-  colorScheme: const ColorScheme.dark(
-    primary: Color(0xFF39FF14),
-    secondary: Color(0xFFD4AF37),
-    surface: Color(0xFF1A1A1A),
-  ),
-);
+// Production Environment Guard Rails
+abstract class EnvConfig {
+  static const String supabaseUrl = String.fromEnvironment(
+    'SUPABASE_URL',
+    defaultValue: 'YOUR_SUPABASE_URL_HERE', 
+  );
+  static const String supabaseKey = String.fromEnvironment(
+    'SUPABASE_ANON_KEY',
+    defaultValue: 'YOUR_SUPABASE_ANON_KEY_HERE',
+  );
+
+  static void validate() {
+    if (supabaseUrl.isEmpty || 
+        supabaseKey.isEmpty || 
+        supabaseUrl == 'YOUR_SUPABASE_URL_HERE' || 
+        supabaseKey == 'YOUR_SUPABASE_ANON_KEY_HERE') {
+      throw Exception('PRODUCTION BOOT DENIED: Live Supabase credentials are empty or misconfigured.');
+    }
+  }
+}
 
 void main() async {
+  // Ensure engine bindings are alive before running async setups
   WidgetsFlutterBinding.ensureInitialized();
   
+<<<<<<< HEAD
   // Validate presence of credentials
   EnvConfig.validate();
 
   // Initialize Supabase using the validated environment variables
+=======
+  // Enforce credentials check
+  EnvConfig.validate();
+
+  // Establish live persistent database socket connections
+>>>>>>> 81660cde22d3d9f27f124e7fd2dc5e986e678991
   await Supabase.initialize(
     url: EnvConfig.supabaseUrl,
     publishableKey: EnvConfig.supabaseKey,
@@ -70,40 +91,61 @@ class _MyAppState extends State<MyApp> {
   late final FeatureFlagProvider _featureFlagProvider;
   late final ProgressionFeaturePolicyProvider _progressionFeaturePolicyProvider;
   late final GoRouter _router;
+  late final SupabaseClient _dbClient;
 
   @override
   void initState() {
     super.initState();
+    // Capture the active production client instance
+    _dbClient = Supabase.instance.client;
+
+    // Core Security & Routing Engine Architecture
     _authProvider = SupabaseAuthProvider();
-    _featureFlagProvider = FeatureFlagProvider(store: createKeyValueStore());
+    _featureFlag_provider = FeatureFlagProvider(store: createKeyValueStore());
     _progressionFeaturePolicyProvider = ProgressionFeaturePolicyProvider(authProvider: _authProvider);
-    Future.microtask(_featureFlagProvider.ensureInitialized);
     _router = AppRouter.createRouter(_authProvider);
+
+    // Initialize synchronous production configurations
+    Future.microtask(_featureFlagProvider.ensureInitialized);
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        // System Identity & Authorization Dependencies
         ChangeNotifierProvider<AppAuthProvider>.value(value: _authProvider),
         ChangeNotifierProvider<FeatureFlagProvider>.value(value: _featureFlagProvider),
         ChangeNotifierProvider<ProgressionFeaturePolicyProvider>.value(value: _progressionFeaturePolicyProvider),
-        ChangeNotifierProvider(create: (_) => NotificationService()),
-        ChangeNotifierProvider(create: (_) => MessageService()),
-        ChangeNotifierProvider(create: (_) => PostService()),
-        ChangeNotifierProvider(create: (_) => GroupService(store: createKeyValueStore())),
-        ChangeNotifierProvider(create: (_) => PortfolioService(store: createKeyValueStore())),
-        ChangeNotifierProvider(create: (_) => StoryService(store: createKeyValueStore())),
-        Provider(create: (_) => StudioService()),
-        Provider(create: (_) => MissionComposerService()),
-        ChangeNotifierProvider(create: (_) => OpportunityService(createKeyValueStore())),  
-        ChangeNotifierProvider(create: (_) => MonetizationService()),
-        ChangeNotifierProvider(create: (_) => ProgressionService()),
+        
+        // Live Infrastructure Data Pipelines (Passing the active dbClient directly)
+        ChangeNotifierProvider(create: (_) => NotificationService(client: _dbClient)),
+        ChangeNotifierProvider(create: (_) => MessageService(client: _dbClient)),
+        ChangeNotifierProvider(create: (_) => PostService(client: _dbClient)),
+        ChangeNotifierProvider(create: (_) => GroupService(client: _dbClient, localCache: createKeyValueStore())),
+        ChangeNotifierProvider(create: (_) => PortfolioService(client: _dbClient, localCache: createKeyValueStore())),
+        ChangeNotifierProvider(create: (_) => StoryService(client: _dbClient, localCache: createKeyValueStore())),
+        ChangeNotifierProvider(create: (_) => OpportunityService(client: _dbClient, localCache: createKeyValueStore())),  
+        ChangeNotifierProvider(create: (_) => MonetizationService(client: _dbClient)),
+        ChangeNotifierProvider(create: (_) => ProgressionService(client: _dbClient)),
+        
+        // Stateless Operational Engine Services
+        Provider(create: (_) => StudioService(client: _dbClient)),
+        Provider(create: (_) => MissionComposerService(client: _dbClient)),
       ],
       child: MaterialApp.router(
         title: 'SPOTLIGHT Connect',
         debugShowCheckedModeBanner: false,
-        theme: darkTheme,
+        theme: ThemeData(
+          brightness: Brightness.dark,
+          scaffoldBackgroundColor: Colors.black,
+          primaryColor: const Color(0xFF39FF14), // Spotlight Cyber Green
+          colorScheme: const ColorScheme.dark(
+            primary: Color(0xFF39FF14),
+            secondary: Color(0xFFD4AF37), // Brand Impact Gold
+            surface: Color(0xFF1A1A1A),
+          ),
+        ),
         themeMode: ThemeMode.dark,
         routerConfig: _router,
       ),
