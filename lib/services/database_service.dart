@@ -19,4 +19,33 @@ class SpotlightDatabase {
               );
             }).toList());
   }
+
+  /// Invokes the secure 4-Pillar Edge Function to process an attribution event
+  Future<Map<String, dynamic>?> createAttributionEntry({
+    required String adminId,
+    required String fanId,
+    required String creatorId,
+    required String brandId,
+  }) async {
+    try {
+      final response = await _supabase.functions.invoke(
+        'create_attribution_entry',
+        body: {
+          'admin_id': adminId,
+          'fan_id': fanId,
+          'creator_id': creatorId,
+          'brand_id': brandId,
+        },
+      );
+
+      if (response.status != 200) {
+        throw Exception('Edge Function Error (${response.status}): ${response.data}');
+      }
+
+      return response.data as Map<String, dynamic>?;
+    } catch (e) {
+      print('Error creating attribution ledger entry: $e');
+      rethrow;
+    }
+  }
 }
