@@ -30,7 +30,6 @@ supabase/.branches
 supabase/.temp
 
 # ----- IDE FILES -----
-.vscode/settings.json
 .idea/
 *.iml
 

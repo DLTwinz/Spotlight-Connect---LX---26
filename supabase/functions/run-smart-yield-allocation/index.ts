@@ -1,4 +1,4 @@
-// supabase/functions/run-smart-yield-allocation/index.ts
+// supabase/functions/run-smart-yield-allocation/index.ts+
 import type { Context } from "https://deno.land/x/supabase@v1/mod.ts";
 
 type ScoreInputs = {
