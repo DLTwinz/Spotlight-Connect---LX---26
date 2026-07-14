@@ -19,40 +19,27 @@ import 'package:spotlight_connect/services/story_service.dart';
 import 'package:spotlight_connect/services/studio_service.dart';
 import 'package:spotlight_connect/services/progression_service.dart';
 import 'package:spotlight_connect/storage/key_value_store.dart';
-<<<<<<< HEAD
-
-// Configuration interface for secure env injection
-abstract class EnvConfig {
-  static const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
-  static const String supabaseKey = String.fromEnvironment('SUPABASE_ANON_KEY');
-
-  static void validate() {
-    if (supabaseUrl.isEmpty || supabaseKey.isEmpty) {
-      throw Exception('CRITICAL: SUPABASE_URL or SUPABASE_ANON_KEY not found in environment.');
-    }
-  }
-}
-=======
 import 'package:spotlight_connect/services/monetization_service.dart';
->>>>>>> 81660cde22d3d9f27f124e7fd2dc5e986e678991
 
 // Production Environment Guard Rails
 abstract class EnvConfig {
   static const String supabaseUrl = String.fromEnvironment(
     'SUPABASE_URL',
-    defaultValue: 'YOUR_SUPABASE_URL_HERE', 
+    defaultValue: 'https://mdwvokenmehdfybgujpa.supabase.co',
   );
   static const String supabaseKey = String.fromEnvironment(
     'SUPABASE_ANON_KEY',
-    defaultValue: 'YOUR_SUPABASE_ANON_KEY_HERE',
+    defaultValue: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kd3Zva2VubWVoZGZ5Ymd1anBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODAzMzUsImV4cCI6MjA5MTg1NjMzNX0.tds2VeVEl05jd3cbaC4vutxnLRtTF6i2d5MMAJS3KJk',
   );
 
   static void validate() {
-    if (supabaseUrl.isEmpty || 
-        supabaseKey.isEmpty || 
-        supabaseUrl == 'YOUR_SUPABASE_URL_HERE' || 
-        supabaseKey == 'YOUR_SUPABASE_ANON_KEY_HERE') {
-      throw Exception('PRODUCTION BOOT DENIED: Live Supabase credentials are empty or misconfigured.');
+    if (supabaseUrl.isEmpty ||
+        supabaseKey.isEmpty ||
+        supabaseUrl == 'https://mdwvokenmehdfybgujpa.supabase.co' ||
+        supabaseKey == 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kd3Zva2VubWVoZGZ5Ymd1anBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODAzMzUsImV4cCI6MjA5MTg1NjMzNX0.tds2VeVEl05jd3cbaC4vutxnLRtTF6i2d5MMAJS3KJk') {
+      throw Exception(
+        'PRODUCTION BOOT DENIED: Live Supabase credentials are empty or misconfigured.',
+      );
     }
   }
 }
@@ -61,17 +48,10 @@ void main() async {
   // Ensure engine bindings are alive before running async setups
   WidgetsFlutterBinding.ensureInitialized();
   
-<<<<<<< HEAD
-  // Validate presence of credentials
+  // Enforce credentials check before opening live Supabase connections
   EnvConfig.validate();
 
   // Initialize Supabase using the validated environment variables
-=======
-  // Enforce credentials check
-  EnvConfig.validate();
-
-  // Establish live persistent database socket connections
->>>>>>> 81660cde22d3d9f27f124e7fd2dc5e986e678991
   await Supabase.initialize(
     url: EnvConfig.supabaseUrl,
     publishableKey: EnvConfig.supabaseKey,

@@ -877,11 +877,6 @@ class AppRouter {
     );
   }
 }
-<<<<<<< HEAD
-final launchEnabled = true;
-const fallback = "/";
-=======
 
 final launchEnabled = true;
 const fallback = "/";
->>>>>>> 81660cde22d3d9f27f124e7fd2dc5e986e678991

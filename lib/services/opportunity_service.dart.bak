@@ -48,7 +48,6 @@ class OpportunityService extends ChangeNotifier {
       rethrow;
     }
   }
-  Future<void> toggleSaved(String id) async {
     final uid = _uid;
 
     if (_isSupabaseMode) {
@@ -106,7 +105,6 @@ class OpportunityService extends ChangeNotifier {
     required List<String> portfolioLinks,
     required String availability,
   }) async {
-  Future<void> toggleSaved(String id) async {
     final uid = _uid;
     if (uid == null) return;
     if (_applications.any((a) => a.opportunityId == opportunityId && a.applicantUserId == uid)) return;
@@ -174,7 +172,6 @@ class OpportunityService extends ChangeNotifier {
     required String description,
     required List<String> tags,
   }) async {
-  Future<void> toggleSaved(String id) async {
     final uid = _uid;
     if (uid == null) return;
 

@@ -201,7 +201,7 @@ serve(async (req) => {
 
       if (metric === "profile_complete") {
         // Simple profile completion heuristic: has username + bio
-        const { data: profile } = await svc.from("profiles").select("username, bio").eq("user_id", userId).maybeSingle();
+        const { data: profile } = await svc.from("public_profiles").select("username, bio").eq("user_id", userId).maybeSingle();
         const score = (profile?.username ? 50 : 0) + (profile?.bio ? 50 : 0);
         const v = Math.min(score, 100);
         const done = v >= (target || 100);
