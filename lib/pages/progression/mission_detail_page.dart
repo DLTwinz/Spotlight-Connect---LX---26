@@ -4,17 +4,16 @@ import 'package:spotlight_connect/models/progression_models.dart';
 class MissionDetailPage extends StatelessWidget {
   const MissionDetailPage({
     super.key,
-    required this.missions,
-    required this.missionId,
+        required this.missionId,
   });
 
-  final Map<String, dynamic> missions;
+  final Map<String, dynamic>? missions;
   final String missionId;
 
   @override
   Widget build(BuildContext context) {
     // FIX: missions is a Map — use [] not firstWhere
-    final raw = missions[missionId];
+    final raw = missions?[missionId];
     if (raw == null) {
       return const Scaffold(
         body: Center(child: Text('Mission not found.')),

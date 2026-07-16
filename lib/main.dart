@@ -81,7 +81,7 @@ class _MyAppState extends State<MyApp> {
 
     // Core Security & Routing Engine Architecture
     _authProvider = SupabaseAuthProvider();
-    _featureFlag_provider = FeatureFlagProvider(store: createKeyValueStore());
+    _featureFlagProvider = FeatureFlagProvider(store: createKeyValueStore());
     _progressionFeaturePolicyProvider = ProgressionFeaturePolicyProvider(authProvider: _authProvider);
     _router = AppRouter.createRouter(_authProvider);
 

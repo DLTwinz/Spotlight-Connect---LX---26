@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class QAHarnessPage extends StatelessWidget {
-  const QAHarnessPage({super.key});
+class QaHarnessPage extends StatelessWidget {
+  const QaHarnessPage({super.key});
 
   @override
   Widget build(BuildContext context) {
