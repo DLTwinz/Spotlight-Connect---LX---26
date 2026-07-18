@@ -3,25 +3,44 @@ import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 
 // Your existing project imports (Keep these below the Flutter ones)
+import 'package:spotlight_connect/services/auth_provider.dart';
 import 'package:spotlight_connect/providers/app_auth_provider.dart';
 import 'package:spotlight_connect/providers/feature_flag_provider.dart';
 import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
 import 'package:spotlight_connect/models/user_model.dart';
 import 'package:spotlight_connect/models/studio_session_model.dart';
 // ... Add any other necessary project-specific imports here ...
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 // --- YOUR LOCAL PROJECT IMPORTS BELOW THIS LINE ---
+import 'package:spotlight_connect/services/auth_provider.dart';
+import 'package:spotlight_connect/providers/app_auth_provider.dart';
+import 'package:spotlight_connect/providers/feature_flag_provider.dart';
+import 'package:spotlight_connect/models/user_model.dart';
 // Add any other specific files that were showing "Target of URI doesn't exist" here
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:go_router/go_router.dart';
 
 // Your existing project imports (Keep these below the Flutter ones)
+import 'package:spotlight_connect/services/auth_provider.dart';
+import 'package:spotlight_connect/providers/app_auth_provider.dart';
+import 'package:spotlight_connect/providers/feature_flag_provider.dart';
+import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+import 'package:spotlight_connect/models/user_model.dart';
+import 'package:spotlight_connect/models/studio_session_model.dart';
 
 import 'pages/auth/auth_callback_page.dart';
 import 'pages/auth/early_access_gate_page.dart';
 import 'pages/auth/landing_auth_page.dart';
 import 'pages/auth/onboarding_page.dart';
 import 'pages/auth/permission_denied_page.dart';
+import 'pages/auth/permission_denied_page.dart';
 import 'pages/auth/reset_password_page.dart';
+import 'pages/auth/waiting_approval_page.dart';
 import 'pages/auth/waiting_approval_page.dart';
 import 'pages/dashboards/admin_dashboard.dart';
 import 'pages/dashboards/audience_dashboard.dart';
@@ -38,6 +57,7 @@ import 'pages/progression/rewards_page.dart';
 import 'pages/shared/feature_disabled_page.dart';
 import 'pages/studio/livekit_room_page.dart';
 // ... Add any other necessary project-specific imports here ...
+
 
 class AppRoutes {
   static const String root = '/';
@@ -82,9 +102,7 @@ class EnvConfig {
 
   static void validate() {
     if (supabaseUrl.isEmpty || supabaseKey.isEmpty) {
-      throw Exception(
-        'Missing required environment variables: SUPABASE_URL or SUPABASE_ANON_KEY',
-      );
+      throw Exception('Missing required environment variables: SUPABASE_URL or SUPABASE_ANON_KEY');
     }
   }
 }
@@ -92,11 +110,11 @@ class EnvConfig {
 class AppRouter {
   static GoRouter createRouter(AppAuthProvider authProvider) {
     final initial = _computeInitialLocation(fallback: fallback);
-
+    
     // TEMPORARY OVERRIDE FOR TESTING: Force admin dashboard to test new analytics UI
     // Remove this line once you're satisfied with the admin dashboard design
     final finalInitialLocation = initial; // Set to 'initial' to revert
-
+    
     return GoRouter(
       // During beta: start on Early Access gate. When launch is enabled, logged-out users can access /login.
       initialLocation: finalInitialLocation,
@@ -113,35 +131,14 @@ class AppRouter {
           try {
             final baseUri = Uri.base;
             final fragRaw = baseUri.fragment;
-            final qp = <String, String>{
-              ...state.uri.queryParameters,
-              ...baseUri.queryParameters,
-            };
-            final hasSupabaseFragmentTokens =
-                fragRaw.contains('access_token=') ||
-                fragRaw.contains('refresh_token=') ||
-                fragRaw.contains('type=recovery');
-            final hasSupabaseError =
-                fragRaw.contains('error=') ||
-                qp.containsKey('error') ||
-                qp.containsKey('error_code') ||
-                qp.containsKey('error_description');
+            final qp = <String, String>{...state.uri.queryParameters, ...baseUri.queryParameters};
+            final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+            final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
             final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
-            final hasSupabaseRecoveryType =
-                (qp['type'] ?? '').toLowerCase() == 'recovery';
-            final hasSupabaseAuthParams =
-                hasSupabaseFragmentTokens ||
-                hasSupabasePkceCode ||
-                hasSupabaseRecoveryType ||
-                hasSupabaseError;
+            final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+            final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
             if (hasSupabaseAuthParams) {
-              context.go(
-                Uri(
-                  path: AppRoutes.authCallback,
-                  queryParameters: qp,
-                  fragment: fragRaw,
-                ).toString(),
-              );
+              context.go(Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString());
               return;
             }
           } catch (e) {
@@ -167,9 +164,7 @@ class AppRouter {
         final isEarlyAccessRoute = location == AppRoutes.earlyAccess;
         final isOnboardingRoute = location == AppRoutes.onboarding;
         final isResetPasswordRoute = location == AppRoutes.resetPassword;
-        final isAccessDeniedRoute =
-            location == AppRoutes.accessDenied ||
-            location == AppRoutes.permissionDenied;
+        final isAccessDeniedRoute = location == AppRoutes.accessDenied || location == AppRoutes.permissionDenied;
         final isWaitingApprovalRoute = location == AppRoutes.waitingApproval;
         final isLiveKitRoute = location == AppRoutes.livekit;
         final isFeatureDisabledRoute = location == AppRoutes.featureDisabled;
@@ -200,6 +195,7 @@ class AppRouter {
           return liveKitUrl.trim().isNotEmpty;
         }
 
+
         void logRedirect(String target) {
           if (!kDebugMode) return;
           debugPrint(
@@ -215,46 +211,23 @@ class AppRouter {
         // URL fragment (/#access_token=...). GoRouter's `state.uri` does not
         // always preserve the fragment consistently, but `Uri.base` does.
         final baseUri = Uri.base;
-        final fragRaw = baseUri.fragment.isNotEmpty
-            ? baseUri.fragment
-            : state.uri.fragment;
-        final qp = <String, String>{
-          ...state.uri.queryParameters,
-          ...baseUri.queryParameters,
-        };
-        final hasSupabaseFragmentTokens =
-            fragRaw.contains('access_token=') ||
-            fragRaw.contains('refresh_token=') ||
-            fragRaw.contains('type=recovery');
+        final fragRaw = baseUri.fragment.isNotEmpty ? baseUri.fragment : state.uri.fragment;
+        final qp = <String, String>{...state.uri.queryParameters, ...baseUri.queryParameters};
+        final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
         // Supabase uses `#error=...&error_code=...&error_description=...` for certain link failures.
         // We must funnel these into /auth/callback too, otherwise users see a cryptic hash URL.
-        final hasSupabaseError =
-            fragRaw.contains('error=') ||
-            qp.containsKey('error') ||
-            qp.containsKey('error_code') ||
-            qp.containsKey('error_description');
+        final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
         final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
-        final hasSupabaseRecoveryType =
-            (qp['type'] ?? '').toLowerCase() == 'recovery';
-        final hasSupabaseAuthParams =
-            hasSupabaseFragmentTokens ||
-            hasSupabasePkceCode ||
-            hasSupabaseRecoveryType ||
-            hasSupabaseError;
+        final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+        final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
 
         if (kDebugMode && location == AppRoutes.login) {
           debugPrint(
             'Router at /login: stateUri=${state.uri} basePath=${baseUri.path} baseQueryKeys=${baseUri.queryParameters.keys.toList()} fragmentLen=${baseUri.fragment.length} hasSupabaseAuthParams=$hasSupabaseAuthParams',
           );
         }
-        if (hasSupabaseAuthParams &&
-            !isAuthCallbackRoute &&
-            !isResetPasswordRoute) {
-          final target = Uri(
-            path: AppRoutes.authCallback,
-            queryParameters: qp,
-            fragment: fragRaw,
-          ).toString();
+        if (hasSupabaseAuthParams && !isAuthCallbackRoute && !isResetPasswordRoute) {
+          final target = Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString();
           logRedirect(target);
           return target;
         }
@@ -276,17 +249,10 @@ class AppRouter {
         String accessDenied({required String missing, String? requiredRole}) {
           final qp = <String, String>{'missing': missing, 'from': location};
           if (requiredRole != null) qp['role'] = requiredRole;
-          return Uri(
-            path: AppRoutes.permissionDenied,
-            queryParameters: qp,
-          ).toString();
+          return Uri(path: AppRoutes.permissionDenied, queryParameters: qp).toString();
         }
 
-        String featureDisabled({
-          required String featureKey,
-          required String title,
-          required String message,
-        }) {
+        String featureDisabled({required String featureKey, required String title, required String message}) {
           return Uri(
             path: AppRoutes.featureDisabled,
             queryParameters: <String, String>{
@@ -310,11 +276,7 @@ class AppRouter {
           if (isLoggedIn) {
             final target = Uri(
               path: AppRoutes.accessDenied,
-              queryParameters: <String, String>{
-                'missing': 'qa',
-                'from': location,
-                'role': 'admin',
-              },
+              queryParameters: <String, String>{'missing': 'qa', 'from': location, 'role': 'admin'},
             ).toString();
             logRedirect(target);
             return target;
@@ -354,9 +316,7 @@ class AppRouter {
             return AppRoutes.login;
           }
 
-          if (isAuthRoute || isResetPasswordRoute || isAccessDeniedRoute) {
-            return null;
-          }
+          if (isAuthRoute || isResetPasswordRoute || isAccessDeniedRoute) return null;
           logRedirect(AppRoutes.login);
           return AppRoutes.login;
         }
@@ -369,22 +329,23 @@ class AppRouter {
           return AppRoutes.admin;
         }
         if (!user!.onboardingComplete) {
-          // Admin redirect
-          if (user!.activeRole == "admin") {
-            if (location.startsWith("/admin")) return null;
-            logRedirect(AppRoutes.admin);
-            return AppRoutes.admin;
-          }
+        // Admin redirect
+        if (user!.activeRole == "admin") {
+          if (location.startsWith("/admin")) return null;
+          logRedirect(AppRoutes.admin);
+          return AppRoutes.admin;
+        }
           if (isOnboardingRoute) return null;
-          // Admin redirect
-          if (user!.activeRole == "admin") {
-            if (location.startsWith("/admin")) return null;
-            logRedirect(AppRoutes.admin);
-            return AppRoutes.admin;
-          }
+        // Admin redirect
+        if (user!.activeRole == "admin") {
+          if (location.startsWith("/admin")) return null;
+          logRedirect(AppRoutes.admin);
+          return AppRoutes.admin;
+        }
           logRedirect(AppRoutes.onboarding);
           return AppRoutes.onboarding;
         }
+
 
         // Post-onboarding gating states must never silently fall through into a
         // normal dashboard.
@@ -397,11 +358,7 @@ class AppRouter {
         }
         if (user.isRejected || user.isRestricted || user.isSuspended) {
           if (isAccessDeniedRoute) return null;
-          final target = accessDenied(
-            missing: user.isRejected
-                ? 'rejected'
-                : (user.isSuspended ? 'suspended' : 'restricted'),
-          );
+          final target = accessDenied(missing: user.isRejected ? 'rejected' : (user.isSuspended ? 'suspended' : 'restricted'));
           logRedirect(target);
           return target;
         }
@@ -414,18 +371,13 @@ class AppRouter {
           return target;
         }
 
-        bool isKnownRole(String? r) =>
-            r == 'audience' || r == 'talent' || r == 'business' || r == 'admin';
+        bool isKnownRole(String? r) => r == 'audience' || r == 'talent' || r == 'business' || r == 'admin';
 
         // Launch-grade invariants: if the profile is malformed or role state is
         // unresolved, we must not silently route the user into Audience.
         final approved = user.approvedRoles;
         final active = user.activeRole;
-        final profileMalformed =
-            user.userId.isEmpty ||
-            approved.isEmpty ||
-            !approved.contains('audience') ||
-            !isKnownRole(active);
+        final profileMalformed = user.userId.isEmpty || approved.isEmpty || !approved.contains('audience') || !isKnownRole(active);
         if (profileMalformed) {
           // Allow staying on /access to view the message, otherwise route there.
           if (isAccessDeniedRoute) return null;
@@ -438,19 +390,13 @@ class AppRouter {
         // this is a resolved denial state and must go to the blocked screen.
         if (active == 'talent' && !approved.contains('talent')) {
           if (isAccessDeniedRoute) return null;
-          final target = accessDenied(
-            missing: 'approval',
-            requiredRole: 'talent',
-          );
+          final target = accessDenied(missing: 'approval', requiredRole: 'talent');
           logRedirect(target);
           return target;
         }
         if (active == 'business' && !approved.contains('business')) {
           if (isAccessDeniedRoute) return null;
-          final target = accessDenied(
-            missing: 'approval',
-            requiredRole: 'business',
-          );
+          final target = accessDenied(missing: 'approval', requiredRole: 'business');
           logRedirect(target);
           return target;
         }
@@ -465,8 +411,7 @@ class AppRouter {
           if (u.activeRole == 'talent' && u.approvedRoles.contains('talent')) {
             return AppRoutes.talent;
           }
-          if (u.activeRole == 'business' &&
-              u.approvedRoles.contains('business')) {
+          if (u.activeRole == 'business' && u.approvedRoles.contains('business')) {
             return AppRoutes.business;
           }
           return AppRoutes.audience;
@@ -509,12 +454,7 @@ class AppRouter {
         // If the user is already on a role dashboard but the active role changed,
         // keep navigation deterministic by always routing to the resolved
         // dashboard for the current profile.
-        final roleDashPaths = <String>{
-          AppRoutes.audience,
-          AppRoutes.talent,
-          AppRoutes.business,
-          AppRoutes.admin,
-        };
+        final roleDashPaths = <String>{AppRoutes.audience, AppRoutes.talent, AppRoutes.business, AppRoutes.admin};
         if (roleDashPaths.contains(location)) {
           final target = defaultDashboardRouteFor(user);
           if (target != location) {
@@ -557,9 +497,7 @@ class AppRouter {
           '${AppRoutes.missions}/',
           '${AppRoutes.campaigns}/',
         };
-        final isKnownByPrefix = knownPrefixes.any(
-          (p) => location.startsWith(p),
-        );
+        final isKnownByPrefix = knownPrefixes.any((p) => location.startsWith(p));
         if (!knownPaths.contains(location) && !isKnownByPrefix) {
           final target = defaultDashboardRouteFor(user);
           logRedirect(target);
@@ -567,32 +505,24 @@ class AppRouter {
         }
 
         // Role guards
-        if (location == AppRoutes.talent &&
-            !user.approvedRoles.contains('talent')) {
+        if (location == AppRoutes.talent && !user.approvedRoles.contains('talent')) {
           final target = accessDenied(missing: 'role', requiredRole: 'talent');
           logRedirect(target);
           return target;
         }
-        if (location == AppRoutes.business &&
-            !user.approvedRoles.contains('business')) {
-          final target = accessDenied(
-            missing: 'role',
-            requiredRole: 'business',
-          );
+        if (location == AppRoutes.business && !user.approvedRoles.contains('business')) {
+          final target = accessDenied(missing: 'role', requiredRole: 'business');
           logRedirect(target);
           return target;
         }
-        if (location == AppRoutes.admin &&
-            !user.approvedRoles.contains('admin')) {
+        if (location == AppRoutes.admin && !user.approvedRoles.contains('admin')) {
           final target = accessDenied(missing: 'role', requiredRole: 'admin');
           logRedirect(target);
           return target;
         }
 
         // Admin tooling guards
-        final isAdminTooling =
-            location == AppRoutes.adminMissions ||
-            location == AppRoutes.adminCampaigns;
+        final isAdminTooling = location == AppRoutes.adminMissions || location == AppRoutes.adminCampaigns;
         if (isAdminTooling && !user.approvedRoles.contains('admin')) {
           final target = accessDenied(missing: 'role', requiredRole: 'admin');
           logRedirect(target);
@@ -601,8 +531,7 @@ class AppRouter {
 
         // Progression route guards (server-authoritative feature policy).
         // Prevent deep links / refreshes into disabled modules.
-        final isProgressionRoute =
-            location == AppRoutes.missions ||
+        final isProgressionRoute = location == AppRoutes.missions ||
             location.startsWith('${AppRoutes.missions}/') ||
             location == AppRoutes.rewards ||
             location == AppRoutes.campaigns ||
@@ -610,8 +539,7 @@ class AppRouter {
             location == AppRoutes.progress;
         if (isProgressionRoute && !isFeatureDisabledRoute) {
           try {
-            final policyProvider = context
-                .read<ProgressionFeaturePolicyProvider>();
+            final policyProvider = context.read<ProgressionFeaturePolicyProvider>();
             if (!policyProvider.isLoading) {
               final policy = policyProvider.policy;
               final roleKey = policyProvider.roleKey;
@@ -625,17 +553,14 @@ class AppRouter {
                 blocked = true;
                 title = 'Progression is disabled';
                 message = 'Progression is currently turned off.';
-              } else if (location == AppRoutes.missions ||
-                  location.startsWith('${AppRoutes.missions}/')) {
-                if (!policy.missionsEnabled ||
-                    !policy.roleMissionsEnabled(roleKey)) {
+              } else if (location == AppRoutes.missions || location.startsWith('${AppRoutes.missions}/')) {
+                if (!policy.missionsEnabled || !policy.roleMissionsEnabled(roleKey)) {
                   blocked = true;
                   feature = 'missions';
                   title = 'Missions are disabled';
                   message = 'Missions are currently unavailable for your role.';
                 }
-              } else if (location == AppRoutes.campaigns ||
-                  location.startsWith('${AppRoutes.campaigns}/')) {
+              } else if (location == AppRoutes.campaigns || location.startsWith('${AppRoutes.campaigns}/')) {
                 if (!policy.campaignsEnabled) {
                   blocked = true;
                   feature = 'campaigns';
@@ -660,11 +585,7 @@ class AppRouter {
               }
 
               if (blocked) {
-                final target = featureDisabled(
-                  featureKey: feature,
-                  title: title,
-                  message: message,
-                );
+                final target = featureDisabled(featureKey: feature, title: title, message: message);
                 logRedirect(target);
                 return target;
               }
@@ -680,106 +601,74 @@ class AppRouter {
         GoRoute(
           path: AppRoutes.root,
           builder: (context, state) => const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ), // Splash / loading
+            body: Center(child: CircularProgressIndicator()), // Splash / loading
           ),
         ),
         GoRoute(
           path: AppRoutes.authCallback,
-          pageBuilder: (context, state) =>
-              _fadeSlidePage(const AuthCallbackPage(), state),
+          pageBuilder: (context, state) => _fadeSlidePage(const AuthCallbackPage(), state),
         ),
         GoRoute(
           path: AppRoutes.earlyAccess,
-          pageBuilder: (context, state) =>
-              _fadeSlidePage(const EarlyAccessGatePage(), state),
+          pageBuilder: (context, state) => _fadeSlidePage(const EarlyAccessGatePage(), state),
         ),
         GoRoute(
           path: AppRoutes.login,
           pageBuilder: (context, state) {
             final email = state.uri.queryParameters['email'];
             final ea = state.uri.queryParameters['ea'] == '1';
-            return _fadeSlidePage(
-              LandingAuthPage(initialEmail: email, earlyAccessFlow: ea),
-              state,
-            );
+            return _fadeSlidePage(LandingAuthPage(initialEmail: email, earlyAccessFlow: ea), state);
           },
         ),
         GoRoute(
           path: AppRoutes.onboarding,
-          pageBuilder: (context, state) =>
-              _fadeSlidePage(const OnboardingPage(), state),
+          pageBuilder: (context, state) => _fadeSlidePage(const OnboardingPage(), state),
         ),
         GoRoute(
           path: AppRoutes.waitingApproval,
-          pageBuilder: (context, state) =>
-              _fadeSlidePage(const WaitingApprovalPage(), state),
+          pageBuilder: (context, state) => _fadeSlidePage(const WaitingApprovalPage(), state),
         ),
         GoRoute(
           path: AppRoutes.resetPassword,
           pageBuilder: (context, state) {
             final email = state.uri.queryParameters['email'];
             final step = state.uri.queryParameters['step'];
-            return _fadeSlidePage(
-              ResetPasswordPage(initialEmail: email, initialStep: step),
-              state,
-            );
+            return _fadeSlidePage(ResetPasswordPage(initialEmail: email, initialStep: step), state);
           },
         ),
         GoRoute(
           path: AppRoutes.accessDenied,
-          pageBuilder: (context, state) =>
-              _fadeSlidePage(PermissionDeniedPage(uri: state.uri), state),
+          pageBuilder: (context, state) => _fadeSlidePage(PermissionDeniedPage(uri: state.uri), state),
         ),
         GoRoute(
           path: AppRoutes.permissionDenied,
-          pageBuilder: (context, state) =>
-              _fadeSlidePage(PermissionDeniedPage(uri: state.uri), state),
+          pageBuilder: (context, state) => _fadeSlidePage(PermissionDeniedPage(uri: state.uri), state),
         ),
         GoRoute(
           path: AppRoutes.audience,
-          pageBuilder: (context, state) =>
-              _fadeSlidePage(const AudienceDashboard(), state),
+          pageBuilder: (context, state) => _fadeSlidePage(const AudienceDashboard(), state),
         ),
-        GoRoute(
-          path: AppRoutes.audienceDashboard,
-          redirect: (context, state) => AppRoutes.audience,
-        ),
+        GoRoute(path: AppRoutes.audienceDashboard, redirect: (context, state) => AppRoutes.audience),
         GoRoute(
           path: AppRoutes.talent,
-          pageBuilder: (context, state) =>
-              _fadeSlidePage(const TalentDashboard(), state),
+          pageBuilder: (context, state) => _fadeSlidePage(const TalentDashboard(), state),
         ),
-        GoRoute(
-          path: AppRoutes.talentDashboard,
-          redirect: (context, state) => AppRoutes.talent,
-        ),
+        GoRoute(path: AppRoutes.talentDashboard, redirect: (context, state) => AppRoutes.talent),
         GoRoute(
           path: AppRoutes.business,
-          pageBuilder: (context, state) =>
-              _fadeSlidePage(const BusinessDashboard(), state),
+          pageBuilder: (context, state) => _fadeSlidePage(const BusinessDashboard(), state),
         ),
-        GoRoute(
-          path: AppRoutes.businessDashboard,
-          redirect: (context, state) => AppRoutes.business,
-        ),
+        GoRoute(path: AppRoutes.businessDashboard, redirect: (context, state) => AppRoutes.business),
         GoRoute(
           path: AppRoutes.admin,
-          pageBuilder: (context, state) =>
-              _fadeSlidePage(const AdminDashboard(), state),
+          pageBuilder: (context, state) => _fadeSlidePage(const AdminDashboard(), state),
         ),
 
         GoRoute(
           path: AppRoutes.featureDisabled,
           pageBuilder: (context, state) {
-            final title =
-                (state.uri.queryParameters['title'] ?? 'Feature unavailable')
-                    .trim();
-            final message =
-                (state.uri.queryParameters['message'] ??
-                        'This feature is currently unavailable.')
-                    .trim();
+            final title = (state.uri.queryParameters['title'] ?? 'Feature unavailable').trim();
+            final message = (state.uri.queryParameters['message'] ?? 'This feature is currently unavailable.').trim();
             final feature = (state.uri.queryParameters['feature'] ?? '').trim();
             final icon = switch (feature) {
               'missions' => Icons.task_alt,
@@ -788,18 +677,14 @@ class AppRouter {
               'progress' => Icons.insights,
               _ => Icons.lock_outline,
             };
-            return _fadeSlidePage(
-              FeatureDisabledPage(title: title, message: message, icon: icon),
-              state,
-            );
+            return _fadeSlidePage(FeatureDisabledPage(title: title, message: message, icon: icon), state);
           },
         ),
 
         // Progression system routes
         GoRoute(
           path: AppRoutes.missions,
-          pageBuilder: (context, state) =>
-              _fadeSlidePage(const MissionsPage(), state),
+          pageBuilder: (context, state) => _fadeSlidePage(const MissionsPage(), state),
           routes: [
             GoRoute(
               path: ':id',
@@ -812,42 +697,34 @@ class AppRouter {
         ),
         GoRoute(
           path: AppRoutes.rewards,
-          pageBuilder: (context, state) =>
-              _fadeSlidePage(const RewardsPage(), state),
+          pageBuilder: (context, state) => _fadeSlidePage(const RewardsPage(), state),
         ),
         GoRoute(
           path: AppRoutes.campaigns,
-          pageBuilder: (context, state) =>
-              _fadeSlidePage(const CampaignsPage(), state),
+          pageBuilder: (context, state) => _fadeSlidePage(const CampaignsPage(), state),
           routes: [
             GoRoute(
               path: ':campaignId',
               pageBuilder: (context, state) {
                 final id = (state.pathParameters['campaignId'] ?? '').trim();
-                return _fadeSlidePage(
-                  CampaignDetailPage(campaignId: id),
-                  state,
-                );
+                return _fadeSlidePage(CampaignDetailPage(campaignId: id), state);
               },
             ),
           ],
         ),
         GoRoute(
           path: AppRoutes.progress,
-          pageBuilder: (context, state) =>
-              _fadeSlidePage(const ProgressPage(), state),
+          pageBuilder: (context, state) => _fadeSlidePage(const ProgressPage(), state),
         ),
 
         // Admin progression tooling
         GoRoute(
           path: AppRoutes.adminMissions,
-          pageBuilder: (context, state) =>
-              _fadeSlidePage(const AdminMissionsPage(), state),
+          pageBuilder: (context, state) => _fadeSlidePage(const AdminMissionsPage(), state),
         ),
         GoRoute(
           path: AppRoutes.adminCampaigns,
-          pageBuilder: (context, state) =>
-              _fadeSlidePage(const AdminCampaignsPage(), state),
+          pageBuilder: (context, state) => _fadeSlidePage(const AdminCampaignsPage(), state),
         ),
 
         GoRoute(
@@ -858,18 +735,10 @@ class AppRouter {
               final session = extra['session'];
               final hostMode = extra['hostMode'] == true;
               if (session is StudioSessionModel) {
-                return _fadeSlidePage(
-                  LiveKitRoomPage(session: session, hostMode: hostMode),
-                  state,
-                );
+                return _fadeSlidePage(LiveKitRoomPage(session: session, hostMode: hostMode), state);
               }
             }
-            return _fadeSlidePage(
-              const Scaffold(
-                body: Center(child: Text('Missing LiveKit session.')),
-              ),
-              state,
-            );
+            return _fadeSlidePage(const Scaffold(body: Center(child: Text('Missing LiveKit session.'))), state);
           },
         ),
 
@@ -880,8 +749,7 @@ class AppRouter {
         if (!kReleaseMode)
           GoRoute(
             path: AppRoutes.qa,
-            pageBuilder: (context, state) =>
-                _fadeSlidePage(const QAHarnessPage(), state),
+            pageBuilder: (context, state) => _fadeSlidePage(const QAHarnessPage(), state),
           ),
 
         // Fallback routes: some hosts land on opaque token-like paths.
@@ -899,41 +767,18 @@ class AppRouter {
             // Preserve auth params and funnel into /auth/callback.
             try {
               final baseUri = Uri.base;
-              final fragRaw = baseUri.fragment.isNotEmpty
-                  ? baseUri.fragment
-                  : state.uri.fragment;
-              final qp = <String, String>{
-                ...state.uri.queryParameters,
-                ...baseUri.queryParameters,
-              };
-              final hasSupabaseFragmentTokens =
-                  fragRaw.contains('access_token=') ||
-                  fragRaw.contains('refresh_token=') ||
-                  fragRaw.contains('type=recovery');
-              final hasSupabaseError =
-                  fragRaw.contains('error=') ||
-                  qp.containsKey('error') ||
-                  qp.containsKey('error_code') ||
-                  qp.containsKey('error_description');
+              final fragRaw = baseUri.fragment.isNotEmpty ? baseUri.fragment : state.uri.fragment;
+              final qp = <String, String>{...state.uri.queryParameters, ...baseUri.queryParameters};
+              final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+              final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
               final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
-              final hasSupabaseRecoveryType =
-                  (qp['type'] ?? '').toLowerCase() == 'recovery';
-              final hasSupabaseAuthParams =
-                  hasSupabaseFragmentTokens ||
-                  hasSupabasePkceCode ||
-                  hasSupabaseRecoveryType ||
-                  hasSupabaseError;
+              final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+              final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
               if (hasSupabaseAuthParams) {
-                return Uri(
-                  path: AppRoutes.authCallback,
-                  queryParameters: qp,
-                  fragment: fragRaw,
-                ).toString();
+                return Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString();
               }
             } catch (e) {
-              debugPrint(
-                'AppRouter: opaque-path redirect failed to preserve auth params: $e',
-              );
+              debugPrint('AppRouter: opaque-path redirect failed to preserve auth params: $e');
             }
             return AppRoutes.root;
           },
@@ -945,45 +790,23 @@ class AppRouter {
           redirect: (context, state) {
             try {
               final baseUri = Uri.base;
-              final fragRaw = baseUri.fragment.isNotEmpty
-                  ? baseUri.fragment
-                  : state.uri.fragment;
-              final qp = <String, String>{
-                ...state.uri.queryParameters,
-                ...baseUri.queryParameters,
-              };
-              final hasSupabaseFragmentTokens =
-                  fragRaw.contains('access_token=') ||
-                  fragRaw.contains('refresh_token=') ||
-                  fragRaw.contains('type=recovery');
-              final hasSupabaseError =
-                  fragRaw.contains('error=') ||
-                  qp.containsKey('error') ||
-                  qp.containsKey('error_code') ||
-                  qp.containsKey('error_description');
+              final fragRaw = baseUri.fragment.isNotEmpty ? baseUri.fragment : state.uri.fragment;
+              final qp = <String, String>{...state.uri.queryParameters, ...baseUri.queryParameters};
+              final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+              final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
               final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
-              final hasSupabaseRecoveryType =
-                  (qp['type'] ?? '').toLowerCase() == 'recovery';
-              final hasSupabaseAuthParams =
-                  hasSupabaseFragmentTokens ||
-                  hasSupabasePkceCode ||
-                  hasSupabaseRecoveryType ||
-                  hasSupabaseError;
+              final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+              final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
               if (hasSupabaseAuthParams) {
-                return Uri(
-                  path: AppRoutes.authCallback,
-                  queryParameters: qp,
-                  fragment: fragRaw,
-                ).toString();
+                return Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString();
               }
             } catch (e) {
-              debugPrint(
-                'AppRouter: deep-opaque redirect failed to preserve auth params: $e',
-              );
+              debugPrint('AppRouter: deep-opaque redirect failed to preserve auth params: $e');
             }
             return AppRoutes.root;
           },
         ),
+
       ],
     );
   }
@@ -1006,23 +829,12 @@ class AppRouter {
       // consume the session. Boot into /auth/callback so AuthCallbackPage can
       // parse and exchange the tokens/code.
       final fragRaw = uri.fragment;
-      final hasSupabaseFragmentTokens =
-          fragRaw.contains('access_token=') ||
-          fragRaw.contains('refresh_token=') ||
-          fragRaw.contains('type=recovery');
+      final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
       final hasSupabaseFragmentError = fragRaw.contains('error=');
-      final hasSupabaseQueryCode =
-          (uri.queryParameters['code'] ?? '').isNotEmpty;
-      final hasSupabaseQueryRecoveryType =
-          (uri.queryParameters['type'] ?? '').toLowerCase() == 'recovery';
-      if ((path.isEmpty || path == '/') &&
-          (hasSupabaseFragmentTokens ||
-              hasSupabaseFragmentError ||
-              hasSupabaseQueryCode ||
-              hasSupabaseQueryRecoveryType)) {
-        debugPrint(
-          'AppRouter: detected Supabase email-link params at root; booting to ${AppRoutes.authCallback}',
-        );
+      final hasSupabaseQueryCode = (uri.queryParameters['code'] ?? '').isNotEmpty;
+      final hasSupabaseQueryRecoveryType = (uri.queryParameters['type'] ?? '').toLowerCase() == 'recovery';
+      if ((path.isEmpty || path == '/') && (hasSupabaseFragmentTokens || hasSupabaseFragmentError || hasSupabaseQueryCode || hasSupabaseQueryRecoveryType)) {
+        debugPrint('AppRouter: detected Supabase email-link params at root; booting to ${AppRoutes.authCallback}');
         return AppRoutes.authCallback;
       }
 
@@ -1036,17 +848,12 @@ class AppRouter {
         return '$routeOnly?${parts.sublist(1).join('?')}';
       }
     } catch (e) {
-      debugPrint(
-        'AppRouter: failed to compute initialLocation from Uri.base: $e',
-      );
+      debugPrint('AppRouter: failed to compute initialLocation from Uri.base: $e');
     }
     return fallback;
   }
 
-  static String _pathWithQuery({
-    required String path,
-    required Map<String, String> queryParameters,
-  }) {
+  static String _pathWithQuery({required String path, required Map<String, String> queryParameters}) {
     if (queryParameters.isEmpty) return path;
     final query = Uri(queryParameters: queryParameters).query;
     if (query.isEmpty) return path;
@@ -1058,14 +865,10 @@ class AppRouter {
       key: state.pageKey,
       child: child,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final fade = CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOutCubic,
-        );
-        final slide = Tween<Offset>(
-          begin: const Offset(0.04, 0),
-          end: Offset.zero,
-        ).chain(CurveTween(curve: Curves.easeOutCubic)).animate(animation);
+        final fade = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+        final slide = Tween<Offset>(begin: const Offset(0.04, 0), end: Offset.zero)
+            .chain(CurveTween(curve: Curves.easeOutCubic))
+            .animate(animation);
         return FadeTransition(
           opacity: fade,
           child: SlideTransition(position: slide, child: child),

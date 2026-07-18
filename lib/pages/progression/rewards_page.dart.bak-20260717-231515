@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:spotlight_connect/models/progression_models.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
 import 'package:spotlight_connect/pages/shared/feature_disabled_page.dart';
@@ -261,7 +260,7 @@ class _BadgeChip extends StatelessWidget {
   const _BadgeChip({required this.name, required this.badgeType, required this.description});
 
   final String name;
-  final String? badgeType;
+  final String badgeType;
   final String? description;
 
   @override
@@ -287,10 +286,10 @@ class _BadgeChip extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          if ((badgeType ?? '').trim().isNotEmpty) ...[
+          if (badgeType.trim().isNotEmpty) ...[
             const SizedBox(width: 8),
             Text(
-              badgeType!,
+              badgeType,
               style: theme.textTheme.labelSmall?.withColor(theme.colorScheme.onSurfaceVariant),
               overflow: TextOverflow.ellipsis,
             ),
@@ -356,20 +355,10 @@ class _ProofHistoryRow extends StatelessWidget {
     final icon = switch (event.kind) {
       ProofEventKind.mission => Icons.task_alt,
       ProofEventKind.campaign => Icons.campaign_outlined,
-      ProofEventKind.purchase => Icons.shopping_bag_outlined,
-      ProofEventKind.subscription => Icons.subscriptions_outlined,
-      ProofEventKind.tip => Icons.volunteer_activism_outlined,
-      ProofEventKind.attendance => Icons.event_available_outlined,
-      ProofEventKind.milestone => Icons.flag_outlined,
     };
     final tint = switch (event.kind) {
       ProofEventKind.mission => theme.colorScheme.primary,
       ProofEventKind.campaign => theme.colorScheme.secondary,
-      ProofEventKind.purchase => theme.colorScheme.tertiary,
-      ProofEventKind.subscription => theme.colorScheme.primary,
-      ProofEventKind.tip => theme.colorScheme.error,
-      ProofEventKind.attendance => theme.colorScheme.secondary,
-      ProofEventKind.milestone => theme.colorScheme.primary,
     };
 
     return Container(

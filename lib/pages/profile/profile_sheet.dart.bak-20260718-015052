@@ -605,8 +605,8 @@ class _ProfileProofHistoryRow extends StatelessWidget {
     final theme = Theme.of(context);
 
     final IconData icon = switch (event.kind) {
-
-
+      ProofEventKind.mission => Icons.task_alt,
+      ProofEventKind.campaign => Icons.campaign_outlined,
       ProofEventKind.purchase => Icons.shopping_bag_outlined,
       ProofEventKind.subscription => Icons.repeat_outlined,
       ProofEventKind.tip => Icons.volunteer_activism_outlined,
@@ -616,8 +616,8 @@ class _ProfileProofHistoryRow extends StatelessWidget {
     };
 
     final Color tint = switch (event.kind) {
-
-
+      ProofEventKind.mission => theme.colorScheme.primary,
+      ProofEventKind.campaign => theme.colorScheme.secondary,
       ProofEventKind.purchase => Colors.green,
       ProofEventKind.subscription => Colors.blue,
       ProofEventKind.tip => Colors.amber,

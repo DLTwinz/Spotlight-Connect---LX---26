@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:spotlight_connect/models/progression_models.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
@@ -605,8 +604,8 @@ class _ProfileProofHistoryRow extends StatelessWidget {
     final theme = Theme.of(context);
 
     final IconData icon = switch (event.kind) {
-
-
+      ProofEventKind.mission => Icons.task_alt,
+      ProofEventKind.campaign => Icons.campaign_outlined,
       ProofEventKind.purchase => Icons.shopping_bag_outlined,
       ProofEventKind.subscription => Icons.repeat_outlined,
       ProofEventKind.tip => Icons.volunteer_activism_outlined,
@@ -616,8 +615,8 @@ class _ProfileProofHistoryRow extends StatelessWidget {
     };
 
     final Color tint = switch (event.kind) {
-
-
+      ProofEventKind.mission => theme.colorScheme.primary,
+      ProofEventKind.campaign => theme.colorScheme.secondary,
       ProofEventKind.purchase => Colors.green,
       ProofEventKind.subscription => Colors.blue,
       ProofEventKind.tip => Colors.amber,

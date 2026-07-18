@@ -58,7 +58,7 @@ class StudioService extends ChangeNotifier {
     try {
       // If you have a Supabase Edge function or RPC that generates a LiveKit token,
       // call it here. The example uses rpc('livekit_token', params: {...}).
-      final resp = await Supabase.instance.client.rpc('livekit_token', params: {
+      final resp = await Supabase.instance.rpc('livekit_token', params: {
         'room': room,
         'participant': participant,
       });

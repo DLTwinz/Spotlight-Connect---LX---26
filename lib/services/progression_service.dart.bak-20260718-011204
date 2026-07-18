@@ -251,17 +251,6 @@ class ProgressionService extends ChangeNotifier {
     return CampaignModel.fromJson(Map<String, dynamic>.from(row));
   }
 
-  Future<MissionModel?> loadMissionById(String missionId) async {
-    final row = await _client
-        .from('missions')
-        .select('*')
-        .eq('id', missionId)
-        .maybeSingle();
-
-    if (row == null) return null;
-    return MissionModel.fromJson(Map<String, dynamic>.from(row));
-  }
-
   Future<List<MissionListItemModel>> loadCampaignMissions(
     String campaignId,
   ) async {

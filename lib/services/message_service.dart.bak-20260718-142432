@@ -45,8 +45,7 @@ class MessageService extends ChangeNotifier {
             (r) => MessageThread(
               threadId: r['id'] as String,
               participantUserIds: List<String>.from(
-                r['participant_user_ids'] as List? ?? [],
-              ),
+                  r['participant_user_ids'] as List? ?? []),
             ),
           ),
         );
@@ -84,7 +83,7 @@ class MessageService extends ChangeNotifier {
     // Create a new thread row.
     final insertPayload = <String, dynamic>{
       'participant_user_ids': participantUserIds,
-      'opportunity_id': ?opportunityId,
+      if (opportunityId != null) 'opportunity_id': opportunityId,
     };
     final row = await _client
         .from('message_threads')
@@ -94,9 +93,8 @@ class MessageService extends ChangeNotifier {
 
     final thread = MessageThread(
       threadId: row['id'] as String,
-      participantUserIds: List<String>.from(
-        row['participant_user_ids'] as List? ?? [],
-      ),
+      participantUserIds:
+          List<String>.from(row['participant_user_ids'] as List? ?? []),
     );
     _threads.insert(0, thread);
     notifyListeners();

@@ -91,9 +91,8 @@ class FeedTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isTalent = (role ?? 'talent').trim().toLowerCase() == 'talent';
-    final Color accentColor = isTalent
-        ? const Color(0xFF39FF14)
-        : const Color(0xFFD4AF37);
+    final Color accentColor =
+        isTalent ? const Color(0xFF39FF14) : const Color(0xFFD4AF37);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -112,7 +111,7 @@ class FeedTab extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.refresh, color: accentColor, size: 20),
             onPressed: () {},
-          ),
+          )
         ],
       ),
       body: ListView.builder(
@@ -203,11 +202,7 @@ class ReelsTab extends StatelessWidget {
       body: Center(
         child: Text(
           "REELS TELEMETRY EMBEDDED",
-          style: TextStyle(
-            color: Colors.white38,
-            fontSize: 11,
-            letterSpacing: 2,
-          ),
+          style: TextStyle(color: Colors.white38, fontSize: 11, letterSpacing: 2),
         ),
       ),
     );
@@ -224,9 +219,8 @@ class DiscoverTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isTalent = (role ?? 'talent').trim().toLowerCase() == 'talent';
-    final Color accentColor = isTalent
-        ? const Color(0xFF39FF14)
-        : const Color(0xFFD4AF37);
+    final Color accentColor =
+        isTalent ? const Color(0xFF39FF14) : const Color(0xFFD4AF37);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -260,9 +254,8 @@ class DiscoverTab extends StatelessWidget {
                   height: 120,
                   decoration: BoxDecoration(
                     color: accentColor.withValues(alpha: 0.05),
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(12),
-                    ),
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(12)),
                   ),
                   child: Center(
                     child: Icon(
@@ -327,12 +320,12 @@ class DiscoverTab extends StatelessWidget {
                             ),
                             onPressed: () {},
                             child: Text(isTalent ? 'ENGAGE' : 'INSPECT'),
-                          ),
+                          )
                         ],
-                      ),
+                      )
                     ],
                   ),
-                ),
+                )
               ],
             ),
           );
@@ -406,7 +399,6 @@ class _StudioTabState extends State<StudioTab> {
           _isLoading = false;
         });
       }
-    }
   }
 
   String _formatCurrency(num? value) {
@@ -443,16 +435,21 @@ class _StudioTabState extends State<StudioTab> {
           IconButton(
             icon: Icon(Icons.refresh, color: _accentColor, size: 20),
             onPressed: _loadAttribution,
-          ),
+          )
         ],
       ),
-      body: Padding(padding: const EdgeInsets.all(16.0), child: _buildBody()),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: _buildBody(),
+      ),
     );
   }
 
   Widget _buildBody() {
     if (_isLoading) {
-      return Center(child: CircularProgressIndicator(color: _accentColor));
+      return Center(
+        child: CircularProgressIndicator(color: _accentColor),
+      );
     }
 
     if (_errorMessage != null) {
@@ -515,9 +512,7 @@ class _StudioTabState extends State<StudioTab> {
                   _TelemetryCard(
                     title: 'Creator',
                     value: _creatorSummary?.creatorName ?? '--',
-                    trend: _formatTimestamp(
-                      _creatorSummary?.summaryGeneratedAt,
-                    ),
+                    trend: _formatTimestamp(_creatorSummary?.summaryGeneratedAt),
                     icon: Icons.person_outline,
                     accentColor: _accentColor,
                   ),
@@ -576,11 +571,8 @@ class _StudioTabState extends State<StudioTab> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.waves,
-                  color: _accentColor.withValues(alpha: 0.4),
-                  size: 36,
-                ),
+                Icon(Icons.waves,
+                    color: _accentColor.withValues(alpha: 0.4), size: 36),
                 const SizedBox(height: 12),
                 Text(
                   _isTalent
@@ -597,7 +589,7 @@ class _StudioTabState extends State<StudioTab> {
               ],
             ),
           ),
-        ),
+        )
       ],
     );
   }
@@ -660,11 +652,7 @@ class OpportunitiesTab extends StatelessWidget {
       body: Center(
         child: Text(
           "PIPELINE CONTRACTS ENCRYPTED",
-          style: TextStyle(
-            color: Colors.white24,
-            fontSize: 11,
-            letterSpacing: 2,
-          ),
+          style: TextStyle(color: Colors.white24, fontSize: 11, letterSpacing: 2),
         ),
       ),
     );
@@ -681,9 +669,8 @@ class ProfileTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isTalent = (role ?? 'talent').trim().toLowerCase() == 'talent';
-    final Color accentColor = isTalent
-        ? const Color(0xFF39FF14)
-        : const Color(0xFFD4AF37);
+    final Color accentColor =
+        isTalent ? const Color(0xFF39FF14) : const Color(0xFFD4AF37);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -739,12 +726,10 @@ class ProfileTab extends StatelessWidget {
                     _buildIdentityRow('Routing Token Claim', 'Valid'),
                     const Divider(color: Color(0xFF1A1A1A), height: 24),
                     _buildIdentityRow(
-                      'Database Protocol',
-                      'Supabase Realtime RLS',
-                    ),
+                        'Database Protocol', 'Supabase Realtime RLS'),
                   ],
                 ),
-              ),
+              )
             ],
           ),
         ),
@@ -756,10 +741,7 @@ class ProfileTab extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: const TextStyle(color: Colors.white54, fontSize: 12),
-        ),
+        Text(label, style: const TextStyle(color: Colors.white54, fontSize: 12)),
         Text(
           status,
           style: const TextStyle(
