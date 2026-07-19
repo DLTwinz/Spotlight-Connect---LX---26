@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:spotlight_connect/models/user_model.dart';
 
 import 'package:spotlight_connect/models/comment_model.dart';
 import 'package:spotlight_connect/models/post_model.dart';
@@ -481,7 +480,7 @@ class _CommentsSheetState extends State<CommentsSheet> {
     final theme = Theme.of(context);
     final viewInsets = MediaQuery.viewInsetsOf(context);
     final service = context.watch<PostService>();
-    final user = context.select<AppAuthProvider, UserModel?>((auth) => auth.currentUser);
+    final user = context.watch<AppAuthProvider>().currentUser;
     final comments = service.commentsFor(widget.post.postId);
 
     return Padding(

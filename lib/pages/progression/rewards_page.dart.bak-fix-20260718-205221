@@ -14,7 +14,7 @@ class RewardsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final policy = context.select<ProgressionFeaturePolicyProvider, dynamic>((p) => p.policy);
+    final policy = context.select<ProgressionFeaturePolicyProvider, ProgressionFeaturePolicy>((p) => p.policy);
     if (!policy.progressionEnabled || !policy.redemptionsEnabled) {
       return const FeatureDisabledPage(
         title: 'Rewards are disabled',

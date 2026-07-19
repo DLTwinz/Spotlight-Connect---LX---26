@@ -17,8 +17,7 @@ class SupabaseAuthProvider extends AppAuthProvider {
   bool get isLoggedIn => Supabase.instance.client.auth.currentSession != null;
 
   @override
-  @override
-  UserModel? get currentUser => _currentUser;
+  dynamic get currentUser => _currentUser;
 
   @override
   bool get isAdmin => _currentUser?.isAdmin ?? false;

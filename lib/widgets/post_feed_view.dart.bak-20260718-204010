@@ -24,7 +24,7 @@ class _PostFeedViewState extends State<PostFeedView> {
 
   @override
   Widget build(BuildContext context) {
-    final posts = context.select<PostService, List<dynamic>>((svc) => svc.items);
+    final posts = context.watch<PostService>().items;
 
     if (posts.isEmpty) {
       return const Center(child: Text('No posts yet.'));

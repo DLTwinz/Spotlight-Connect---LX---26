@@ -361,25 +361,23 @@ class AppRouter {
           return AppRoutes.login;
         }
 
-        final currentUser = user!;
-
         // Logged in but hasn't completed onboarding
         // Admin redirect
-        if (currentUser.activeRole == "admin") {
+        if (user.activeRole == "admin") {
           if (location.startsWith("/admin")) return null;
           logRedirect(AppRoutes.admin);
           return AppRoutes.admin;
         }
-        if (!currentUser.onboardingComplete) {
+        if (!user.onboardingComplete) {
           // Admin redirect
-          if (currentUser.activeRole == "admin") {
+          if (user.activeRole == "admin") {
             if (location.startsWith("/admin")) return null;
             logRedirect(AppRoutes.admin);
             return AppRoutes.admin;
           }
           if (isOnboardingRoute) return null;
           // Admin redirect
-          if (currentUser.activeRole == "admin") {
+          if (user!.activeRole == "admin") {
             if (location.startsWith("/admin")) return null;
             logRedirect(AppRoutes.admin);
             return AppRoutes.admin;
@@ -392,17 +390,17 @@ class AppRouter {
         // normal dashboard.
         // - pending review -> waiting approval
         // - rejected/restricted/suspended -> permission denied
-        if (currentUser.isPendingReview) {
+        if (user.isPendingReview) {
           if (isWaitingApprovalRoute || isAccessDeniedRoute) return null;
           logRedirect(AppRoutes.waitingApproval);
           return AppRoutes.waitingApproval;
         }
-        if (currentUser.isRejected || currentUser.isRestricted || currentUser.isSuspended) {
+        if (user.isRejected || user.isRestricted || user.isSuspended) {
           if (isAccessDeniedRoute) return null;
           final target = accessDenied(
-            missing: currentUser.isRejected
+            missing: user.isRejected
                 ? 'rejected'
-                : (currentUser.isSuspended ? 'suspended' : 'restricted'),
+                : (user.isSuspended ? 'suspended' : 'restricted'),
           );
           logRedirect(target);
           return target;
@@ -421,10 +419,10 @@ class AppRouter {
 
         // Launch-grade invariants: if the profile is malformed or role state is
         // unresolved, we must not silently route the user into Audience.
-        final approved = currentUser.approvedRoles;
-        final active = currentUser.activeRole;
+        final approved = user.approvedRoles;
+        final active = user.activeRole;
         final profileMalformed =
-            currentUser.userId.isEmpty ||
+            user.userId.isEmpty ||
             approved.isEmpty ||
             !approved.contains('audience') ||
             !isKnownRole(active);
@@ -479,14 +477,14 @@ class AppRouter {
         // Supabase recovery links establish a session, and users must stay on
         // the reset password screen long enough to set a new password.
         if (isEarlyAccessRoute) {
-          final target = defaultDashboardRouteFor(currentUser);
+          final target = defaultDashboardRouteFor(user);
           logRedirect(target);
           return target;
         }
 
         if (isAuthRoute) {
-          if (currentUser.onboardingComplete) {
-            final target = defaultDashboardRouteFor(currentUser);
+          if (user.onboardingComplete) {
+            final target = defaultDashboardRouteFor(user);
             if (target != AppRoutes.login) {
               logRedirect(target);
               return target;
@@ -496,14 +494,14 @@ class AppRouter {
         }
 
         if (isOnboardingRoute) {
-          final target = defaultDashboardRouteFor(currentUser);
+          final target = defaultDashboardRouteFor(user);
           logRedirect(target);
           return target;
         }
 
         // At root, redirect to active role dashboard
         if (location == AppRoutes.root) {
-          final target = defaultDashboardRouteFor(currentUser);
+          final target = defaultDashboardRouteFor(user);
           logRedirect(target);
           return target;
         }
@@ -518,7 +516,7 @@ class AppRouter {
           AppRoutes.admin,
         };
         if (roleDashPaths.contains(location)) {
-          final target = defaultDashboardRouteFor(currentUser);
+          final target = defaultDashboardRouteFor(user);
           if (target != location) {
             logRedirect(target);
             return target;
@@ -563,10 +561,11 @@ class AppRouter {
           (p) => location.startsWith(p),
         );
         if (!knownPaths.contains(location) && !isKnownByPrefix) {
-          final target = defaultDashboardRouteFor(currentUser);
+          final target = defaultDashboardRouteFor(user);
           logRedirect(target);
           return target;
         }
+
         // Role guards
         if (location == AppRoutes.talent &&
             !user.approvedRoles.contains('talent')) {

@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:spotlight_connect/models/progression_models.dart';
 import 'package:provider/provider.dart';
-import 'package:spotlight_connect/models/user_model.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:spotlight_connect/pages/dashboards/widgets/post_card.dart';
@@ -15,10 +14,10 @@ import 'package:spotlight_connect/services/progression_service.dart';
 import 'package:spotlight_connect/providers/app_auth_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// A lightweight profile viewer presented as a bottom sheet.
+/// A lightweight profile viewer used in local/mock mode.
 ///
-/// This can be opened from feed, comments, and repost cards without changing
-/// app routing.
+/// This is intentionally a bottom sheet (not a full page) so it can be opened
+/// from anywhere (feed, comments, repost cards) without changing app routing.
 class ProfileSheet extends StatefulWidget {
   const ProfileSheet({
     super.key,
@@ -152,10 +151,8 @@ class _ProfileSheetState extends State<ProfileSheet> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final allPosts = context.select<PostService, List<dynamic>>((svc) => svc.posts);
-    final posts = allPosts
-        .where((p) => p != null && p.authorId == widget.userId)
-        .cast<dynamic>()
+    final posts = context.select<PostService, List<PostView>>((svc) => svc.posts)
+        .where((p) => p.authorId == widget.userId)
         .toList(growable: false);
     final isSelf = widget.userId == _uid;
     final progSvc = isSelf ? context.watch<ProgressionService>() : null;

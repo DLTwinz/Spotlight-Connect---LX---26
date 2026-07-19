@@ -15,10 +15,10 @@ import 'package:spotlight_connect/services/progression_service.dart';
 import 'package:spotlight_connect/providers/app_auth_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// A lightweight profile viewer presented as a bottom sheet.
+/// A lightweight profile viewer used in local/mock mode.
 ///
-/// This can be opened from feed, comments, and repost cards without changing
-/// app routing.
+/// This is intentionally a bottom sheet (not a full page) so it can be opened
+/// from anywhere (feed, comments, repost cards) without changing app routing.
 class ProfileSheet extends StatefulWidget {
   const ProfileSheet({
     super.key,

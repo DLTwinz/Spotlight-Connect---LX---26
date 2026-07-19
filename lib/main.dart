@@ -18,50 +18,38 @@ import 'package:spotlight_connect/services/post_service.dart';
 import 'package:spotlight_connect/services/story_service.dart';
 import 'package:spotlight_connect/services/studio_service.dart';
 import 'package:spotlight_connect/services/progression_service.dart';
-import 'package:spotlight_connect/storage/key_value_store.dart';
 import 'package:spotlight_connect/services/monetization_service.dart';
+import 'package:spotlight_connect/storage/key_value_store.dart';
 
-// Production Environment Guard Rails
 abstract class EnvConfig {
-  static const String supabaseUrl = String.fromEnvironment(
-    'SUPABASE_URL',
-    defaultValue: 'https://mdwvokenmehdfybgujpa.supabase.co',
-  );
-  static const String supabaseKey = String.fromEnvironment(
-    'SUPABASE_ANON_KEY',
-    defaultValue: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kd3Zva2VubWVoZGZ5Ymd1anBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODAzMzUsImV4cCI6MjA5MTg1NjMzNX0.tds2VeVEl05jd3cbaC4vutxnLRtTF6i2d5MMAJS3KJk',
-  );
+  static const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+  static const String supabaseKey = String.fromEnvironment('SUPABASE_ANON_KEY');
 
   static void validate() {
-    if (supabaseUrl.isEmpty ||
-        supabaseKey.isEmpty ||
-        supabaseUrl == 'https://mdwvokenmehdfybgujpa.supabase.co' ||
-        supabaseKey == 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kd3Zva2VubWVoZGZ5Ymd1anBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODAzMzUsImV4cCI6MjA5MTg1NjMzNX0.tds2VeVEl05jd3cbaC4vutxnLRtTF6i2d5MMAJS3KJk') {
+    if (supabaseUrl.isEmpty || supabaseKey.isEmpty) {
       throw Exception(
-        'PRODUCTION BOOT DENIED: Live Supabase credentials are empty or misconfigured.',
+        'PRODUCTION BOOT DENIED: SUPABASE_URL and SUPABASE_ANON_KEY must be provided via --dart-define.',
       );
     }
   }
 }
 
-void main() async {
-  // Ensure engine bindings are alive before running async setups
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Enforce credentials check before opening live Supabase connections
+
   EnvConfig.validate();
 
-  // Initialize Supabase using the validated environment variables
   await Supabase.initialize(
     url: EnvConfig.supabaseUrl,
     publishableKey: EnvConfig.supabaseKey,
   );
-  
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
   @override
   State<MyApp> createState() => _MyAppState();
 }
@@ -76,16 +64,15 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    // Capture the active production client instance
+
     _dbClient = Supabase.instance.client;
 
-    // Core Security & Routing Engine Architecture
     _authProvider = SupabaseAuthProvider();
     _featureFlagProvider = FeatureFlagProvider(store: createKeyValueStore());
-    _progressionFeaturePolicyProvider = ProgressionFeaturePolicyProvider(authProvider: _authProvider);
+    _progressionFeaturePolicyProvider =
+        ProgressionFeaturePolicyProvider(authProvider: _authProvider);
     _router = AppRouter.createRouter(_authProvider);
 
-    // Initialize synchronous production configurations
     Future.microtask(_featureFlagProvider.ensureInitialized);
   }
 
@@ -93,25 +80,102 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // System Identity & Authorization Dependencies
+        Provider<SupabaseClient>.value(value: _dbClient),
+
         ChangeNotifierProvider<AppAuthProvider>.value(value: _authProvider),
-        ChangeNotifierProvider<FeatureFlagProvider>.value(value: _featureFlagProvider),
-        ChangeNotifierProvider<ProgressionFeaturePolicyProvider>.value(value: _progressionFeaturePolicyProvider),
-        
-        // Live Infrastructure Data Pipelines (Passing the active dbClient directly)
-        ChangeNotifierProvider(create: (_) => NotificationService(client: _dbClient)),
-        ChangeNotifierProvider(create: (_) => MessageService(client: _dbClient)),
-        ChangeNotifierProvider(create: (_) => PostService(client: _dbClient)),
-        ChangeNotifierProvider(create: (_) => GroupService(client: _dbClient, localCache: createKeyValueStore())),
-        ChangeNotifierProvider(create: (_) => PortfolioService(client: _dbClient, localCache: createKeyValueStore())),
-        ChangeNotifierProvider(create: (_) => StoryService(client: _dbClient, localCache: createKeyValueStore())),
-        ChangeNotifierProvider(create: (_) => OpportunityService(client: _dbClient, localCache: createKeyValueStore())),  
-        ChangeNotifierProvider(create: (_) => MonetizationService(client: _dbClient)),
-        ChangeNotifierProvider(create: (_) => ProgressionService(client: _dbClient)),
-        
-        // Stateless Operational Engine Services
-        Provider(create: (_) => StudioService(client: _dbClient)),
-        Provider(create: (_) => MissionComposerService(client: _dbClient)),
+        ChangeNotifierProvider<FeatureFlagProvider>.value(
+          value: _featureFlagProvider,
+        ),
+        ChangeNotifierProvider<ProgressionFeaturePolicyProvider>.value(
+          value: _progressionFeaturePolicyProvider,
+        ),
+
+        ChangeNotifierProxyProvider<SupabaseClient, NotificationService>(
+          create: (context) =>
+              NotificationService(client: context.read<SupabaseClient>()),
+          update: (context, client, previous) =>
+              previous ?? NotificationService(client: client),
+        ),
+        ChangeNotifierProxyProvider<SupabaseClient, MessageService>(
+          create: (context) =>
+              MessageService(client: context.read<SupabaseClient>()),
+          update: (context, client, previous) =>
+              previous ?? MessageService(client: client),
+        ),
+        ChangeNotifierProxyProvider<SupabaseClient, PostService>(
+          create: (context) => PostService(client: context.read<SupabaseClient>()),
+          update: (context, client, previous) =>
+              previous ?? PostService(client: client),
+        ),
+        ChangeNotifierProxyProvider<SupabaseClient, GroupService>(
+          create: (context) => GroupService(
+            client: context.read<SupabaseClient>(),
+            localCache: createKeyValueStore(),
+          ),
+          update: (context, client, previous) =>
+              previous ??
+              GroupService(
+                client: client,
+                localCache: createKeyValueStore(),
+              ),
+        ),
+        ChangeNotifierProxyProvider<SupabaseClient, PortfolioService>(
+          create: (context) => PortfolioService(
+            client: context.read<SupabaseClient>(),
+            localCache: createKeyValueStore(),
+          ),
+          update: (context, client, previous) =>
+              previous ??
+              PortfolioService(
+                client: client,
+                localCache: createKeyValueStore(),
+              ),
+        ),
+        ChangeNotifierProxyProvider<SupabaseClient, StoryService>(
+          create: (context) => StoryService(
+            client: context.read<SupabaseClient>(),
+            localCache: createKeyValueStore(),
+          ),
+          update: (context, client, previous) =>
+              previous ??
+              StoryService(
+                client: client,
+                localCache: createKeyValueStore(),
+              ),
+        ),
+        ChangeNotifierProxyProvider<SupabaseClient, OpportunityService>(
+          create: (context) => OpportunityService(
+            client: context.read<SupabaseClient>(),
+            localCache: createKeyValueStore(),
+          ),
+          update: (context, client, previous) =>
+              previous ??
+              OpportunityService(
+                client: client,
+                localCache: createKeyValueStore(),
+              ),
+        ),
+        ChangeNotifierProxyProvider<SupabaseClient, MonetizationService>(
+          create: (context) =>
+              MonetizationService(client: context.read<SupabaseClient>()),
+          update: (context, client, previous) =>
+              previous ?? MonetizationService(client: client),
+        ),
+        ChangeNotifierProxyProvider<SupabaseClient, ProgressionService>(
+          create: (context) =>
+              ProgressionService(client: context.read<SupabaseClient>()),
+          update: (context, client, previous) =>
+              previous ?? ProgressionService(client: client),
+        ),
+
+        ProxyProvider<SupabaseClient, StudioService>(
+          update: (context, client, previous) =>
+              previous ?? StudioService(client: client),
+        ),
+        ProxyProvider<SupabaseClient, MissionComposerService>(
+          update: (context, client, previous) =>
+              previous ?? MissionComposerService(client: client),
+        ),
       ],
       child: MaterialApp.router(
         title: 'SPOTLIGHT Connect',
@@ -119,10 +183,10 @@ class _MyAppState extends State<MyApp> {
         theme: ThemeData(
           brightness: Brightness.dark,
           scaffoldBackgroundColor: Colors.black,
-          primaryColor: const Color(0xFF39FF14), // Spotlight Cyber Green
+          primaryColor: const Color(0xFF39FF14),
           colorScheme: const ColorScheme.dark(
             primary: Color(0xFF39FF14),
-            secondary: Color(0xFFD4AF37), // Brand Impact Gold
+            secondary: Color(0xFFD4AF37),
             surface: Color(0xFF1A1A1A),
           ),
         ),
