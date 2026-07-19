@@ -69,8 +69,9 @@ class _MyAppState extends State<MyApp> {
 
     _authProvider = SupabaseAuthProvider();
     _featureFlagProvider = FeatureFlagProvider(store: createKeyValueStore());
-    _progressionFeaturePolicyProvider =
-        ProgressionFeaturePolicyProvider(authProvider: _authProvider);
+    _progressionFeaturePolicyProvider = ProgressionFeaturePolicyProvider(
+      authProvider: _authProvider,
+    );
     _router = AppRouter.createRouter(_authProvider);
 
     Future.microtask(_featureFlagProvider.ensureInitialized);
@@ -103,7 +104,8 @@ class _MyAppState extends State<MyApp> {
               previous ?? MessageService(client: client),
         ),
         ChangeNotifierProxyProvider<SupabaseClient, PostService>(
-          create: (context) => PostService(client: context.read<SupabaseClient>()),
+          create: (context) =>
+              PostService(client: context.read<SupabaseClient>()),
           update: (context, client, previous) =>
               previous ?? PostService(client: client),
         ),
@@ -114,10 +116,7 @@ class _MyAppState extends State<MyApp> {
           ),
           update: (context, client, previous) =>
               previous ??
-              GroupService(
-                client: client,
-                localCache: createKeyValueStore(),
-              ),
+              GroupService(client: client, localCache: createKeyValueStore()),
         ),
         ChangeNotifierProxyProvider<SupabaseClient, PortfolioService>(
           create: (context) => PortfolioService(
@@ -138,10 +137,7 @@ class _MyAppState extends State<MyApp> {
           ),
           update: (context, client, previous) =>
               previous ??
-              StoryService(
-                client: client,
-                localCache: createKeyValueStore(),
-              ),
+              StoryService(client: client, localCache: createKeyValueStore()),
         ),
         ChangeNotifierProxyProvider<SupabaseClient, OpportunityService>(
           create: (context) => OpportunityService(
