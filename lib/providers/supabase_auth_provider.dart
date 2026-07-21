@@ -17,7 +17,6 @@ class SupabaseAuthProvider extends AppAuthProvider {
   bool get isLoggedIn => Supabase.instance.client.auth.currentSession != null;
 
   @override
-  @override
   UserModel? get currentUser => _currentUser;
 
   @override
@@ -35,24 +34,22 @@ class SupabaseAuthProvider extends AppAuthProvider {
     _initializeAuthListener();
   }
 
+  @override
+  Future<void> ensureInitialized() async {
+    await refreshCurrentUser();
+  }
+
   void _initializeAuthListener() {
-    debugPrint('🚨 AUTH: Initializing onAuthStateChange listener...');
     _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((
       data,
     ) async {
       final session = data.session;
-      final event = data.event;
-      debugPrint('🚨 AUTH EVENT TRIGGERED: $event');
       if (session == null) {
-        debugPrint('🚨 AUTH: No session found.');
         _currentUser = null;
         _isLoading = false;
         notifyListeners();
         return;
       }
-      debugPrint(
-        '🚨 AUTH: Session captured for UID: ${session.user.id}. Hydrating...',
-      );
       await refreshProfile(session.user.id, session.user.email);
     });
   }
@@ -62,29 +59,42 @@ class SupabaseAuthProvider extends AppAuthProvider {
     _isLoading = true;
     _lastError = null;
     notifyListeners();
+
     try {
-      debugPrint('🚨 DB REQUEST: Fetching profile row for UID: $uid');
       final response = await Supabase.instance.client
           .from('profiles')
           .select()
-          .or('id.eq.$uid,user_id.eq.$uid')
+          .eq('user_id', uid)
           .maybeSingle();
-      debugPrint('🚨 DB RESPONSE: Payload received: $response');
+
       if (response == null) {
         _currentUser = UserModel.fromJson({
           'id': uid,
+          'user_id': uid,
           'email': email ?? '',
+          'username': '',
           'onboarding_complete': false,
           'approved_roles': ['audience'],
           'active_role': 'audience',
           'application_status_summary': 'none',
+          'is_admin': false,
         });
       } else {
-        _currentUser = UserModel.fromJson(response);
+        final hydrated = Map<String, dynamic>.from(response);
+        hydrated['email'] = hydrated['email'] ?? email ?? '';
+        hydrated['user_id'] = hydrated['user_id'] ?? uid;
+        hydrated['approved_roles'] = hydrated['approved_roles'] ?? ['audience'];
+        hydrated['active_role'] = hydrated['active_role'] ?? 'audience';
+        hydrated['application_status_summary'] =
+            hydrated['application_status_summary'] ?? 'none';
+        hydrated['is_admin'] = hydrated['is_admin'] ?? false;
+        hydrated['onboarding_complete'] =
+            hydrated['onboarding_complete'] ?? false;
+        _currentUser = UserModel.fromJson(hydrated);
       }
     } catch (e, stackTrace) {
       _lastError = e.toString();
-      debugPrint('🚨 PARSER CRASH: $e\n$stackTrace');
+      debugPrint('SupabaseAuthProvider.refreshProfile error: $e\n$stackTrace');
       _currentUser = null;
     } finally {
       _isLoading = false;
@@ -93,49 +103,75 @@ class SupabaseAuthProvider extends AppAuthProvider {
   }
 
   @override
-  Future<void> ensureInitialized() async {
+  Future<void> refreshCurrentUser() async {
     final session = Supabase.instance.client.auth.currentSession;
-    if (session != null && _currentUser == null && !_isLoading) {
-      await refreshProfile(session.user.id, session.user.email);
+    if (session == null) {
+      _currentUser = null;
+      _isLoading = false;
+      notifyListeners();
+      return;
     }
+    await refreshProfile(session.user.id, session.user.email);
   }
 
   @override
   Future<void> login(String email, String password, [String? extra]) async {
+    _isLoading = true;
+    _lastError = null;
+    notifyListeners();
     try {
-      _isLoading = true;
-      _lastError = null;
-      notifyListeners();
       await Supabase.instance.client.auth.signInWithPassword(
         email: email,
         password: password,
       );
+      await refreshCurrentUser();
     } catch (e) {
       _lastError = e.toString();
+      rethrow;
+    } finally {
       _isLoading = false;
       notifyListeners();
-      rethrow;
     }
   }
 
   @override
   Future<void> signup(String email, String password, [String? extra]) async {
-    await Supabase.instance.client.auth.signUp(
-      email: email,
-      password: password,
-    );
+    _isLoading = true;
+    _lastError = null;
+    notifyListeners();
+    try {
+      final result = await Supabase.instance.client.auth.signUp(
+        email: email,
+        password: password,
+      );
+      final uid = result.user?.id;
+      if (uid != null) {
+        await Supabase.instance.client.from('profiles').upsert({
+          'user_id': uid,
+          'email': email,
+          'username': '',
+          'active_role': 'audience',
+          'approved_roles': ['audience'],
+          'onboarding_complete': false,
+          'application_status_summary': 'none',
+          'is_admin': false,
+        }, onConflict: 'user_id');
+      }
+      await refreshCurrentUser();
+    } catch (e) {
+      _lastError = e.toString();
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   @override
   Future<void> logout() async {
-    _currentUser = null;
     await Supabase.instance.client.auth.signOut();
-  }
-
-  @override
-  Future<void> refreshCurrentUser() async {
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user != null) await refreshProfile(user.id, user.email);
+    _currentUser = null;
+    notifyListeners();
   }
 
   @override
@@ -144,51 +180,67 @@ class SupabaseAuthProvider extends AppAuthProvider {
   }
 
   @override
-  Future<void> completeOnboarding([String? a, String? b]) async {}
+  Future<void> completeOnboarding([String? username, String? role]) async {
+    final session = Supabase.instance.client.auth.currentSession;
+    if (session == null) {
+      throw Exception('No active session.');
+    }
+
+    final selectedRole = (role ?? '').trim();
+    final approvedRoles = <String>['audience'];
+    var requestedRolePending = false;
+    var applicationStatusSummary = 'none';
+
+    if (selectedRole == 'talent' || selectedRole == 'business') {
+      requestedRolePending = true;
+      applicationStatusSummary = 'pending';
+    }
+
+    await Supabase.instance.client.from('profiles').upsert({
+      'user_id': session.user.id,
+      'email': session.user.email,
+      'username': (username ?? '').trim(),
+      'active_role': selectedRole.isEmpty ? 'audience' : 'audience',
+      'approved_roles': approvedRoles,
+      'onboarding_complete': true,
+      'requested_role_pending': requestedRolePending,
+      'application_status_summary': applicationStatusSummary,
+      'is_admin': false,
+    }, onConflict: 'user_id');
+
+    if (selectedRole == 'talent' || selectedRole == 'business') {
+      final profile = await Supabase.instance.client
+          .from('profiles')
+          .select('id')
+          .eq('user_id', session.user.id)
+          .single();
+
+      await Supabase.instance.client.from('user_roles').upsert({
+        'profile_id': profile['id'],
+        'role': selectedRole,
+        'status': 'pending',
+      }, onConflict: 'profile_id,role');
+    }
+
+    await refreshCurrentUser();
+  }
 
   @override
   Future<void> setActiveRole(String role) async {
-    // 1. HARD SECURITY WALL: Immediate ejection if the session context isn't an explicit admin
-    if (!isAdmin) {
-      debugPrint(
-        '🚨 SECURITY VIOLATION: Unauthorized role switch attempt to [$role] was rejected.',
-      );
-      throw Exception(
-        'UNAUTHORIZED: Profile mutation and role switching is strictly locked for standard accounts.',
-      );
+    final session = Supabase.instance.client.auth.currentSession;
+    if (session == null) {
+      throw Exception('No active session.');
     }
 
-    final uid = Supabase.instance.client.auth.currentUser?.id;
-    if (uid == null || _currentUser == null) return;
+    final normalized = role.trim().toLowerCase();
+    if (normalized.isEmpty) return;
 
-    try {
-      _isLoading = true;
-      _lastError = null;
-      notifyListeners();
+    await Supabase.instance.client
+        .from('profiles')
+        .update({'active_role': normalized})
+        .eq('user_id', session.user.id);
 
-      debugPrint(
-        '🚨 DB REQUEST: Admin authorized. Shifting runtime perspective to [$role] for UID: $uid',
-      );
-
-      // 2. Perform authenticated backend state mutation inside the centralized profile relation
-      await Supabase.instance.client
-          .from('profiles')
-          .update({'active_role': role})
-          .or('id.eq.$uid,user_id.eq.$uid');
-
-      // 3. Re-hydrate local session state directly from data source to preserve single source of truth
-      await refreshProfile(
-        uid,
-        Supabase.instance.client.auth.currentUser?.email,
-      );
-    } catch (e) {
-      _lastError = e.toString();
-      debugPrint('🚨 ROLE MUTATION PROTOCOL FAILURE: $e');
-      rethrow;
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
+    await refreshCurrentUser();
   }
 
   @override

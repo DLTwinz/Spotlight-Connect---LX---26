@@ -13,7 +13,7 @@ class AppAuthProvider extends ChangeNotifier {
   Future<void> logout() async {}
   Future<void> sendPasswordResetEmail(String email) async {}
   Future<void> refreshCurrentUser() async {}
-  Future<void> completeOnboarding([String? a, String? b]) async {}
+  Future<void> completeOnboarding([String? username, String? role]) async {}
   Future<void> setActiveRole(String role) async {}
   bool get launchEnabled => true;
   bool isEarlyAccessApproved() => true;

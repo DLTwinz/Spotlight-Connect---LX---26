@@ -102,7 +102,10 @@ class _MyAppState extends State<MyApp> {
     );
     _router = AppRouter.createRouter(_authProvider);
 
-    Future.microtask(_featureFlagProvider.ensureInitialized);
+    Future.microtask(() async {
+      await _authProvider.ensureInitialized();
+      await _featureFlagProvider.ensureInitialized();
+    });
   }
 
   @override
