@@ -361,7 +361,7 @@ class AppRouter {
           return AppRoutes.login;
         }
 
-        final currentUser = user;
+        final UserModel currentUser = user!;
 
         // Logged in but hasn't completed onboarding
         // Admin redirect
@@ -571,13 +571,13 @@ class AppRouter {
         }
         // Role guards
         if (location == AppRoutes.talent &&
-            !user.approvedRoles.contains('talent')) {
+            !currentUser.approvedRoles.contains('talent')) {
           final target = accessDenied(missing: 'role', requiredRole: 'talent');
           logRedirect(target);
           return target;
         }
         if (location == AppRoutes.business &&
-            !user.approvedRoles.contains('business')) {
+            !currentUser.approvedRoles.contains('business')) {
           final target = accessDenied(
             missing: 'role',
             requiredRole: 'business',
@@ -586,7 +586,7 @@ class AppRouter {
           return target;
         }
         if (location == AppRoutes.admin &&
-            !user.approvedRoles.contains('admin')) {
+            !currentUser.approvedRoles.contains('admin')) {
           final target = accessDenied(missing: 'role', requiredRole: 'admin');
           logRedirect(target);
           return target;
@@ -596,7 +596,7 @@ class AppRouter {
         final isAdminTooling =
             location == AppRoutes.adminMissions ||
             location == AppRoutes.adminCampaigns;
-        if (isAdminTooling && !user.approvedRoles.contains('admin')) {
+        if (isAdminTooling && !currentUser.approvedRoles.contains('admin')) {
           final target = accessDenied(missing: 'role', requiredRole: 'admin');
           logRedirect(target);
           return target;
