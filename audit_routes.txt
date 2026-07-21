@@ -1,0 +1,1014 @@
+lib/nav.dart.bak-20260718-144125:83:  static GoRouter createRouter(AppAuthProvider authProvider) {
+lib/nav.dart.bak-20260718-144125:90:    return GoRouter(
+lib/nav.dart.bak-20260718-144125:113:              context.go(Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString());
+lib/nav.dart.bak-20260718-144125:119:          context.go(AppRoutes.root);
+lib/nav.dart.bak-20260718-144125:134:        final isAuthRoute = location == AppRoutes.login;
+lib/nav.dart.bak-20260718-144125:135:        final isAuthCallbackRoute = location == AppRoutes.authCallback;
+lib/nav.dart.bak-20260718-144125:136:        final isEarlyAccessRoute = location == AppRoutes.earlyAccess;
+lib/nav.dart.bak-20260718-144125:137:        final isOnboardingRoute = location == AppRoutes.onboarding;
+lib/nav.dart.bak-20260718-144125:138:        final isResetPasswordRoute = location == AppRoutes.resetPassword;
+lib/nav.dart.bak-20260718-144125:139:        final isAccessDeniedRoute = location == AppRoutes.accessDenied || location == AppRoutes.permissionDenied;
+lib/nav.dart.bak-20260718-144125:140:        final isWaitingApprovalRoute = location == AppRoutes.waitingApproval;
+lib/nav.dart.bak-20260718-144125:141:        final isLiveKitRoute = location == AppRoutes.livekit;
+lib/nav.dart.bak-20260718-144125:142:        final isFeatureDisabledRoute = location == AppRoutes.featureDisabled;
+lib/nav.dart.bak-20260718-144125:183:        // URL fragment (/#access_token=...). GoRouter's `state.uri` does not
+lib/nav.dart.bak-20260718-144125:196:        if (kDebugMode && location == AppRoutes.login) {
+lib/nav.dart.bak-20260718-144125:202:          final target = Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString();
+lib/nav.dart.bak-20260718-144125:224:          return Uri(path: AppRoutes.permissionDenied, queryParameters: qp).toString();
+lib/nav.dart.bak-20260718-144125:229:            path: AppRoutes.featureDisabled,
+lib/nav.dart.bak-20260718-144125:240:        if (location == AppRoutes.qa) {
+lib/nav.dart.bak-20260718-144125:242:            logRedirect(AppRoutes.login);
+lib/nav.dart.bak-20260718-144125:243:            return AppRoutes.login;
+lib/nav.dart.bak-20260718-144125:250:              path: AppRoutes.accessDenied,
+lib/nav.dart.bak-20260718-144125:256:          logRedirect(AppRoutes.login);
+lib/nav.dart.bak-20260718-144125:257:          return AppRoutes.login;
+lib/nav.dart.bak-20260718-144125:267:          if (location == AppRoutes.root) return null;
+lib/nav.dart.bak-20260718-144125:268:          logRedirect(AppRoutes.root);
+lib/nav.dart.bak-20260718-144125:269:          return AppRoutes.root;
+lib/nav.dart.bak-20260718-144125:277:            logRedirect(AppRoutes.earlyAccess);
+lib/nav.dart.bak-20260718-144125:278:            return AppRoutes.earlyAccess;
+lib/nav.dart.bak-20260718-144125:287:            logRedirect(AppRoutes.login);
+lib/nav.dart.bak-20260718-144125:288:            return AppRoutes.login;
+lib/nav.dart.bak-20260718-144125:292:          logRedirect(AppRoutes.login);
+lib/nav.dart.bak-20260718-144125:293:          return AppRoutes.login;
+lib/nav.dart.bak-20260718-144125:300:          logRedirect(AppRoutes.admin);
+lib/nav.dart.bak-20260718-144125:301:          return AppRoutes.admin;
+lib/nav.dart.bak-20260718-144125:307:          logRedirect(AppRoutes.admin);
+lib/nav.dart.bak-20260718-144125:308:          return AppRoutes.admin;
+lib/nav.dart.bak-20260718-144125:314:          logRedirect(AppRoutes.admin);
+lib/nav.dart.bak-20260718-144125:315:          return AppRoutes.admin;
+lib/nav.dart.bak-20260718-144125:317:          logRedirect(AppRoutes.onboarding);
+lib/nav.dart.bak-20260718-144125:318:          return AppRoutes.onboarding;
+lib/nav.dart.bak-20260718-144125:328:          logRedirect(AppRoutes.waitingApproval);
+lib/nav.dart.bak-20260718-144125:329:          return AppRoutes.waitingApproval;
+lib/nav.dart.bak-20260718-144125:378:            if (u.activeRole == 'talent') return AppRoutes.talent;
+lib/nav.dart.bak-20260718-144125:379:            if (u.activeRole == 'business') return AppRoutes.business;
+lib/nav.dart.bak-20260718-144125:380:            if (u.activeRole == 'audience') return AppRoutes.audience;
+lib/nav.dart.bak-20260718-144125:381:            return AppRoutes.admin;
+lib/nav.dart.bak-20260718-144125:384:            return AppRoutes.talent;
+lib/nav.dart.bak-20260718-144125:387:            return AppRoutes.business;
+lib/nav.dart.bak-20260718-144125:389:          return AppRoutes.audience;
+lib/nav.dart.bak-20260718-144125:405:            if (target != AppRoutes.login) {
+lib/nav.dart.bak-20260718-144125:420:        if (location == AppRoutes.root) {
+lib/nav.dart.bak-20260718-144125:429:        final roleDashPaths = <String>{AppRoutes.audience, AppRoutes.talent, AppRoutes.business, AppRoutes.admin};
+lib/nav.dart.bak-20260718-144125:442:          AppRoutes.root,
+lib/nav.dart.bak-20260718-144125:443:          AppRoutes.earlyAccess,
+lib/nav.dart.bak-20260718-144125:444:          AppRoutes.login,
+lib/nav.dart.bak-20260718-144125:445:          AppRoutes.onboarding,
+lib/nav.dart.bak-20260718-144125:446:          AppRoutes.authCallback,
+lib/nav.dart.bak-20260718-144125:447:          AppRoutes.resetPassword,
+lib/nav.dart.bak-20260718-144125:448:          AppRoutes.waitingApproval,
+lib/nav.dart.bak-20260718-144125:449:          AppRoutes.accessDenied,
+lib/nav.dart.bak-20260718-144125:450:          AppRoutes.permissionDenied,
+lib/nav.dart.bak-20260718-144125:451:          AppRoutes.audience,
+lib/nav.dart.bak-20260718-144125:452:          AppRoutes.talent,
+lib/nav.dart.bak-20260718-144125:453:          AppRoutes.business,
+lib/nav.dart.bak-20260718-144125:454:          AppRoutes.admin,
+lib/nav.dart.bak-20260718-144125:455:          AppRoutes.audienceDashboard,
+lib/nav.dart.bak-20260718-144125:456:          AppRoutes.talentDashboard,
+lib/nav.dart.bak-20260718-144125:457:          AppRoutes.businessDashboard,
+lib/nav.dart.bak-20260718-144125:458:          AppRoutes.livekit,
+lib/nav.dart.bak-20260718-144125:459:          AppRoutes.missions,
+lib/nav.dart.bak-20260718-144125:460:          AppRoutes.rewards,
+lib/nav.dart.bak-20260718-144125:461:          AppRoutes.campaigns,
+lib/nav.dart.bak-20260718-144125:462:          AppRoutes.progress,
+lib/nav.dart.bak-20260718-144125:463:          AppRoutes.adminMissions,
+lib/nav.dart.bak-20260718-144125:464:          AppRoutes.adminCampaigns,
+lib/nav.dart.bak-20260718-144125:465:          AppRoutes.featureDisabled,
+lib/nav.dart.bak-20260718-144125:466:          if (!kReleaseMode) AppRoutes.qa,
+lib/nav.dart.bak-20260718-144125:469:          '${AppRoutes.missions}/',
+lib/nav.dart.bak-20260718-144125:470:          '${AppRoutes.campaigns}/',
+lib/nav.dart.bak-20260718-144125:480:        if (location == AppRoutes.talent && !user.approvedRoles.contains('talent')) {
+lib/nav.dart.bak-20260718-144125:485:        if (location == AppRoutes.business && !user.approvedRoles.contains('business')) {
+lib/nav.dart.bak-20260718-144125:490:        if (location == AppRoutes.admin && !user.approvedRoles.contains('admin')) {
+lib/nav.dart.bak-20260718-144125:497:        final isAdminTooling = location == AppRoutes.adminMissions || location == AppRoutes.adminCampaigns;
+lib/nav.dart.bak-20260718-144125:506:        final isProgressionRoute = location == AppRoutes.missions ||
+lib/nav.dart.bak-20260718-144125:507:            location.startsWith('${AppRoutes.missions}/') ||
+lib/nav.dart.bak-20260718-144125:508:            location == AppRoutes.rewards ||
+lib/nav.dart.bak-20260718-144125:509:            location == AppRoutes.campaigns ||
+lib/nav.dart.bak-20260718-144125:510:            location.startsWith('${AppRoutes.campaigns}/') ||
+lib/nav.dart.bak-20260718-144125:511:            location == AppRoutes.progress;
+lib/nav.dart.bak-20260718-144125:528:              } else if (location == AppRoutes.missions || location.startsWith('${AppRoutes.missions}/')) {
+lib/nav.dart.bak-20260718-144125:535:              } else if (location == AppRoutes.campaigns || location.startsWith('${AppRoutes.campaigns}/')) {
+lib/nav.dart.bak-20260718-144125:542:              } else if (location == AppRoutes.rewards) {
+lib/nav.dart.bak-20260718-144125:549:              } else if (location == AppRoutes.progress) {
+lib/nav.dart.bak-20260718-144125:574:          path: AppRoutes.root,
+lib/nav.dart.bak-20260718-144125:580:          path: AppRoutes.authCallback,
+lib/nav.dart.bak-20260718-144125:584:          path: AppRoutes.earlyAccess,
+lib/nav.dart.bak-20260718-144125:588:          path: AppRoutes.login,
+lib/nav.dart.bak-20260718-144125:596:          path: AppRoutes.onboarding,
+lib/nav.dart.bak-20260718-144125:600:          path: AppRoutes.waitingApproval,
+lib/nav.dart.bak-20260718-144125:604:          path: AppRoutes.resetPassword,
+lib/nav.dart.bak-20260718-144125:612:          path: AppRoutes.accessDenied,
+lib/nav.dart.bak-20260718-144125:616:          path: AppRoutes.permissionDenied,
+lib/nav.dart.bak-20260718-144125:620:          path: AppRoutes.audience,
+lib/nav.dart.bak-20260718-144125:623:        GoRoute(path: AppRoutes.audienceDashboard, redirect: (context, state) => AppRoutes.audience),
+lib/nav.dart.bak-20260718-144125:625:          path: AppRoutes.talent,
+lib/nav.dart.bak-20260718-144125:628:        GoRoute(path: AppRoutes.talentDashboard, redirect: (context, state) => AppRoutes.talent),
+lib/nav.dart.bak-20260718-144125:630:          path: AppRoutes.business,
+lib/nav.dart.bak-20260718-144125:633:        GoRoute(path: AppRoutes.businessDashboard, redirect: (context, state) => AppRoutes.business),
+lib/nav.dart.bak-20260718-144125:635:          path: AppRoutes.admin,
+lib/nav.dart.bak-20260718-144125:640:          path: AppRoutes.featureDisabled,
+lib/nav.dart.bak-20260718-144125:658:          path: AppRoutes.missions,
+lib/nav.dart.bak-20260718-144125:671:          path: AppRoutes.rewards,
+lib/nav.dart.bak-20260718-144125:675:          path: AppRoutes.campaigns,
+lib/nav.dart.bak-20260718-144125:688:          path: AppRoutes.progress,
+lib/nav.dart.bak-20260718-144125:694:          path: AppRoutes.adminMissions,
+lib/nav.dart.bak-20260718-144125:698:          path: AppRoutes.adminCampaigns,
+lib/nav.dart.bak-20260718-144125:703:          path: AppRoutes.livekit,
+lib/nav.dart.bak-20260718-144125:723:            path: AppRoutes.qa,
+lib/nav.dart.bak-20260718-144125:728:        // GoRouter must have a concrete route match, otherwise it throws
+lib/nav.dart.bak-20260718-144125:750:                return Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString();
+lib/nav.dart.bak-20260718-144125:755:            return AppRoutes.root;
+lib/nav.dart.bak-20260718-144125:773:                return Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString();
+lib/nav.dart.bak-20260718-144125:778:            return AppRoutes.root;
+lib/nav.dart.bak-20260718-144125:809:        debugPrint('AppRouter: detected Supabase email-link params at root; booting to ${AppRoutes.authCallback}');
+lib/nav.dart.bak-20260718-144125:810:        return AppRoutes.authCallback;
+lib/nav.dart.bak-20260718-144125:835:  static Page<void> _fadeSlidePage(Widget child, GoRouterState state) {
+lib/main.dart.bak-20260718-185940:73:  late final GoRouter _router;
+lib/nav.dart.bak-20260718-142326:111:  static GoRouter createRouter(AppAuthProvider authProvider) {
+lib/nav.dart.bak-20260718-142326:118:    return GoRouter(
+lib/nav.dart.bak-20260718-142326:141:              context.go(Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString());
+lib/nav.dart.bak-20260718-142326:147:          context.go(AppRoutes.root);
+lib/nav.dart.bak-20260718-142326:162:        final isAuthRoute = location == AppRoutes.login;
+lib/nav.dart.bak-20260718-142326:163:        final isAuthCallbackRoute = location == AppRoutes.authCallback;
+lib/nav.dart.bak-20260718-142326:164:        final isEarlyAccessRoute = location == AppRoutes.earlyAccess;
+lib/nav.dart.bak-20260718-142326:165:        final isOnboardingRoute = location == AppRoutes.onboarding;
+lib/nav.dart.bak-20260718-142326:166:        final isResetPasswordRoute = location == AppRoutes.resetPassword;
+lib/nav.dart.bak-20260718-142326:167:        final isAccessDeniedRoute = location == AppRoutes.accessDenied || location == AppRoutes.permissionDenied;
+lib/nav.dart.bak-20260718-142326:168:        final isWaitingApprovalRoute = location == AppRoutes.waitingApproval;
+lib/nav.dart.bak-20260718-142326:169:        final isLiveKitRoute = location == AppRoutes.livekit;
+lib/nav.dart.bak-20260718-142326:170:        final isFeatureDisabledRoute = location == AppRoutes.featureDisabled;
+lib/nav.dart.bak-20260718-142326:211:        // URL fragment (/#access_token=...). GoRouter's `state.uri` does not
+lib/nav.dart.bak-20260718-142326:224:        if (kDebugMode && location == AppRoutes.login) {
+lib/nav.dart.bak-20260718-142326:230:          final target = Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString();
+lib/nav.dart.bak-20260718-142326:252:          return Uri(path: AppRoutes.permissionDenied, queryParameters: qp).toString();
+lib/nav.dart.bak-20260718-142326:257:            path: AppRoutes.featureDisabled,
+lib/nav.dart.bak-20260718-142326:268:        if (location == AppRoutes.qa) {
+lib/nav.dart.bak-20260718-142326:270:            logRedirect(AppRoutes.login);
+lib/nav.dart.bak-20260718-142326:271:            return AppRoutes.login;
+lib/nav.dart.bak-20260718-142326:278:              path: AppRoutes.accessDenied,
+lib/nav.dart.bak-20260718-142326:284:          logRedirect(AppRoutes.login);
+lib/nav.dart.bak-20260718-142326:285:          return AppRoutes.login;
+lib/nav.dart.bak-20260718-142326:295:          if (location == AppRoutes.root) return null;
+lib/nav.dart.bak-20260718-142326:296:          logRedirect(AppRoutes.root);
+lib/nav.dart.bak-20260718-142326:297:          return AppRoutes.root;
+lib/nav.dart.bak-20260718-142326:305:            logRedirect(AppRoutes.earlyAccess);
+lib/nav.dart.bak-20260718-142326:306:            return AppRoutes.earlyAccess;
+lib/nav.dart.bak-20260718-142326:315:            logRedirect(AppRoutes.login);
+lib/nav.dart.bak-20260718-142326:316:            return AppRoutes.login;
+lib/nav.dart.bak-20260718-142326:320:          logRedirect(AppRoutes.login);
+lib/nav.dart.bak-20260718-142326:321:          return AppRoutes.login;
+lib/nav.dart.bak-20260718-142326:328:          logRedirect(AppRoutes.admin);
+lib/nav.dart.bak-20260718-142326:329:          return AppRoutes.admin;
+lib/nav.dart.bak-20260718-142326:335:          logRedirect(AppRoutes.admin);
+lib/nav.dart.bak-20260718-142326:336:          return AppRoutes.admin;
+lib/nav.dart.bak-20260718-142326:342:          logRedirect(AppRoutes.admin);
+lib/nav.dart.bak-20260718-142326:343:          return AppRoutes.admin;
+lib/nav.dart.bak-20260718-142326:345:          logRedirect(AppRoutes.onboarding);
+lib/nav.dart.bak-20260718-142326:346:          return AppRoutes.onboarding;
+lib/nav.dart.bak-20260718-142326:356:          logRedirect(AppRoutes.waitingApproval);
+lib/nav.dart.bak-20260718-142326:357:          return AppRoutes.waitingApproval;
+lib/nav.dart.bak-20260718-142326:406:            if (u.activeRole == 'talent') return AppRoutes.talent;
+lib/nav.dart.bak-20260718-142326:407:            if (u.activeRole == 'business') return AppRoutes.business;
+lib/nav.dart.bak-20260718-142326:408:            if (u.activeRole == 'audience') return AppRoutes.audience;
+lib/nav.dart.bak-20260718-142326:409:            return AppRoutes.admin;
+lib/nav.dart.bak-20260718-142326:412:            return AppRoutes.talent;
+lib/nav.dart.bak-20260718-142326:415:            return AppRoutes.business;
+lib/nav.dart.bak-20260718-142326:417:          return AppRoutes.audience;
+lib/nav.dart.bak-20260718-142326:433:            if (target != AppRoutes.login) {
+lib/nav.dart.bak-20260718-142326:448:        if (location == AppRoutes.root) {
+lib/nav.dart.bak-20260718-142326:457:        final roleDashPaths = <String>{AppRoutes.audience, AppRoutes.talent, AppRoutes.business, AppRoutes.admin};
+lib/nav.dart.bak-20260718-142326:470:          AppRoutes.root,
+lib/nav.dart.bak-20260718-142326:471:          AppRoutes.earlyAccess,
+lib/nav.dart.bak-20260718-142326:472:          AppRoutes.login,
+lib/nav.dart.bak-20260718-142326:473:          AppRoutes.onboarding,
+lib/nav.dart.bak-20260718-142326:474:          AppRoutes.authCallback,
+lib/nav.dart.bak-20260718-142326:475:          AppRoutes.resetPassword,
+lib/nav.dart.bak-20260718-142326:476:          AppRoutes.waitingApproval,
+lib/nav.dart.bak-20260718-142326:477:          AppRoutes.accessDenied,
+lib/nav.dart.bak-20260718-142326:478:          AppRoutes.permissionDenied,
+lib/nav.dart.bak-20260718-142326:479:          AppRoutes.audience,
+lib/nav.dart.bak-20260718-142326:480:          AppRoutes.talent,
+lib/nav.dart.bak-20260718-142326:481:          AppRoutes.business,
+lib/nav.dart.bak-20260718-142326:482:          AppRoutes.admin,
+lib/nav.dart.bak-20260718-142326:483:          AppRoutes.audienceDashboard,
+lib/nav.dart.bak-20260718-142326:484:          AppRoutes.talentDashboard,
+lib/nav.dart.bak-20260718-142326:485:          AppRoutes.businessDashboard,
+lib/nav.dart.bak-20260718-142326:486:          AppRoutes.livekit,
+lib/nav.dart.bak-20260718-142326:487:          AppRoutes.missions,
+lib/nav.dart.bak-20260718-142326:488:          AppRoutes.rewards,
+lib/nav.dart.bak-20260718-142326:489:          AppRoutes.campaigns,
+lib/nav.dart.bak-20260718-142326:490:          AppRoutes.progress,
+lib/nav.dart.bak-20260718-142326:491:          AppRoutes.adminMissions,
+lib/nav.dart.bak-20260718-142326:492:          AppRoutes.adminCampaigns,
+lib/nav.dart.bak-20260718-142326:493:          AppRoutes.featureDisabled,
+lib/nav.dart.bak-20260718-142326:494:          if (!kReleaseMode) AppRoutes.qa,
+lib/nav.dart.bak-20260718-142326:497:          '${AppRoutes.missions}/',
+lib/nav.dart.bak-20260718-142326:498:          '${AppRoutes.campaigns}/',
+lib/nav.dart.bak-20260718-142326:508:        if (location == AppRoutes.talent && !user.approvedRoles.contains('talent')) {
+lib/nav.dart.bak-20260718-142326:513:        if (location == AppRoutes.business && !user.approvedRoles.contains('business')) {
+lib/nav.dart.bak-20260718-142326:518:        if (location == AppRoutes.admin && !user.approvedRoles.contains('admin')) {
+lib/nav.dart.bak-20260718-142326:525:        final isAdminTooling = location == AppRoutes.adminMissions || location == AppRoutes.adminCampaigns;
+lib/nav.dart.bak-20260718-142326:534:        final isProgressionRoute = location == AppRoutes.missions ||
+lib/nav.dart.bak-20260718-142326:535:            location.startsWith('${AppRoutes.missions}/') ||
+lib/nav.dart.bak-20260718-142326:536:            location == AppRoutes.rewards ||
+lib/nav.dart.bak-20260718-142326:537:            location == AppRoutes.campaigns ||
+lib/nav.dart.bak-20260718-142326:538:            location.startsWith('${AppRoutes.campaigns}/') ||
+lib/nav.dart.bak-20260718-142326:539:            location == AppRoutes.progress;
+lib/nav.dart.bak-20260718-142326:556:              } else if (location == AppRoutes.missions || location.startsWith('${AppRoutes.missions}/')) {
+lib/nav.dart.bak-20260718-142326:563:              } else if (location == AppRoutes.campaigns || location.startsWith('${AppRoutes.campaigns}/')) {
+lib/nav.dart.bak-20260718-142326:570:              } else if (location == AppRoutes.rewards) {
+lib/nav.dart.bak-20260718-142326:577:              } else if (location == AppRoutes.progress) {
+lib/nav.dart.bak-20260718-142326:602:          path: AppRoutes.root,
+lib/nav.dart.bak-20260718-142326:608:          path: AppRoutes.authCallback,
+lib/nav.dart.bak-20260718-142326:612:          path: AppRoutes.earlyAccess,
+lib/nav.dart.bak-20260718-142326:616:          path: AppRoutes.login,
+lib/nav.dart.bak-20260718-142326:624:          path: AppRoutes.onboarding,
+lib/nav.dart.bak-20260718-142326:628:          path: AppRoutes.waitingApproval,
+lib/nav.dart.bak-20260718-142326:632:          path: AppRoutes.resetPassword,
+lib/nav.dart.bak-20260718-142326:640:          path: AppRoutes.accessDenied,
+lib/nav.dart.bak-20260718-142326:644:          path: AppRoutes.permissionDenied,
+lib/nav.dart.bak-20260718-142326:648:          path: AppRoutes.audience,
+lib/nav.dart.bak-20260718-142326:651:        GoRoute(path: AppRoutes.audienceDashboard, redirect: (context, state) => AppRoutes.audience),
+lib/nav.dart.bak-20260718-142326:653:          path: AppRoutes.talent,
+lib/nav.dart.bak-20260718-142326:656:        GoRoute(path: AppRoutes.talentDashboard, redirect: (context, state) => AppRoutes.talent),
+lib/nav.dart.bak-20260718-142326:658:          path: AppRoutes.business,
+lib/nav.dart.bak-20260718-142326:661:        GoRoute(path: AppRoutes.businessDashboard, redirect: (context, state) => AppRoutes.business),
+lib/nav.dart.bak-20260718-142326:663:          path: AppRoutes.admin,
+lib/nav.dart.bak-20260718-142326:668:          path: AppRoutes.featureDisabled,
+lib/nav.dart.bak-20260718-142326:686:          path: AppRoutes.missions,
+lib/nav.dart.bak-20260718-142326:699:          path: AppRoutes.rewards,
+lib/nav.dart.bak-20260718-142326:703:          path: AppRoutes.campaigns,
+lib/nav.dart.bak-20260718-142326:716:          path: AppRoutes.progress,
+lib/nav.dart.bak-20260718-142326:722:          path: AppRoutes.adminMissions,
+lib/nav.dart.bak-20260718-142326:726:          path: AppRoutes.adminCampaigns,
+lib/nav.dart.bak-20260718-142326:731:          path: AppRoutes.livekit,
+lib/nav.dart.bak-20260718-142326:751:            path: AppRoutes.qa,
+lib/nav.dart.bak-20260718-142326:756:        // GoRouter must have a concrete route match, otherwise it throws
+lib/nav.dart.bak-20260718-142326:778:                return Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString();
+lib/nav.dart.bak-20260718-142326:783:            return AppRoutes.root;
+lib/nav.dart.bak-20260718-142326:801:                return Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString();
+lib/nav.dart.bak-20260718-142326:806:            return AppRoutes.root;
+lib/nav.dart.bak-20260718-142326:837:        debugPrint('AppRouter: detected Supabase email-link params at root; booting to ${AppRoutes.authCallback}');
+lib/nav.dart.bak-20260718-142326:838:        return AppRoutes.authCallback;
+lib/nav.dart.bak-20260718-142326:863:  static Page<void> _fadeSlidePage(Widget child, GoRouterState state) {
+lib/main.dart:61:  late final GoRouter _router;
+lib/nav.dart.bak-nullfix-20260719-014530:93:  static GoRouter createRouter(AppAuthProvider authProvider) {
+lib/nav.dart.bak-nullfix-20260719-014530:100:    return GoRouter(
+lib/nav.dart.bak-nullfix-20260719-014530:138:              context.go(
+lib/nav.dart.bak-nullfix-20260719-014530:140:                  path: AppRoutes.authCallback,
+lib/nav.dart.bak-nullfix-20260719-014530:150:          context.go(AppRoutes.root);
+lib/nav.dart.bak-nullfix-20260719-014530:165:        final isAuthRoute = location == AppRoutes.login;
+lib/nav.dart.bak-nullfix-20260719-014530:166:        final isAuthCallbackRoute = location == AppRoutes.authCallback;
+lib/nav.dart.bak-nullfix-20260719-014530:167:        final isEarlyAccessRoute = location == AppRoutes.earlyAccess;
+lib/nav.dart.bak-nullfix-20260719-014530:168:        final isOnboardingRoute = location == AppRoutes.onboarding;
+lib/nav.dart.bak-nullfix-20260719-014530:169:        final isResetPasswordRoute = location == AppRoutes.resetPassword;
+lib/nav.dart.bak-nullfix-20260719-014530:171:            location == AppRoutes.accessDenied ||
+lib/nav.dart.bak-nullfix-20260719-014530:172:            location == AppRoutes.permissionDenied;
+lib/nav.dart.bak-nullfix-20260719-014530:173:        final isWaitingApprovalRoute = location == AppRoutes.waitingApproval;
+lib/nav.dart.bak-nullfix-20260719-014530:174:        final isLiveKitRoute = location == AppRoutes.livekit;
+lib/nav.dart.bak-nullfix-20260719-014530:175:        final isFeatureDisabledRoute = location == AppRoutes.featureDisabled;
+lib/nav.dart.bak-nullfix-20260719-014530:215:        // URL fragment (/#access_token=...). GoRouter's `state.uri` does not
+lib/nav.dart.bak-nullfix-20260719-014530:245:        if (kDebugMode && location == AppRoutes.login) {
+lib/nav.dart.bak-nullfix-20260719-014530:254:            path: AppRoutes.authCallback,
+lib/nav.dart.bak-nullfix-20260719-014530:280:            path: AppRoutes.permissionDenied,
+lib/nav.dart.bak-nullfix-20260719-014530:291:            path: AppRoutes.featureDisabled,
+lib/nav.dart.bak-nullfix-20260719-014530:302:        if (location == AppRoutes.qa) {
+lib/nav.dart.bak-nullfix-20260719-014530:304:            logRedirect(AppRoutes.login);
+lib/nav.dart.bak-nullfix-20260719-014530:305:            return AppRoutes.login;
+lib/nav.dart.bak-nullfix-20260719-014530:312:              path: AppRoutes.accessDenied,
+lib/nav.dart.bak-nullfix-20260719-014530:322:          logRedirect(AppRoutes.login);
+lib/nav.dart.bak-nullfix-20260719-014530:323:          return AppRoutes.login;
+lib/nav.dart.bak-nullfix-20260719-014530:333:          if (location == AppRoutes.root) return null;
+lib/nav.dart.bak-nullfix-20260719-014530:334:          logRedirect(AppRoutes.root);
+lib/nav.dart.bak-nullfix-20260719-014530:335:          return AppRoutes.root;
+lib/nav.dart.bak-nullfix-20260719-014530:343:            logRedirect(AppRoutes.earlyAccess);
+lib/nav.dart.bak-nullfix-20260719-014530:344:            return AppRoutes.earlyAccess;
+lib/nav.dart.bak-nullfix-20260719-014530:353:            logRedirect(AppRoutes.login);
+lib/nav.dart.bak-nullfix-20260719-014530:354:            return AppRoutes.login;
+lib/nav.dart.bak-nullfix-20260719-014530:360:          logRedirect(AppRoutes.login);
+lib/nav.dart.bak-nullfix-20260719-014530:361:          return AppRoutes.login;
+lib/nav.dart.bak-nullfix-20260719-014530:368:          logRedirect(AppRoutes.admin);
+lib/nav.dart.bak-nullfix-20260719-014530:369:          return AppRoutes.admin;
+lib/nav.dart.bak-nullfix-20260719-014530:375:            logRedirect(AppRoutes.admin);
+lib/nav.dart.bak-nullfix-20260719-014530:376:            return AppRoutes.admin;
+lib/nav.dart.bak-nullfix-20260719-014530:382:            logRedirect(AppRoutes.admin);
+lib/nav.dart.bak-nullfix-20260719-014530:383:            return AppRoutes.admin;
+lib/nav.dart.bak-nullfix-20260719-014530:385:          logRedirect(AppRoutes.onboarding);
+lib/nav.dart.bak-nullfix-20260719-014530:386:          return AppRoutes.onboarding;
+lib/nav.dart.bak-nullfix-20260719-014530:395:          logRedirect(AppRoutes.waitingApproval);
+lib/nav.dart.bak-nullfix-20260719-014530:396:          return AppRoutes.waitingApproval;
+lib/nav.dart.bak-nullfix-20260719-014530:460:            if (u.activeRole == 'talent') return AppRoutes.talent;
+lib/nav.dart.bak-nullfix-20260719-014530:461:            if (u.activeRole == 'business') return AppRoutes.business;
+lib/nav.dart.bak-nullfix-20260719-014530:462:            if (u.activeRole == 'audience') return AppRoutes.audience;
+lib/nav.dart.bak-nullfix-20260719-014530:463:            return AppRoutes.admin;
+lib/nav.dart.bak-nullfix-20260719-014530:466:            return AppRoutes.talent;
+lib/nav.dart.bak-nullfix-20260719-014530:470:            return AppRoutes.business;
+lib/nav.dart.bak-nullfix-20260719-014530:472:          return AppRoutes.audience;
+lib/nav.dart.bak-nullfix-20260719-014530:488:            if (target != AppRoutes.login) {
+lib/nav.dart.bak-nullfix-20260719-014530:503:        if (location == AppRoutes.root) {
+lib/nav.dart.bak-nullfix-20260719-014530:513:          AppRoutes.audience,
+lib/nav.dart.bak-nullfix-20260719-014530:514:          AppRoutes.talent,
+lib/nav.dart.bak-nullfix-20260719-014530:515:          AppRoutes.business,
+lib/nav.dart.bak-nullfix-20260719-014530:516:          AppRoutes.admin,
+lib/nav.dart.bak-nullfix-20260719-014530:530:          AppRoutes.root,
+lib/nav.dart.bak-nullfix-20260719-014530:531:          AppRoutes.earlyAccess,
+lib/nav.dart.bak-nullfix-20260719-014530:532:          AppRoutes.login,
+lib/nav.dart.bak-nullfix-20260719-014530:533:          AppRoutes.onboarding,
+lib/nav.dart.bak-nullfix-20260719-014530:534:          AppRoutes.authCallback,
+lib/nav.dart.bak-nullfix-20260719-014530:535:          AppRoutes.resetPassword,
+lib/nav.dart.bak-nullfix-20260719-014530:536:          AppRoutes.waitingApproval,
+lib/nav.dart.bak-nullfix-20260719-014530:537:          AppRoutes.accessDenied,
+lib/nav.dart.bak-nullfix-20260719-014530:538:          AppRoutes.permissionDenied,
+lib/nav.dart.bak-nullfix-20260719-014530:539:          AppRoutes.audience,
+lib/nav.dart.bak-nullfix-20260719-014530:540:          AppRoutes.talent,
+lib/nav.dart.bak-nullfix-20260719-014530:541:          AppRoutes.business,
+lib/nav.dart.bak-nullfix-20260719-014530:542:          AppRoutes.admin,
+lib/nav.dart.bak-nullfix-20260719-014530:543:          AppRoutes.audienceDashboard,
+lib/nav.dart.bak-nullfix-20260719-014530:544:          AppRoutes.talentDashboard,
+lib/nav.dart.bak-nullfix-20260719-014530:545:          AppRoutes.businessDashboard,
+lib/nav.dart.bak-nullfix-20260719-014530:546:          AppRoutes.livekit,
+lib/nav.dart.bak-nullfix-20260719-014530:547:          AppRoutes.missions,
+lib/nav.dart.bak-nullfix-20260719-014530:548:          AppRoutes.rewards,
+lib/nav.dart.bak-nullfix-20260719-014530:549:          AppRoutes.campaigns,
+lib/nav.dart.bak-nullfix-20260719-014530:550:          AppRoutes.progress,
+lib/nav.dart.bak-nullfix-20260719-014530:551:          AppRoutes.adminMissions,
+lib/nav.dart.bak-nullfix-20260719-014530:552:          AppRoutes.adminCampaigns,
+lib/nav.dart.bak-nullfix-20260719-014530:553:          AppRoutes.featureDisabled,
+lib/nav.dart.bak-nullfix-20260719-014530:554:          if (!kReleaseMode) AppRoutes.qa,
+lib/nav.dart.bak-nullfix-20260719-014530:557:          '${AppRoutes.missions}/',
+lib/nav.dart.bak-nullfix-20260719-014530:558:          '${AppRoutes.campaigns}/',
+lib/nav.dart.bak-nullfix-20260719-014530:570:        if (location == AppRoutes.talent &&
+lib/nav.dart.bak-nullfix-20260719-014530:576:        if (location == AppRoutes.business &&
+lib/nav.dart.bak-nullfix-20260719-014530:585:        if (location == AppRoutes.admin &&
+lib/nav.dart.bak-nullfix-20260719-014530:594:            location == AppRoutes.adminMissions ||
+lib/nav.dart.bak-nullfix-20260719-014530:595:            location == AppRoutes.adminCampaigns;
+lib/nav.dart.bak-nullfix-20260719-014530:605:            location == AppRoutes.missions ||
+lib/nav.dart.bak-nullfix-20260719-014530:606:            location.startsWith('${AppRoutes.missions}/') ||
+lib/nav.dart.bak-nullfix-20260719-014530:607:            location == AppRoutes.rewards ||
+lib/nav.dart.bak-nullfix-20260719-014530:608:            location == AppRoutes.campaigns ||
+lib/nav.dart.bak-nullfix-20260719-014530:609:            location.startsWith('${AppRoutes.campaigns}/') ||
+lib/nav.dart.bak-nullfix-20260719-014530:610:            location == AppRoutes.progress;
+lib/nav.dart.bak-nullfix-20260719-014530:628:              } else if (location == AppRoutes.missions ||
+lib/nav.dart.bak-nullfix-20260719-014530:629:                  location.startsWith('${AppRoutes.missions}/')) {
+lib/nav.dart.bak-nullfix-20260719-014530:637:              } else if (location == AppRoutes.campaigns ||
+lib/nav.dart.bak-nullfix-20260719-014530:638:                  location.startsWith('${AppRoutes.campaigns}/')) {
+lib/nav.dart.bak-nullfix-20260719-014530:645:              } else if (location == AppRoutes.rewards) {
+lib/nav.dart.bak-nullfix-20260719-014530:652:              } else if (location == AppRoutes.progress) {
+lib/nav.dart.bak-nullfix-20260719-014530:681:          path: AppRoutes.root,
+lib/nav.dart.bak-nullfix-20260719-014530:689:          path: AppRoutes.authCallback,
+lib/nav.dart.bak-nullfix-20260719-014530:694:          path: AppRoutes.earlyAccess,
+lib/nav.dart.bak-nullfix-20260719-014530:699:          path: AppRoutes.login,
+lib/nav.dart.bak-nullfix-20260719-014530:710:          path: AppRoutes.onboarding,
+lib/nav.dart.bak-nullfix-20260719-014530:715:          path: AppRoutes.waitingApproval,
+lib/nav.dart.bak-nullfix-20260719-014530:720:          path: AppRoutes.resetPassword,
+lib/nav.dart.bak-nullfix-20260719-014530:731:          path: AppRoutes.accessDenied,
+lib/nav.dart.bak-nullfix-20260719-014530:736:          path: AppRoutes.permissionDenied,
+lib/nav.dart.bak-nullfix-20260719-014530:741:          path: AppRoutes.audience,
+lib/nav.dart.bak-nullfix-20260719-014530:746:          path: AppRoutes.audienceDashboard,
+lib/nav.dart.bak-nullfix-20260719-014530:747:          redirect: (context, state) => AppRoutes.audience,
+lib/nav.dart.bak-nullfix-20260719-014530:750:          path: AppRoutes.talent,
+lib/nav.dart.bak-nullfix-20260719-014530:755:          path: AppRoutes.talentDashboard,
+lib/nav.dart.bak-nullfix-20260719-014530:756:          redirect: (context, state) => AppRoutes.talent,
+lib/nav.dart.bak-nullfix-20260719-014530:759:          path: AppRoutes.business,
+lib/nav.dart.bak-nullfix-20260719-014530:764:          path: AppRoutes.businessDashboard,
+lib/nav.dart.bak-nullfix-20260719-014530:765:          redirect: (context, state) => AppRoutes.business,
+lib/nav.dart.bak-nullfix-20260719-014530:768:          path: AppRoutes.admin,
+lib/nav.dart.bak-nullfix-20260719-014530:774:          path: AppRoutes.featureDisabled,
+lib/nav.dart.bak-nullfix-20260719-014530:800:          path: AppRoutes.missions,
+lib/nav.dart.bak-nullfix-20260719-014530:814:          path: AppRoutes.rewards,
+lib/nav.dart.bak-nullfix-20260719-014530:819:          path: AppRoutes.campaigns,
+lib/nav.dart.bak-nullfix-20260719-014530:836:          path: AppRoutes.progress,
+lib/nav.dart.bak-nullfix-20260719-014530:843:          path: AppRoutes.adminMissions,
+lib/nav.dart.bak-nullfix-20260719-014530:848:          path: AppRoutes.adminCampaigns,
+lib/nav.dart.bak-nullfix-20260719-014530:854:          path: AppRoutes.livekit,
+lib/nav.dart.bak-nullfix-20260719-014530:882:            path: AppRoutes.qa,
+lib/nav.dart.bak-nullfix-20260719-014530:888:        // GoRouter must have a concrete route match, otherwise it throws
+lib/nav.dart.bak-nullfix-20260719-014530:928:                  path: AppRoutes.authCallback,
+lib/nav.dart.bak-nullfix-20260719-014530:938:            return AppRoutes.root;
+lib/nav.dart.bak-nullfix-20260719-014530:974:                  path: AppRoutes.authCallback,
+lib/nav.dart.bak-nullfix-20260719-014530:984:            return AppRoutes.root;
+lib/nav.dart.bak-nullfix-20260719-014530:1024:          'AppRouter: detected Supabase email-link params at root; booting to ${AppRoutes.authCallback}',
+lib/nav.dart.bak-nullfix-20260719-014530:1026:        return AppRoutes.authCallback;
+lib/nav.dart.bak-nullfix-20260719-014530:1056:  static Page<void> _fadeSlidePage(Widget child, GoRouterState state) {
+lib/nav.dart.bak-20260718-022423:111:  static GoRouter createRouter(AppAuthProvider authProvider) {
+lib/nav.dart.bak-20260718-022423:118:    return GoRouter(
+lib/nav.dart.bak-20260718-022423:141:              context.go(Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString());
+lib/nav.dart.bak-20260718-022423:147:          context.go(AppRoutes.root);
+lib/nav.dart.bak-20260718-022423:162:        final isAuthRoute = location == AppRoutes.login;
+lib/nav.dart.bak-20260718-022423:163:        final isAuthCallbackRoute = location == AppRoutes.authCallback;
+lib/nav.dart.bak-20260718-022423:164:        final isEarlyAccessRoute = location == AppRoutes.earlyAccess;
+lib/nav.dart.bak-20260718-022423:165:        final isOnboardingRoute = location == AppRoutes.onboarding;
+lib/nav.dart.bak-20260718-022423:166:        final isResetPasswordRoute = location == AppRoutes.resetPassword;
+lib/nav.dart.bak-20260718-022423:167:        final isAccessDeniedRoute = location == AppRoutes.accessDenied || location == AppRoutes.permissionDenied;
+lib/nav.dart.bak-20260718-022423:168:        final isWaitingApprovalRoute = location == AppRoutes.waitingApproval;
+lib/nav.dart.bak-20260718-022423:169:        final isLiveKitRoute = location == AppRoutes.livekit;
+lib/nav.dart.bak-20260718-022423:170:        final isFeatureDisabledRoute = location == AppRoutes.featureDisabled;
+lib/nav.dart.bak-20260718-022423:211:        // URL fragment (/#access_token=...). GoRouter's `state.uri` does not
+lib/nav.dart.bak-20260718-022423:224:        if (kDebugMode && location == AppRoutes.login) {
+lib/nav.dart.bak-20260718-022423:230:          final target = Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString();
+lib/nav.dart.bak-20260718-022423:252:          return Uri(path: AppRoutes.permissionDenied, queryParameters: qp).toString();
+lib/nav.dart.bak-20260718-022423:257:            path: AppRoutes.featureDisabled,
+lib/nav.dart.bak-20260718-022423:268:        if (location == AppRoutes.qa) {
+lib/nav.dart.bak-20260718-022423:270:            logRedirect(AppRoutes.login);
+lib/nav.dart.bak-20260718-022423:271:            return AppRoutes.login;
+lib/nav.dart.bak-20260718-022423:278:              path: AppRoutes.accessDenied,
+lib/nav.dart.bak-20260718-022423:284:          logRedirect(AppRoutes.login);
+lib/nav.dart.bak-20260718-022423:285:          return AppRoutes.login;
+lib/nav.dart.bak-20260718-022423:295:          if (location == AppRoutes.root) return null;
+lib/nav.dart.bak-20260718-022423:296:          logRedirect(AppRoutes.root);
+lib/nav.dart.bak-20260718-022423:297:          return AppRoutes.root;
+lib/nav.dart.bak-20260718-022423:305:            logRedirect(AppRoutes.earlyAccess);
+lib/nav.dart.bak-20260718-022423:306:            return AppRoutes.earlyAccess;
+lib/nav.dart.bak-20260718-022423:315:            logRedirect(AppRoutes.login);
+lib/nav.dart.bak-20260718-022423:316:            return AppRoutes.login;
+lib/nav.dart.bak-20260718-022423:320:          logRedirect(AppRoutes.login);
+lib/nav.dart.bak-20260718-022423:321:          return AppRoutes.login;
+lib/nav.dart.bak-20260718-022423:328:          logRedirect(AppRoutes.admin);
+lib/nav.dart.bak-20260718-022423:329:          return AppRoutes.admin;
+lib/nav.dart.bak-20260718-022423:335:          logRedirect(AppRoutes.admin);
+lib/nav.dart.bak-20260718-022423:336:          return AppRoutes.admin;
+lib/nav.dart.bak-20260718-022423:342:          logRedirect(AppRoutes.admin);
+lib/nav.dart.bak-20260718-022423:343:          return AppRoutes.admin;
+lib/nav.dart.bak-20260718-022423:345:          logRedirect(AppRoutes.onboarding);
+lib/nav.dart.bak-20260718-022423:346:          return AppRoutes.onboarding;
+lib/nav.dart.bak-20260718-022423:356:          logRedirect(AppRoutes.waitingApproval);
+lib/nav.dart.bak-20260718-022423:357:          return AppRoutes.waitingApproval;
+lib/nav.dart.bak-20260718-022423:406:            if (u.activeRole == 'talent') return AppRoutes.talent;
+lib/nav.dart.bak-20260718-022423:407:            if (u.activeRole == 'business') return AppRoutes.business;
+lib/nav.dart.bak-20260718-022423:408:            if (u.activeRole == 'audience') return AppRoutes.audience;
+lib/nav.dart.bak-20260718-022423:409:            return AppRoutes.admin;
+lib/nav.dart.bak-20260718-022423:412:            return AppRoutes.talent;
+lib/nav.dart.bak-20260718-022423:415:            return AppRoutes.business;
+lib/nav.dart.bak-20260718-022423:417:          return AppRoutes.audience;
+lib/nav.dart.bak-20260718-022423:433:            if (target != AppRoutes.login) {
+lib/nav.dart.bak-20260718-022423:448:        if (location == AppRoutes.root) {
+lib/nav.dart.bak-20260718-022423:457:        final roleDashPaths = <String>{AppRoutes.audience, AppRoutes.talent, AppRoutes.business, AppRoutes.admin};
+lib/nav.dart.bak-20260718-022423:470:          AppRoutes.root,
+lib/nav.dart.bak-20260718-022423:471:          AppRoutes.earlyAccess,
+lib/nav.dart.bak-20260718-022423:472:          AppRoutes.login,
+lib/nav.dart.bak-20260718-022423:473:          AppRoutes.onboarding,
+lib/nav.dart.bak-20260718-022423:474:          AppRoutes.authCallback,
+lib/nav.dart.bak-20260718-022423:475:          AppRoutes.resetPassword,
+lib/nav.dart.bak-20260718-022423:476:          AppRoutes.waitingApproval,
+lib/nav.dart.bak-20260718-022423:477:          AppRoutes.accessDenied,
+lib/nav.dart.bak-20260718-022423:478:          AppRoutes.permissionDenied,
+lib/nav.dart.bak-20260718-022423:479:          AppRoutes.audience,
+lib/nav.dart.bak-20260718-022423:480:          AppRoutes.talent,
+lib/nav.dart.bak-20260718-022423:481:          AppRoutes.business,
+lib/nav.dart.bak-20260718-022423:482:          AppRoutes.admin,
+lib/nav.dart.bak-20260718-022423:483:          AppRoutes.audienceDashboard,
+lib/nav.dart.bak-20260718-022423:484:          AppRoutes.talentDashboard,
+lib/nav.dart.bak-20260718-022423:485:          AppRoutes.businessDashboard,
+lib/nav.dart.bak-20260718-022423:486:          AppRoutes.livekit,
+lib/nav.dart.bak-20260718-022423:487:          AppRoutes.missions,
+lib/nav.dart.bak-20260718-022423:488:          AppRoutes.rewards,
+lib/nav.dart.bak-20260718-022423:489:          AppRoutes.campaigns,
+lib/nav.dart.bak-20260718-022423:490:          AppRoutes.progress,
+lib/nav.dart.bak-20260718-022423:491:          AppRoutes.adminMissions,
+lib/nav.dart.bak-20260718-022423:492:          AppRoutes.adminCampaigns,
+lib/nav.dart.bak-20260718-022423:493:          AppRoutes.featureDisabled,
+lib/nav.dart.bak-20260718-022423:494:          if (!kReleaseMode) AppRoutes.qa,
+lib/nav.dart.bak-20260718-022423:497:          '${AppRoutes.missions}/',
+lib/nav.dart.bak-20260718-022423:498:          '${AppRoutes.campaigns}/',
+lib/nav.dart.bak-20260718-022423:508:        if (location == AppRoutes.talent && !user.approvedRoles.contains('talent')) {
+lib/nav.dart.bak-20260718-022423:513:        if (location == AppRoutes.business && !user.approvedRoles.contains('business')) {
+lib/nav.dart.bak-20260718-022423:518:        if (location == AppRoutes.admin && !user.approvedRoles.contains('admin')) {
+lib/nav.dart.bak-20260718-022423:525:        final isAdminTooling = location == AppRoutes.adminMissions || location == AppRoutes.adminCampaigns;
+lib/nav.dart.bak-20260718-022423:534:        final isProgressionRoute = location == AppRoutes.missions ||
+lib/nav.dart.bak-20260718-022423:535:            location.startsWith('${AppRoutes.missions}/') ||
+lib/nav.dart.bak-20260718-022423:536:            location == AppRoutes.rewards ||
+lib/nav.dart.bak-20260718-022423:537:            location == AppRoutes.campaigns ||
+lib/nav.dart.bak-20260718-022423:538:            location.startsWith('${AppRoutes.campaigns}/') ||
+lib/nav.dart.bak-20260718-022423:539:            location == AppRoutes.progress;
+lib/nav.dart.bak-20260718-022423:556:              } else if (location == AppRoutes.missions || location.startsWith('${AppRoutes.missions}/')) {
+lib/nav.dart.bak-20260718-022423:563:              } else if (location == AppRoutes.campaigns || location.startsWith('${AppRoutes.campaigns}/')) {
+lib/nav.dart.bak-20260718-022423:570:              } else if (location == AppRoutes.rewards) {
+lib/nav.dart.bak-20260718-022423:577:              } else if (location == AppRoutes.progress) {
+lib/nav.dart.bak-20260718-022423:602:          path: AppRoutes.root,
+lib/nav.dart.bak-20260718-022423:608:          path: AppRoutes.authCallback,
+lib/nav.dart.bak-20260718-022423:612:          path: AppRoutes.earlyAccess,
+lib/nav.dart.bak-20260718-022423:616:          path: AppRoutes.login,
+lib/nav.dart.bak-20260718-022423:624:          path: AppRoutes.onboarding,
+lib/nav.dart.bak-20260718-022423:628:          path: AppRoutes.waitingApproval,
+lib/nav.dart.bak-20260718-022423:632:          path: AppRoutes.resetPassword,
+lib/nav.dart.bak-20260718-022423:640:          path: AppRoutes.accessDenied,
+lib/nav.dart.bak-20260718-022423:644:          path: AppRoutes.permissionDenied,
+lib/nav.dart.bak-20260718-022423:648:          path: AppRoutes.audience,
+lib/nav.dart.bak-20260718-022423:651:        GoRoute(path: AppRoutes.audienceDashboard, redirect: (context, state) => AppRoutes.audience),
+lib/nav.dart.bak-20260718-022423:653:          path: AppRoutes.talent,
+lib/nav.dart.bak-20260718-022423:656:        GoRoute(path: AppRoutes.talentDashboard, redirect: (context, state) => AppRoutes.talent),
+lib/nav.dart.bak-20260718-022423:658:          path: AppRoutes.business,
+lib/nav.dart.bak-20260718-022423:661:        GoRoute(path: AppRoutes.businessDashboard, redirect: (context, state) => AppRoutes.business),
+lib/nav.dart.bak-20260718-022423:663:          path: AppRoutes.admin,
+lib/nav.dart.bak-20260718-022423:668:          path: AppRoutes.featureDisabled,
+lib/nav.dart.bak-20260718-022423:686:          path: AppRoutes.missions,
+lib/nav.dart.bak-20260718-022423:699:          path: AppRoutes.rewards,
+lib/nav.dart.bak-20260718-022423:703:          path: AppRoutes.campaigns,
+lib/nav.dart.bak-20260718-022423:716:          path: AppRoutes.progress,
+lib/nav.dart.bak-20260718-022423:722:          path: AppRoutes.adminMissions,
+lib/nav.dart.bak-20260718-022423:726:          path: AppRoutes.adminCampaigns,
+lib/nav.dart.bak-20260718-022423:731:          path: AppRoutes.livekit,
+lib/nav.dart.bak-20260718-022423:751:            path: AppRoutes.qa,
+lib/nav.dart.bak-20260718-022423:756:        // GoRouter must have a concrete route match, otherwise it throws
+lib/nav.dart.bak-20260718-022423:778:                return Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString();
+lib/nav.dart.bak-20260718-022423:783:            return AppRoutes.root;
+lib/nav.dart.bak-20260718-022423:801:                return Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString();
+lib/nav.dart.bak-20260718-022423:806:            return AppRoutes.root;
+lib/nav.dart.bak-20260718-022423:837:        debugPrint('AppRouter: detected Supabase email-link params at root; booting to ${AppRoutes.authCallback}');
+lib/nav.dart.bak-20260718-022423:838:        return AppRoutes.authCallback;
+lib/nav.dart.bak-20260718-022423:863:  static Page<void> _fadeSlidePage(Widget child, GoRouterState state) {
+lib/main.dart.bak-20260719-001845:73:  late final GoRouter _router;
+lib/pages/dashboards/widgets/live_watch_sheet.dart:211:                      context.push(AppRoutes.livekit, extra: {'session': session, 'hostMode': false});
+lib/pages/auth/permission_denied_page.dart:74:        if (context.mounted) context.go(AppRoutes.login);
+lib/pages/auth/permission_denied_page.dart:83:      context.go(target);
+lib/pages/auth/permission_denied_page.dart:181:                            onPressed: () => context.go('/'),
+lib/pages/auth/permission_denied_page.dart:192:                              onPressed: () => context.go('/__qa'),
+lib/pages/auth/onboarding_page.dart:38:      context.go('/');
+lib/pages/auth/onboarding_page.dart:56:        leading: AppBackButton(enabled: !auth.isLoading, fallbackLocation: AppRoutes.root),
+lib/pages/auth/landing_auth_page.dart:71:          // Explicitly redirect using GoRouter to bypass the loop
+lib/pages/auth/landing_auth_page.dart:73:          context.go('/');
+lib/pages/auth/auth_callback_page.dart:89:          context.go(Uri(path: AppRoutes.resetPassword, queryParameters: {'step': 'set'}).toString());
+lib/pages/auth/auth_callback_page.dart:94:          context.go(Uri(path: AppRoutes.resetPassword, queryParameters: {'step': 'verify'}).toString());
+lib/pages/auth/auth_callback_page.dart:101:      context.go(AppRoutes.root);
+lib/pages/auth/auth_callback_page.dart:224:                    onPressed: () => context.go(AppRoutes.login),
+lib/pages/auth/waiting_approval_page.dart:72:                        onPressed: () => context.go(AppRoutes.audience),
+lib/pages/auth/waiting_approval_page.dart:82:                                context.go(AppRoutes.login);
+lib/pages/auth/reset_password_page.dart:81:          if (kDebugMode) debugPrint('ResetPasswordPage: detected Supabase email-link params; forwarding to ${AppRoutes.authCallback}');
+lib/pages/auth/reset_password_page.dart:82:          final target = Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: frag).toString();
+lib/pages/auth/reset_password_page.dart:83:          context.go(target);
+lib/pages/auth/reset_password_page.dart:316:      context.go(AppRoutes.login);
+lib/pages/debug/qa_harness_page.dart.bak:397:    context.go('/');
+lib/pages/debug/qa_harness_page.dart.bak:420:    context.go('/admin');
+lib/pages/debug/qa_harness_page.dart.bak:457:    if (mounted) context.go('/');
+lib/pages/debug/qa_harness_page.dart.bak:513:              route: AppRoutes.login,
+lib/pages/debug/qa_harness_page.dart.bak:518:              route: AppRoutes.onboarding,
+lib/pages/debug/qa_harness_page.dart.bak:523:              route: AppRoutes.waitingApproval,
+lib/pages/debug/qa_harness_page.dart.bak:528:              route: AppRoutes.permissionDenied,
+lib/pages/debug/qa_harness_page.dart.bak:536:            _QaCoverageItem.route(title: 'Audience dashboard', subtitle: 'Shell + feed + rewards access', route: AppRoutes.audience),
+lib/pages/debug/qa_harness_page.dart.bak:537:            _QaCoverageItem.route(title: 'Talent dashboard', subtitle: 'Shell + composer + opportunities + studio', route: AppRoutes.talent),
+lib/pages/debug/qa_harness_page.dart.bak:538:            _QaCoverageItem.route(title: 'Business dashboard', subtitle: 'Shell + campaigns + discovery', route: AppRoutes.business),
+lib/pages/debug/qa_harness_page.dart.bak:539:            _QaCoverageItem.route(title: 'Admin dashboard', subtitle: 'Approvals + controls + admin tools', route: AppRoutes.admin),
+lib/pages/debug/qa_harness_page.dart.bak:596:            _QaCoverageItem.route(title: 'Missions', subtitle: 'List + detail', route: AppRoutes.missions),
+lib/pages/debug/qa_harness_page.dart.bak:597:            _QaCoverageItem.route(title: 'Campaigns', subtitle: 'List + detail', route: AppRoutes.campaigns),
+lib/pages/debug/qa_harness_page.dart.bak:598:            _QaCoverageItem.route(title: 'Rewards', subtitle: 'Balance + metrics', route: AppRoutes.rewards),
+lib/pages/debug/qa_harness_page.dart.bak:599:            _QaCoverageItem.route(title: 'Progress', subtitle: 'Milestones + participation', route: AppRoutes.progress),
+lib/pages/debug/qa_harness_page.dart.bak:606:            _QaCoverageItem.route(title: 'Admin: Missions', subtitle: 'Admin mission editor', route: AppRoutes.adminMissions),
+lib/pages/debug/qa_harness_page.dart.bak:607:            _QaCoverageItem.route(title: 'Admin: Campaigns', subtitle: 'Admin campaign editor', route: AppRoutes.adminCampaigns),
+lib/pages/debug/qa_harness_page.dart.bak:617:              openRoute: AppRoutes.talent,
+lib/pages/debug/qa_harness_page.dart.bak:623:              openRoute: AppRoutes.talent,
+lib/pages/debug/qa_harness_page.dart.bak:629:              openRoute: AppRoutes.business,
+lib/pages/debug/qa_harness_page.dart.bak:641:              openRoute: AppRoutes.audience,
+lib/pages/debug/qa_harness_page.dart.bak:647:              openRoute: AppRoutes.audience,
+lib/pages/debug/qa_harness_page.dart.bak:659:              route: AppRoutes.livekit,
+lib/pages/debug/qa_harness_page.dart.bak:664:              openRoute: AppRoutes.talent,
+lib/pages/debug/qa_harness_page.dart.bak:688:              openRoute: AppRoutes.admin,
+lib/pages/debug/qa_harness_page.dart.bak:713:      context.go('/');
+lib/pages/debug/qa_harness_page.dart.bak:727:            onPressed: () => context.go('/'),
+lib/pages/debug/qa_harness_page.dart.bak:738:                if (context.mounted) context.go('/login');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:397:    context.go('/');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:420:    context.go('/admin');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:457:    if (mounted) context.go('/');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:513:              route: AppRoutes.login,
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:518:              route: AppRoutes.onboarding,
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:523:              route: AppRoutes.waitingApproval,
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:528:              route: AppRoutes.permissionDenied,
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:536:            _QaCoverageItem.route(title: 'Audience dashboard', subtitle: 'Shell + feed + rewards access', route: AppRoutes.audience),
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:537:            _QaCoverageItem.route(title: 'Talent dashboard', subtitle: 'Shell + composer + opportunities + studio', route: AppRoutes.talent),
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:538:            _QaCoverageItem.route(title: 'Business dashboard', subtitle: 'Shell + campaigns + discovery', route: AppRoutes.business),
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:539:            _QaCoverageItem.route(title: 'Admin dashboard', subtitle: 'Approvals + controls + admin tools', route: AppRoutes.admin),
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:596:            _QaCoverageItem.route(title: 'Missions', subtitle: 'List + detail', route: AppRoutes.missions),
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:597:            _QaCoverageItem.route(title: 'Campaigns', subtitle: 'List + detail', route: AppRoutes.campaigns),
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:598:            _QaCoverageItem.route(title: 'Rewards', subtitle: 'Balance + metrics', route: AppRoutes.rewards),
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:599:            _QaCoverageItem.route(title: 'Progress', subtitle: 'Milestones + participation', route: AppRoutes.progress),
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:606:            _QaCoverageItem.route(title: 'Admin: Missions', subtitle: 'Admin mission editor', route: AppRoutes.adminMissions),
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:607:            _QaCoverageItem.route(title: 'Admin: Campaigns', subtitle: 'Admin campaign editor', route: AppRoutes.adminCampaigns),
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:617:              openRoute: AppRoutes.talent,
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:623:              openRoute: AppRoutes.talent,
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:629:              openRoute: AppRoutes.business,
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:641:              openRoute: AppRoutes.audience,
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:647:              openRoute: AppRoutes.audience,
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:659:              route: AppRoutes.livekit,
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:664:              openRoute: AppRoutes.talent,
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:688:              openRoute: AppRoutes.admin,
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:713:      context.go('/');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:727:            onPressed: () => context.go('/'),
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:738:                if (context.mounted) context.go('/login');
+lib/pages/shared/feature_disabled_page.dart:66:                        onPressed: () => context.go(defaultTarget()),
+lib/pages/dashboard_screen.dart:154:            if (context.mounted) context.go('/');
+lib/pages/profile/profile_sheet.dart.bak-20260717-231514:335:                      if (context.mounted) context.go('/admin');
+lib/pages/profile/profile_sheet.dart.bak-cleanup-20260719-005143:341:                      if (context.mounted) context.go('/admin');
+lib/pages/profile/profile_sheet.dart.bak-20260718-015052:336:                      if (context.mounted) context.go('/admin');
+lib/pages/profile/profile_sheet.dart.bak-20260718-204010:336:                      if (context.mounted) context.go('/admin');
+lib/pages/profile/profile_sheet.dart:341:                      if (context.mounted) context.go('/admin');
+lib/pages/profile/profile_sheet.dart.bak-userfix-20260718-222954:340:                      if (context.mounted) context.go('/admin');
+lib/pages/profile/profile_sheet.dart.bak-fix-20260718-205221:338:                      if (context.mounted) context.go('/admin');
+lib/nav.dart:93:  static GoRouter createRouter(AppAuthProvider authProvider) {
+lib/nav.dart:100:    return GoRouter(
+lib/nav.dart:138:              context.go(
+lib/nav.dart:140:                  path: AppRoutes.authCallback,
+lib/nav.dart:150:          context.go(AppRoutes.root);
+lib/nav.dart:165:        final isAuthRoute = location == AppRoutes.login;
+lib/nav.dart:166:        final isAuthCallbackRoute = location == AppRoutes.authCallback;
+lib/nav.dart:167:        final isEarlyAccessRoute = location == AppRoutes.earlyAccess;
+lib/nav.dart:168:        final isOnboardingRoute = location == AppRoutes.onboarding;
+lib/nav.dart:169:        final isResetPasswordRoute = location == AppRoutes.resetPassword;
+lib/nav.dart:171:            location == AppRoutes.accessDenied ||
+lib/nav.dart:172:            location == AppRoutes.permissionDenied;
+lib/nav.dart:173:        final isWaitingApprovalRoute = location == AppRoutes.waitingApproval;
+lib/nav.dart:174:        final isLiveKitRoute = location == AppRoutes.livekit;
+lib/nav.dart:175:        final isFeatureDisabledRoute = location == AppRoutes.featureDisabled;
+lib/nav.dart:215:        // URL fragment (/#access_token=...). GoRouter's `state.uri` does not
+lib/nav.dart:245:        if (kDebugMode && location == AppRoutes.login) {
+lib/nav.dart:254:            path: AppRoutes.authCallback,
+lib/nav.dart:280:            path: AppRoutes.permissionDenied,
+lib/nav.dart:291:            path: AppRoutes.featureDisabled,
+lib/nav.dart:302:        if (location == AppRoutes.qa) {
+lib/nav.dart:304:            logRedirect(AppRoutes.login);
+lib/nav.dart:305:            return AppRoutes.login;
+lib/nav.dart:312:              path: AppRoutes.accessDenied,
+lib/nav.dart:322:          logRedirect(AppRoutes.login);
+lib/nav.dart:323:          return AppRoutes.login;
+lib/nav.dart:333:          if (location == AppRoutes.root) return null;
+lib/nav.dart:334:          logRedirect(AppRoutes.root);
+lib/nav.dart:335:          return AppRoutes.root;
+lib/nav.dart:343:            logRedirect(AppRoutes.earlyAccess);
+lib/nav.dart:344:            return AppRoutes.earlyAccess;
+lib/nav.dart:353:            logRedirect(AppRoutes.login);
+lib/nav.dart:354:            return AppRoutes.login;
+lib/nav.dart:360:          logRedirect(AppRoutes.login);
+lib/nav.dart:361:          return AppRoutes.login;
+lib/nav.dart:370:          logRedirect(AppRoutes.admin);
+lib/nav.dart:371:          return AppRoutes.admin;
+lib/nav.dart:377:            logRedirect(AppRoutes.admin);
+lib/nav.dart:378:            return AppRoutes.admin;
+lib/nav.dart:384:            logRedirect(AppRoutes.admin);
+lib/nav.dart:385:            return AppRoutes.admin;
+lib/nav.dart:387:          logRedirect(AppRoutes.onboarding);
+lib/nav.dart:388:          return AppRoutes.onboarding;
+lib/nav.dart:397:          logRedirect(AppRoutes.waitingApproval);
+lib/nav.dart:398:          return AppRoutes.waitingApproval;
+lib/nav.dart:462:            if (u.activeRole == 'talent') return AppRoutes.talent;
+lib/nav.dart:463:            if (u.activeRole == 'business') return AppRoutes.business;
+lib/nav.dart:464:            if (u.activeRole == 'audience') return AppRoutes.audience;
+lib/nav.dart:465:            return AppRoutes.admin;
+lib/nav.dart:468:            return AppRoutes.talent;
+lib/nav.dart:472:            return AppRoutes.business;
+lib/nav.dart:474:          return AppRoutes.audience;
+lib/nav.dart:490:            if (target != AppRoutes.login) {
+lib/nav.dart:505:        if (location == AppRoutes.root) {
+lib/nav.dart:515:          AppRoutes.audience,
+lib/nav.dart:516:          AppRoutes.talent,
+lib/nav.dart:517:          AppRoutes.business,
+lib/nav.dart:518:          AppRoutes.admin,
+lib/nav.dart:532:          AppRoutes.root,
+lib/nav.dart:533:          AppRoutes.earlyAccess,
+lib/nav.dart:534:          AppRoutes.login,
+lib/nav.dart:535:          AppRoutes.onboarding,
+lib/nav.dart:536:          AppRoutes.authCallback,
+lib/nav.dart:537:          AppRoutes.resetPassword,
+lib/nav.dart:538:          AppRoutes.waitingApproval,
+lib/nav.dart:539:          AppRoutes.accessDenied,
+lib/nav.dart:540:          AppRoutes.permissionDenied,
+lib/nav.dart:541:          AppRoutes.audience,
+lib/nav.dart:542:          AppRoutes.talent,
+lib/nav.dart:543:          AppRoutes.business,
+lib/nav.dart:544:          AppRoutes.admin,
+lib/nav.dart:545:          AppRoutes.audienceDashboard,
+lib/nav.dart:546:          AppRoutes.talentDashboard,
+lib/nav.dart:547:          AppRoutes.businessDashboard,
+lib/nav.dart:548:          AppRoutes.livekit,
+lib/nav.dart:549:          AppRoutes.missions,
+lib/nav.dart:550:          AppRoutes.rewards,
+lib/nav.dart:551:          AppRoutes.campaigns,
+lib/nav.dart:552:          AppRoutes.progress,
+lib/nav.dart:553:          AppRoutes.adminMissions,
+lib/nav.dart:554:          AppRoutes.adminCampaigns,
+lib/nav.dart:555:          AppRoutes.featureDisabled,
+lib/nav.dart:556:          if (!kReleaseMode) AppRoutes.qa,
+lib/nav.dart:559:          '${AppRoutes.missions}/',
+lib/nav.dart:560:          '${AppRoutes.campaigns}/',
+lib/nav.dart:571:        if (location == AppRoutes.talent &&
+lib/nav.dart:577:        if (location == AppRoutes.business &&
+lib/nav.dart:586:        if (location == AppRoutes.admin &&
+lib/nav.dart:595:            location == AppRoutes.adminMissions ||
+lib/nav.dart:596:            location == AppRoutes.adminCampaigns;
+lib/nav.dart:606:            location == AppRoutes.missions ||
+lib/nav.dart:607:            location.startsWith('${AppRoutes.missions}/') ||
+lib/nav.dart:608:            location == AppRoutes.rewards ||
+lib/nav.dart:609:            location == AppRoutes.campaigns ||
+lib/nav.dart:610:            location.startsWith('${AppRoutes.campaigns}/') ||
+lib/nav.dart:611:            location == AppRoutes.progress;
+lib/nav.dart:629:              } else if (location == AppRoutes.missions ||
+lib/nav.dart:630:                  location.startsWith('${AppRoutes.missions}/')) {
+lib/nav.dart:638:              } else if (location == AppRoutes.campaigns ||
+lib/nav.dart:639:                  location.startsWith('${AppRoutes.campaigns}/')) {
+lib/nav.dart:646:              } else if (location == AppRoutes.rewards) {
+lib/nav.dart:653:              } else if (location == AppRoutes.progress) {
+lib/nav.dart:682:          path: AppRoutes.root,
+lib/nav.dart:690:          path: AppRoutes.authCallback,
+lib/nav.dart:695:          path: AppRoutes.earlyAccess,
+lib/nav.dart:700:          path: AppRoutes.login,
+lib/nav.dart:711:          path: AppRoutes.onboarding,
+lib/nav.dart:716:          path: AppRoutes.waitingApproval,
+lib/nav.dart:721:          path: AppRoutes.resetPassword,
+lib/nav.dart:732:          path: AppRoutes.accessDenied,
+lib/nav.dart:737:          path: AppRoutes.permissionDenied,
+lib/nav.dart:742:          path: AppRoutes.audience,
+lib/nav.dart:747:          path: AppRoutes.audienceDashboard,
+lib/nav.dart:748:          redirect: (context, state) => AppRoutes.audience,
+lib/nav.dart:751:          path: AppRoutes.talent,
+lib/nav.dart:756:          path: AppRoutes.talentDashboard,
+lib/nav.dart:757:          redirect: (context, state) => AppRoutes.talent,
+lib/nav.dart:760:          path: AppRoutes.business,
+lib/nav.dart:765:          path: AppRoutes.businessDashboard,
+lib/nav.dart:766:          redirect: (context, state) => AppRoutes.business,
+lib/nav.dart:769:          path: AppRoutes.admin,
+lib/nav.dart:775:          path: AppRoutes.featureDisabled,
+lib/nav.dart:801:          path: AppRoutes.missions,
+lib/nav.dart:815:          path: AppRoutes.rewards,
+lib/nav.dart:820:          path: AppRoutes.campaigns,
+lib/nav.dart:837:          path: AppRoutes.progress,
+lib/nav.dart:844:          path: AppRoutes.adminMissions,
+lib/nav.dart:849:          path: AppRoutes.adminCampaigns,
+lib/nav.dart:855:          path: AppRoutes.livekit,
+lib/nav.dart:883:            path: AppRoutes.qa,
+lib/nav.dart:889:        // GoRouter must have a concrete route match, otherwise it throws
+lib/nav.dart:929:                  path: AppRoutes.authCallback,
+lib/nav.dart:939:            return AppRoutes.root;
+lib/nav.dart:975:                  path: AppRoutes.authCallback,
+lib/nav.dart:985:            return AppRoutes.root;
+lib/nav.dart:1025:          'AppRouter: detected Supabase email-link params at root; booting to ${AppRoutes.authCallback}',
+lib/nav.dart:1027:        return AppRoutes.authCallback;
+lib/nav.dart:1057:  static Page<void> _fadeSlidePage(Widget child, GoRouterState state) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:93:  static GoRouter createRouter(AppAuthProvider authProvider) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:100:    return GoRouter(
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:138:              context.go(
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:140:                  path: AppRoutes.authCallback,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:150:          context.go(AppRoutes.root);
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:165:        final isAuthRoute = location == AppRoutes.login;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:166:        final isAuthCallbackRoute = location == AppRoutes.authCallback;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:167:        final isEarlyAccessRoute = location == AppRoutes.earlyAccess;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:168:        final isOnboardingRoute = location == AppRoutes.onboarding;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:169:        final isResetPasswordRoute = location == AppRoutes.resetPassword;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:171:            location == AppRoutes.accessDenied ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:172:            location == AppRoutes.permissionDenied;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:173:        final isWaitingApprovalRoute = location == AppRoutes.waitingApproval;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:174:        final isLiveKitRoute = location == AppRoutes.livekit;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:175:        final isFeatureDisabledRoute = location == AppRoutes.featureDisabled;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:215:        // URL fragment (/#access_token=...). GoRouter's `state.uri` does not
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:245:        if (kDebugMode && location == AppRoutes.login) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:254:            path: AppRoutes.authCallback,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:280:            path: AppRoutes.permissionDenied,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:291:            path: AppRoutes.featureDisabled,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:302:        if (location == AppRoutes.qa) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:304:            logRedirect(AppRoutes.login);
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:305:            return AppRoutes.login;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:312:              path: AppRoutes.accessDenied,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:322:          logRedirect(AppRoutes.login);
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:323:          return AppRoutes.login;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:333:          if (location == AppRoutes.root) return null;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:334:          logRedirect(AppRoutes.root);
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:335:          return AppRoutes.root;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:343:            logRedirect(AppRoutes.earlyAccess);
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:344:            return AppRoutes.earlyAccess;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:353:            logRedirect(AppRoutes.login);
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:354:            return AppRoutes.login;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:360:          logRedirect(AppRoutes.login);
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:361:          return AppRoutes.login;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:368:          logRedirect(AppRoutes.admin);
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:369:          return AppRoutes.admin;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:375:            logRedirect(AppRoutes.admin);
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:376:            return AppRoutes.admin;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:382:            logRedirect(AppRoutes.admin);
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:383:            return AppRoutes.admin;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:385:          logRedirect(AppRoutes.onboarding);
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:386:          return AppRoutes.onboarding;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:395:          logRedirect(AppRoutes.waitingApproval);
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:396:          return AppRoutes.waitingApproval;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:460:            if (u.activeRole == 'talent') return AppRoutes.talent;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:461:            if (u.activeRole == 'business') return AppRoutes.business;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:462:            if (u.activeRole == 'audience') return AppRoutes.audience;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:463:            return AppRoutes.admin;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:466:            return AppRoutes.talent;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:470:            return AppRoutes.business;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:472:          return AppRoutes.audience;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:488:            if (target != AppRoutes.login) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:503:        if (location == AppRoutes.root) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:513:          AppRoutes.audience,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:514:          AppRoutes.talent,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:515:          AppRoutes.business,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:516:          AppRoutes.admin,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:530:          AppRoutes.root,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:531:          AppRoutes.earlyAccess,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:532:          AppRoutes.login,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:533:          AppRoutes.onboarding,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:534:          AppRoutes.authCallback,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:535:          AppRoutes.resetPassword,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:536:          AppRoutes.waitingApproval,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:537:          AppRoutes.accessDenied,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:538:          AppRoutes.permissionDenied,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:539:          AppRoutes.audience,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:540:          AppRoutes.talent,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:541:          AppRoutes.business,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:542:          AppRoutes.admin,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:543:          AppRoutes.audienceDashboard,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:544:          AppRoutes.talentDashboard,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:545:          AppRoutes.businessDashboard,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:546:          AppRoutes.livekit,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:547:          AppRoutes.missions,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:548:          AppRoutes.rewards,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:549:          AppRoutes.campaigns,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:550:          AppRoutes.progress,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:551:          AppRoutes.adminMissions,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:552:          AppRoutes.adminCampaigns,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:553:          AppRoutes.featureDisabled,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:554:          if (!kReleaseMode) AppRoutes.qa,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:557:          '${AppRoutes.missions}/',
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:558:          '${AppRoutes.campaigns}/',
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:570:        if (location == AppRoutes.talent &&
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:576:        if (location == AppRoutes.business &&
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:585:        if (location == AppRoutes.admin &&
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:594:            location == AppRoutes.adminMissions ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:595:            location == AppRoutes.adminCampaigns;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:605:            location == AppRoutes.missions ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:606:            location.startsWith('${AppRoutes.missions}/') ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:607:            location == AppRoutes.rewards ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:608:            location == AppRoutes.campaigns ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:609:            location.startsWith('${AppRoutes.campaigns}/') ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:610:            location == AppRoutes.progress;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:628:              } else if (location == AppRoutes.missions ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:629:                  location.startsWith('${AppRoutes.missions}/')) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:637:              } else if (location == AppRoutes.campaigns ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:638:                  location.startsWith('${AppRoutes.campaigns}/')) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:645:              } else if (location == AppRoutes.rewards) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:652:              } else if (location == AppRoutes.progress) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:681:          path: AppRoutes.root,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:689:          path: AppRoutes.authCallback,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:694:          path: AppRoutes.earlyAccess,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:699:          path: AppRoutes.login,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:710:          path: AppRoutes.onboarding,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:715:          path: AppRoutes.waitingApproval,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:720:          path: AppRoutes.resetPassword,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:731:          path: AppRoutes.accessDenied,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:736:          path: AppRoutes.permissionDenied,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:741:          path: AppRoutes.audience,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:746:          path: AppRoutes.audienceDashboard,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:747:          redirect: (context, state) => AppRoutes.audience,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:750:          path: AppRoutes.talent,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:755:          path: AppRoutes.talentDashboard,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:756:          redirect: (context, state) => AppRoutes.talent,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:759:          path: AppRoutes.business,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:764:          path: AppRoutes.businessDashboard,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:765:          redirect: (context, state) => AppRoutes.business,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:768:          path: AppRoutes.admin,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:774:          path: AppRoutes.featureDisabled,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:800:          path: AppRoutes.missions,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:814:          path: AppRoutes.rewards,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:819:          path: AppRoutes.campaigns,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:836:          path: AppRoutes.progress,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:843:          path: AppRoutes.adminMissions,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:848:          path: AppRoutes.adminCampaigns,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:854:          path: AppRoutes.livekit,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:882:            path: AppRoutes.qa,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:888:        // GoRouter must have a concrete route match, otherwise it throws
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:928:                  path: AppRoutes.authCallback,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:938:            return AppRoutes.root;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:974:                  path: AppRoutes.authCallback,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:984:            return AppRoutes.root;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:1024:          'AppRouter: detected Supabase email-link params at root; booting to ${AppRoutes.authCallback}',
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:1026:        return AppRoutes.authCallback;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:1056:  static Page<void> _fadeSlidePage(Widget child, GoRouterState state) {
+lib/nav.dart.bak-20260718-151023:83:  static GoRouter createRouter(AppAuthProvider authProvider) {
+lib/nav.dart.bak-20260718-151023:90:    return GoRouter(
+lib/nav.dart.bak-20260718-151023:113:              context.go(Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString());
+lib/nav.dart.bak-20260718-151023:119:          context.go(AppRoutes.root);
+lib/nav.dart.bak-20260718-151023:134:        final isAuthRoute = location == AppRoutes.login;
+lib/nav.dart.bak-20260718-151023:135:        final isAuthCallbackRoute = location == AppRoutes.authCallback;
+lib/nav.dart.bak-20260718-151023:136:        final isEarlyAccessRoute = location == AppRoutes.earlyAccess;
+lib/nav.dart.bak-20260718-151023:137:        final isOnboardingRoute = location == AppRoutes.onboarding;
+lib/nav.dart.bak-20260718-151023:138:        final isResetPasswordRoute = location == AppRoutes.resetPassword;
+lib/nav.dart.bak-20260718-151023:139:        final isAccessDeniedRoute = location == AppRoutes.accessDenied || location == AppRoutes.permissionDenied;
+lib/nav.dart.bak-20260718-151023:140:        final isWaitingApprovalRoute = location == AppRoutes.waitingApproval;
+lib/nav.dart.bak-20260718-151023:141:        final isLiveKitRoute = location == AppRoutes.livekit;
+lib/nav.dart.bak-20260718-151023:142:        final isFeatureDisabledRoute = location == AppRoutes.featureDisabled;
+lib/nav.dart.bak-20260718-151023:183:        // URL fragment (/#access_token=...). GoRouter's `state.uri` does not
+lib/nav.dart.bak-20260718-151023:196:        if (kDebugMode && location == AppRoutes.login) {
+lib/nav.dart.bak-20260718-151023:202:          final target = Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString();
+lib/nav.dart.bak-20260718-151023:224:          return Uri(path: AppRoutes.permissionDenied, queryParameters: qp).toString();
+lib/nav.dart.bak-20260718-151023:229:            path: AppRoutes.featureDisabled,
+lib/nav.dart.bak-20260718-151023:240:        if (location == AppRoutes.qa) {
+lib/nav.dart.bak-20260718-151023:242:            logRedirect(AppRoutes.login);
+lib/nav.dart.bak-20260718-151023:243:            return AppRoutes.login;
+lib/nav.dart.bak-20260718-151023:250:              path: AppRoutes.accessDenied,
+lib/nav.dart.bak-20260718-151023:256:          logRedirect(AppRoutes.login);
+lib/nav.dart.bak-20260718-151023:257:          return AppRoutes.login;
+lib/nav.dart.bak-20260718-151023:267:          if (location == AppRoutes.root) return null;
+lib/nav.dart.bak-20260718-151023:268:          logRedirect(AppRoutes.root);
+lib/nav.dart.bak-20260718-151023:269:          return AppRoutes.root;
+lib/nav.dart.bak-20260718-151023:277:            logRedirect(AppRoutes.earlyAccess);
+lib/nav.dart.bak-20260718-151023:278:            return AppRoutes.earlyAccess;
+lib/nav.dart.bak-20260718-151023:287:            logRedirect(AppRoutes.login);
+lib/nav.dart.bak-20260718-151023:288:            return AppRoutes.login;
+lib/nav.dart.bak-20260718-151023:292:          logRedirect(AppRoutes.login);
+lib/nav.dart.bak-20260718-151023:293:          return AppRoutes.login;
+lib/nav.dart.bak-20260718-151023:300:          logRedirect(AppRoutes.admin);
+lib/nav.dart.bak-20260718-151023:301:          return AppRoutes.admin;
+lib/nav.dart.bak-20260718-151023:307:          logRedirect(AppRoutes.admin);
+lib/nav.dart.bak-20260718-151023:308:          return AppRoutes.admin;
+lib/nav.dart.bak-20260718-151023:314:          logRedirect(AppRoutes.admin);
+lib/nav.dart.bak-20260718-151023:315:          return AppRoutes.admin;
+lib/nav.dart.bak-20260718-151023:317:          logRedirect(AppRoutes.onboarding);
+lib/nav.dart.bak-20260718-151023:318:          return AppRoutes.onboarding;
+lib/nav.dart.bak-20260718-151023:328:          logRedirect(AppRoutes.waitingApproval);
+lib/nav.dart.bak-20260718-151023:329:          return AppRoutes.waitingApproval;
+lib/nav.dart.bak-20260718-151023:378:            if (u.activeRole == 'talent') return AppRoutes.talent;
+lib/nav.dart.bak-20260718-151023:379:            if (u.activeRole == 'business') return AppRoutes.business;
+lib/nav.dart.bak-20260718-151023:380:            if (u.activeRole == 'audience') return AppRoutes.audience;
+lib/nav.dart.bak-20260718-151023:381:            return AppRoutes.admin;
+lib/nav.dart.bak-20260718-151023:384:            return AppRoutes.talent;
+lib/nav.dart.bak-20260718-151023:387:            return AppRoutes.business;
+lib/nav.dart.bak-20260718-151023:389:          return AppRoutes.audience;
+lib/nav.dart.bak-20260718-151023:405:            if (target != AppRoutes.login) {
+lib/nav.dart.bak-20260718-151023:420:        if (location == AppRoutes.root) {
+lib/nav.dart.bak-20260718-151023:429:        final roleDashPaths = <String>{AppRoutes.audience, AppRoutes.talent, AppRoutes.business, AppRoutes.admin};
+lib/nav.dart.bak-20260718-151023:442:          AppRoutes.root,
+lib/nav.dart.bak-20260718-151023:443:          AppRoutes.earlyAccess,
+lib/nav.dart.bak-20260718-151023:444:          AppRoutes.login,
+lib/nav.dart.bak-20260718-151023:445:          AppRoutes.onboarding,
+lib/nav.dart.bak-20260718-151023:446:          AppRoutes.authCallback,
+lib/nav.dart.bak-20260718-151023:447:          AppRoutes.resetPassword,
+lib/nav.dart.bak-20260718-151023:448:          AppRoutes.waitingApproval,
+lib/nav.dart.bak-20260718-151023:449:          AppRoutes.accessDenied,
+lib/nav.dart.bak-20260718-151023:450:          AppRoutes.permissionDenied,
+lib/nav.dart.bak-20260718-151023:451:          AppRoutes.audience,
+lib/nav.dart.bak-20260718-151023:452:          AppRoutes.talent,
+lib/nav.dart.bak-20260718-151023:453:          AppRoutes.business,
+lib/nav.dart.bak-20260718-151023:454:          AppRoutes.admin,
+lib/nav.dart.bak-20260718-151023:455:          AppRoutes.audienceDashboard,
+lib/nav.dart.bak-20260718-151023:456:          AppRoutes.talentDashboard,
+lib/nav.dart.bak-20260718-151023:457:          AppRoutes.businessDashboard,
+lib/nav.dart.bak-20260718-151023:458:          AppRoutes.livekit,
+lib/nav.dart.bak-20260718-151023:459:          AppRoutes.missions,
+lib/nav.dart.bak-20260718-151023:460:          AppRoutes.rewards,
+lib/nav.dart.bak-20260718-151023:461:          AppRoutes.campaigns,
+lib/nav.dart.bak-20260718-151023:462:          AppRoutes.progress,
+lib/nav.dart.bak-20260718-151023:463:          AppRoutes.adminMissions,
+lib/nav.dart.bak-20260718-151023:464:          AppRoutes.adminCampaigns,
+lib/nav.dart.bak-20260718-151023:465:          AppRoutes.featureDisabled,
+lib/nav.dart.bak-20260718-151023:466:          if (!kReleaseMode) AppRoutes.qa,
+lib/nav.dart.bak-20260718-151023:469:          '${AppRoutes.missions}/',
+lib/nav.dart.bak-20260718-151023:470:          '${AppRoutes.campaigns}/',
+lib/nav.dart.bak-20260718-151023:480:        if (location == AppRoutes.talent && !user.approvedRoles.contains('talent')) {
+lib/nav.dart.bak-20260718-151023:485:        if (location == AppRoutes.business && !user.approvedRoles.contains('business')) {
+lib/nav.dart.bak-20260718-151023:490:        if (location == AppRoutes.admin && !user.approvedRoles.contains('admin')) {
+lib/nav.dart.bak-20260718-151023:497:        final isAdminTooling = location == AppRoutes.adminMissions || location == AppRoutes.adminCampaigns;
+lib/nav.dart.bak-20260718-151023:506:        final isProgressionRoute = location == AppRoutes.missions ||
+lib/nav.dart.bak-20260718-151023:507:            location.startsWith('${AppRoutes.missions}/') ||
+lib/nav.dart.bak-20260718-151023:508:            location == AppRoutes.rewards ||
+lib/nav.dart.bak-20260718-151023:509:            location == AppRoutes.campaigns ||
+lib/nav.dart.bak-20260718-151023:510:            location.startsWith('${AppRoutes.campaigns}/') ||
+lib/nav.dart.bak-20260718-151023:511:            location == AppRoutes.progress;
+lib/nav.dart.bak-20260718-151023:528:              } else if (location == AppRoutes.missions || location.startsWith('${AppRoutes.missions}/')) {
+lib/nav.dart.bak-20260718-151023:535:              } else if (location == AppRoutes.campaigns || location.startsWith('${AppRoutes.campaigns}/')) {
+lib/nav.dart.bak-20260718-151023:542:              } else if (location == AppRoutes.rewards) {
+lib/nav.dart.bak-20260718-151023:549:              } else if (location == AppRoutes.progress) {
+lib/nav.dart.bak-20260718-151023:574:          path: AppRoutes.root,
+lib/nav.dart.bak-20260718-151023:580:          path: AppRoutes.authCallback,
+lib/nav.dart.bak-20260718-151023:584:          path: AppRoutes.earlyAccess,
+lib/nav.dart.bak-20260718-151023:588:          path: AppRoutes.login,
+lib/nav.dart.bak-20260718-151023:596:          path: AppRoutes.onboarding,
+lib/nav.dart.bak-20260718-151023:600:          path: AppRoutes.waitingApproval,
+lib/nav.dart.bak-20260718-151023:604:          path: AppRoutes.resetPassword,
+lib/nav.dart.bak-20260718-151023:612:          path: AppRoutes.accessDenied,
+lib/nav.dart.bak-20260718-151023:616:          path: AppRoutes.permissionDenied,
+lib/nav.dart.bak-20260718-151023:620:          path: AppRoutes.audience,
+lib/nav.dart.bak-20260718-151023:623:        GoRoute(path: AppRoutes.audienceDashboard, redirect: (context, state) => AppRoutes.audience),
+lib/nav.dart.bak-20260718-151023:625:          path: AppRoutes.talent,
+lib/nav.dart.bak-20260718-151023:628:        GoRoute(path: AppRoutes.talentDashboard, redirect: (context, state) => AppRoutes.talent),
+lib/nav.dart.bak-20260718-151023:630:          path: AppRoutes.business,
+lib/nav.dart.bak-20260718-151023:633:        GoRoute(path: AppRoutes.businessDashboard, redirect: (context, state) => AppRoutes.business),
+lib/nav.dart.bak-20260718-151023:635:          path: AppRoutes.admin,
+lib/nav.dart.bak-20260718-151023:640:          path: AppRoutes.featureDisabled,
+lib/nav.dart.bak-20260718-151023:658:          path: AppRoutes.missions,
+lib/nav.dart.bak-20260718-151023:671:          path: AppRoutes.rewards,
+lib/nav.dart.bak-20260718-151023:675:          path: AppRoutes.campaigns,
+lib/nav.dart.bak-20260718-151023:688:          path: AppRoutes.progress,
+lib/nav.dart.bak-20260718-151023:694:          path: AppRoutes.adminMissions,
+lib/nav.dart.bak-20260718-151023:698:          path: AppRoutes.adminCampaigns,
+lib/nav.dart.bak-20260718-151023:703:          path: AppRoutes.livekit,
+lib/nav.dart.bak-20260718-151023:723:            path: AppRoutes.qa,
+lib/nav.dart.bak-20260718-151023:728:        // GoRouter must have a concrete route match, otherwise it throws
+lib/nav.dart.bak-20260718-151023:750:                return Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString();
+lib/nav.dart.bak-20260718-151023:755:            return AppRoutes.root;
+lib/nav.dart.bak-20260718-151023:773:                return Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: fragRaw).toString();
+lib/nav.dart.bak-20260718-151023:778:            return AppRoutes.root;
+lib/nav.dart.bak-20260718-151023:809:        debugPrint('AppRouter: detected Supabase email-link params at root; booting to ${AppRoutes.authCallback}');
+lib/nav.dart.bak-20260718-151023:810:        return AppRoutes.authCallback;
+lib/nav.dart.bak-20260718-151023:835:  static Page<void> _fadeSlidePage(Widget child, GoRouterState state) {
+lib/widgets/app_back_button.dart:17:  /// - prelaunch: [AppRoutes.earlyAccess]
+lib/widgets/app_back_button.dart:18:  /// - launch: [AppRoutes.login]
+lib/widgets/app_back_button.dart:21:  String _defaultFallback() => BackendConfig.prelaunchGateEnabled ? AppRoutes.earlyAccess : AppRoutes.login;
+lib/widgets/app_back_button.dart:32:                final router = GoRouter.of(context);
+lib/widgets/app_back_button.dart:40:              context.go(fallbackLocation ?? _defaultFallback());

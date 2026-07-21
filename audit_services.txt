@@ -1,0 +1,27 @@
+lib/services/group_service.dart:4:class GroupService extends ChangeNotifier {
+lib/services/message_service.dart.bak-20260718-144210:15:class MessageService extends ChangeNotifier {
+lib/services/studio_service.dart.bak-unimplemented-20260719-005331:5:class StudioService extends ChangeNotifier {
+lib/services/studio_service.dart:5:class StudioService extends ChangeNotifier {
+lib/services/studio_service.dart.bak-nodev-20260719-005304:5:class StudioService extends ChangeNotifier {
+lib/services/message_service.dart.bak-20260718-161619:15:class MessageService extends ChangeNotifier {
+lib/services/portfolio_service.dart:4:class PortfolioService extends ChangeNotifier {
+lib/services/progression_service.dart.bak-20260718-011204:12:class ProgressionService extends ChangeNotifier {
+lib/services/opportunity_service.dart.bak:4:class OpportunityService extends ChangeNotifier {
+lib/services/monetization_service.dart:7:class MonetizationService extends ChangeNotifier {
+lib/services/post_service.dart.pre_python_fix:4:class PostService extends ChangeNotifier {
+lib/services/message_service.dart.bak-20260718-142432:15:class MessageService extends ChangeNotifier {
+lib/services/mission_composer_services.dart:3:class MissionComposerService {
+lib/services/studio_service.dart.bak-rewrite-20260719-012243:5:class StudioService extends ChangeNotifier {
+lib/services/message_service.dart.bak-20260718-151117:15:class MessageService extends ChangeNotifier {
+lib/services/message_service.dart:15:class MessageService extends ChangeNotifier {
+lib/services/progression_service.dart:12:class ProgressionService extends ChangeNotifier {
+lib/services/message_service.dart.bak-20260718-170213:15:class MessageService extends ChangeNotifier {
+lib/services/notification_service.dart:4:class NotificationService extends ChangeNotifier {
+lib/services/early_access_service.dart:5:class EarlyAccessService {
+lib/services/studio_service.dart.bak-20260717-231515:5:class StudioService extends ChangeNotifier {
+lib/services/story_service.dart:4:class StoryService extends ChangeNotifier {
+lib/services/progression_service.dart.bak:92:class ProgressionService extends ChangeNotifier {
+lib/services/opportunity_service.dart:4:class OpportunityService extends ChangeNotifier {
+lib/services/progression_service.dart.pre-rewrite-20260717-211923:92:class ProgressionService extends ChangeNotifier {
+lib/services/post_service.dart:7:class PostService extends ChangeNotifier {
+lib/services/opportunity_service.dart.merged-broken:4:class OpportunityService extends ChangeNotifier {

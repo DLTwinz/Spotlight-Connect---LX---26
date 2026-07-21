@@ -1,0 +1,392 @@
+lib/models/progression_feature_policy_model.dart:3:/// Server-authoritative feature policy for the progression system.
+lib/models/progression_feature_policy_model.dart:5:/// This is intentionally separate from [AppFeature]/[FeatureFlagProvider], which
+lib/models/progression_feature_policy_model.dart:21:  /// Where the policy came from: `rpc`, `fallback`, etc.
+lib/models/progression_feature_policy_model.dart:71:        // Safe-mode kills writes until backend policy is confirmed.
+lib/models/progression_feature_policy_model.dart:80:        // enabled by policy fetch.
+lib/models/progression_feature_policy_model.dart:115:        if (map.isEmpty) return safeFallback(source: 'fallback_empty_policy');
+lib/providers/progression_feature_policy_provider.dart:5:import 'package:spotlight_connect/models/progression_feature_policy_model.dart';
+lib/providers/progression_feature_policy_provider.dart:10:/// Loads and exposes the server-authoritative progression feature policy
+lib/providers/progression_feature_policy_provider.dart:14:/// - If the policy cannot be loaded, it falls back to a conservative policy
+lib/providers/progression_feature_policy_provider.dart:16:class ProgressionFeaturePolicyProvider extends ChangeNotifier {
+lib/providers/progression_feature_policy_provider.dart:17:  ProgressionFeaturePolicyProvider({required AppAuthProvider authProvider}) : _auth = authProvider {
+lib/providers/progression_feature_policy_provider.dart:37:  ProgressionFeaturePolicy _policy = ProgressionFeaturePolicy.safeFallback(source: 'startup');
+lib/providers/progression_feature_policy_provider.dart:44:  ProgressionFeaturePolicy get policy => _policy;
+lib/providers/progression_feature_policy_provider.dart:46:  /// Convenience: current user role key expected by backend policy.
+lib/providers/progression_feature_policy_provider.dart:65:        // Admins may need to preview other roles, but their own policy should
+lib/providers/progression_feature_policy_provider.dart:74:    // If logged out, keep a safe fallback policy.
+lib/providers/progression_feature_policy_provider.dart:76:      _policy = ProgressionFeaturePolicy.safeFallback(source: 'logged_out');
+lib/providers/progression_feature_policy_provider.dart:89:      _policy = ProgressionFeaturePolicy.fromRpc(payload);
+lib/providers/progression_feature_policy_provider.dart:92:      debugPrint('ProgressionFeaturePolicyProvider.refresh failed: $e');
+lib/providers/progression_feature_policy_provider.dart:95:      _policy = ProgressionFeaturePolicy.safeFallback(source: 'fallback_provider_error');
+lib/providers/feature_flag_provider.dart:7:/// App feature flags for QA/beta gating.
+lib/providers/feature_flag_provider.dart:46:  /// If true, only admins can toggle this flag in the feature flags UI.
+lib/providers/feature_flag_provider.dart:50:class FeatureFlagProvider extends ChangeNotifier {
+lib/providers/feature_flag_provider.dart:51:  FeatureFlagProvider({required KeyValueStore store}) : _store = store;
+lib/providers/feature_flag_provider.dart:107:      // Launch policy: studio scheduling + external streaming links are part of MVP.
+lib/providers/feature_flag_provider.dart:234:      debugPrint('FeatureFlagProvider.ensureInitialized failed: $e');
+lib/providers/feature_flag_provider.dart:258:      debugPrint('FeatureFlagProvider.setEnabled persist failed: $e');
+lib/providers/feature_flag_provider.dart:272:      debugPrint('FeatureFlagProvider.setAllEnabled persist failed: $e');
+lib/providers/feature_flag_provider.dart:286:      debugPrint('FeatureFlagProvider.resetToDefaults persist failed: $e');
+lib/providers/feature_flag_provider.dart:301:      debugPrint('FeatureFlagProvider.unlockEditing persist failed: $e');
+lib/providers/feature_flag_provider.dart:312:      debugPrint('FeatureFlagProvider.lockEditing persist failed: $e');
+lib/nav.dart.bak-20260718-144125:10:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/nav.dart.bak-20260718-144125:148:            final flags = context.read<FeatureFlagProvider>();
+lib/nav.dart.bak-20260718-144125:159:            final flags = context.read<FeatureFlagProvider>();
+lib/nav.dart.bak-20260718-144125:239:        // QA harness gating (admin OR feature flag) in non-release builds.
+lib/nav.dart.bak-20260718-144125:504:        // Progression route guards (server-authoritative feature policy).
+lib/nav.dart.bak-20260718-144125:514:            final policyProvider = context.read<ProgressionFeaturePolicyProvider>();
+lib/nav.dart.bak-20260718-144125:515:            if (!policyProvider.isLoading) {
+lib/nav.dart.bak-20260718-144125:516:              final policy = policyProvider.policy;
+lib/nav.dart.bak-20260718-144125:517:              final roleKey = policyProvider.roleKey;
+lib/nav.dart.bak-20260718-144125:524:              if (!policy.progressionEnabled) {
+lib/nav.dart.bak-20260718-144125:529:                if (!policy.missionsEnabled || !policy.roleMissionsEnabled(roleKey)) {
+lib/nav.dart.bak-20260718-144125:536:                if (!policy.campaignsEnabled) {
+lib/nav.dart.bak-20260718-144125:543:                if (!policy.redemptionsEnabled) {
+lib/nav.dart.bak-20260718-144125:551:                if (!policy.progressionEnabled) {
+lib/main.dart.bak-20260718-185940:9:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/main.dart.bak-20260718-185940:71:  late final FeatureFlagProvider _featureFlagProvider;
+lib/main.dart.bak-20260718-185940:72:  late final ProgressionFeaturePolicyProvider _progressionFeaturePolicyProvider;
+lib/main.dart.bak-20260718-185940:84:    _featureFlagProvider = FeatureFlagProvider(store: createKeyValueStore());
+lib/main.dart.bak-20260718-185940:85:    _progressionFeaturePolicyProvider = ProgressionFeaturePolicyProvider(authProvider: _authProvider);
+lib/main.dart.bak-20260718-185940:98:        ChangeNotifierProvider<FeatureFlagProvider>.value(value: _featureFlagProvider),
+lib/main.dart.bak-20260718-185940:99:        ChangeNotifierProvider<ProgressionFeaturePolicyProvider>.value(value: _progressionFeaturePolicyProvider),
+lib/nav.dart.bak-20260718-142326:9:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/nav.dart.bak-20260718-142326:32:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/nav.dart.bak-20260718-142326:176:            final flags = context.read<FeatureFlagProvider>();
+lib/nav.dart.bak-20260718-142326:187:            final flags = context.read<FeatureFlagProvider>();
+lib/nav.dart.bak-20260718-142326:267:        // QA harness gating (admin OR feature flag) in non-release builds.
+lib/nav.dart.bak-20260718-142326:532:        // Progression route guards (server-authoritative feature policy).
+lib/nav.dart.bak-20260718-142326:542:            final policyProvider = context.read<ProgressionFeaturePolicyProvider>();
+lib/nav.dart.bak-20260718-142326:543:            if (!policyProvider.isLoading) {
+lib/nav.dart.bak-20260718-142326:544:              final policy = policyProvider.policy;
+lib/nav.dart.bak-20260718-142326:545:              final roleKey = policyProvider.roleKey;
+lib/nav.dart.bak-20260718-142326:552:              if (!policy.progressionEnabled) {
+lib/nav.dart.bak-20260718-142326:557:                if (!policy.missionsEnabled || !policy.roleMissionsEnabled(roleKey)) {
+lib/nav.dart.bak-20260718-142326:564:                if (!policy.campaignsEnabled) {
+lib/nav.dart.bak-20260718-142326:571:                if (!policy.redemptionsEnabled) {
+lib/nav.dart.bak-20260718-142326:579:                if (!policy.progressionEnabled) {
+lib/main.dart:9:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/main.dart:59:  late final FeatureFlagProvider _featureFlagProvider;
+lib/main.dart:60:  late final ProgressionFeaturePolicyProvider _progressionFeaturePolicyProvider;
+lib/main.dart:71:    _featureFlagProvider = FeatureFlagProvider(store: createKeyValueStore());
+lib/main.dart:72:    _progressionFeaturePolicyProvider = ProgressionFeaturePolicyProvider(
+lib/main.dart:87:        ChangeNotifierProvider<FeatureFlagProvider>.value(
+lib/main.dart:90:        ChangeNotifierProvider<ProgressionFeaturePolicyProvider>.value(
+lib/nav.dart.bak-nullfix-20260719-014530:8:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/nav.dart.bak-nullfix-20260719-014530:181:            final flags = context.read<FeatureFlagProvider>();
+lib/nav.dart.bak-nullfix-20260719-014530:192:            final flags = context.read<FeatureFlagProvider>();
+lib/nav.dart.bak-nullfix-20260719-014530:301:        // QA harness gating (admin OR feature flag) in non-release builds.
+lib/nav.dart.bak-nullfix-20260719-014530:602:        // Progression route guards (server-authoritative feature policy).
+lib/nav.dart.bak-nullfix-20260719-014530:613:            final policyProvider = context
+lib/nav.dart.bak-nullfix-20260719-014530:614:                .read<ProgressionFeaturePolicyProvider>();
+lib/nav.dart.bak-nullfix-20260719-014530:615:            if (!policyProvider.isLoading) {
+lib/nav.dart.bak-nullfix-20260719-014530:616:              final policy = policyProvider.policy;
+lib/nav.dart.bak-nullfix-20260719-014530:617:              final roleKey = policyProvider.roleKey;
+lib/nav.dart.bak-nullfix-20260719-014530:624:              if (!policy.progressionEnabled) {
+lib/nav.dart.bak-nullfix-20260719-014530:630:                if (!policy.missionsEnabled ||
+lib/nav.dart.bak-nullfix-20260719-014530:631:                    !policy.roleMissionsEnabled(roleKey)) {
+lib/nav.dart.bak-nullfix-20260719-014530:639:                if (!policy.campaignsEnabled) {
+lib/nav.dart.bak-nullfix-20260719-014530:646:                if (!policy.redemptionsEnabled) {
+lib/nav.dart.bak-nullfix-20260719-014530:654:                if (!policy.progressionEnabled) {
+lib/MASTER_SPEC.md:138:Weights should be configurable by creator program or brand policy, but default models should favor verified cleared value and recency over stale historic totals.
+lib/MASTER_SPEC.md:323:Service role is operationally superior for webhook-driven ledger ingestion because it bypasses policy overhead, avoids accidental user-session contamination when correctly isolated, and allows the system to write to multiple protected tables in one trusted flow.[14][26][28] That said, service role must be wrapped in strict preconditions: validated webhook authenticity, schema validation, duplicate checks, append-only semantics, audited writes, and narrow-purpose function boundaries.[17][27]
+lib/MASTER_SPEC.md:333:### RLS policy strategy
+lib/MASTER_SPEC.md:337:Representative policy rules:
+lib/MASTER_SPEC.md:352:- indexing columns referenced in policy predicates,
+lib/MASTER_SPEC.md:357:- and enforcing deny/allow policy tests with pgTAP in CI.[31][32][33][34]
+lib/MASTER_SPEC.md:363:3. Index verification for every policy path.
+lib/MASTER_SPEC.md:366:6. Quarterly policy drift audits.
+lib/MASTER_SPEC.md:454:- Every policy path must be indexed if used at scale.[32]
+lib/nav.dart.bak-20260718-022423:9:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/nav.dart.bak-20260718-022423:32:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/nav.dart.bak-20260718-022423:176:            final flags = context.read<FeatureFlagProvider>();
+lib/nav.dart.bak-20260718-022423:187:            final flags = context.read<FeatureFlagProvider>();
+lib/nav.dart.bak-20260718-022423:267:        // QA harness gating (admin OR feature flag) in non-release builds.
+lib/nav.dart.bak-20260718-022423:532:        // Progression route guards (server-authoritative feature policy).
+lib/nav.dart.bak-20260718-022423:542:            final policyProvider = context.read<ProgressionFeaturePolicyProvider>();
+lib/nav.dart.bak-20260718-022423:543:            if (!policyProvider.isLoading) {
+lib/nav.dart.bak-20260718-022423:544:              final policy = policyProvider.policy;
+lib/nav.dart.bak-20260718-022423:545:              final roleKey = policyProvider.roleKey;
+lib/nav.dart.bak-20260718-022423:552:              if (!policy.progressionEnabled) {
+lib/nav.dart.bak-20260718-022423:557:                if (!policy.missionsEnabled || !policy.roleMissionsEnabled(roleKey)) {
+lib/nav.dart.bak-20260718-022423:564:                if (!policy.campaignsEnabled) {
+lib/nav.dart.bak-20260718-022423:571:                if (!policy.redemptionsEnabled) {
+lib/nav.dart.bak-20260718-022423:579:                if (!policy.progressionEnabled) {
+lib/main.dart.bak-20260719-001845:9:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/main.dart.bak-20260719-001845:71:  late final FeatureFlagProvider _featureFlagProvider;
+lib/main.dart.bak-20260719-001845:72:  late final ProgressionFeaturePolicyProvider _progressionFeaturePolicyProvider;
+lib/main.dart.bak-20260719-001845:84:    _featureFlagProvider = FeatureFlagProvider(store: createKeyValueStore());
+lib/main.dart.bak-20260719-001845:85:    _progressionFeaturePolicyProvider = ProgressionFeaturePolicyProvider(authProvider: _authProvider);
+lib/main.dart.bak-20260719-001845:98:        ChangeNotifierProvider<FeatureFlagProvider>.value(value: _featureFlagProvider),
+lib/main.dart.bak-20260719-001845:99:        ChangeNotifierProvider<ProgressionFeaturePolicyProvider>.value(value: _progressionFeaturePolicyProvider),
+lib/pages/debug/qa_harness_page.dart.bak:168:    _log('RPC get_feature_policy(role=$role)…');
+lib/pages/debug/qa_harness_page.dart.bak:170:      final res = await _sb.rpc('get_feature_policy', params: {'role': role});
+lib/pages/debug/qa_harness_page.dart.bak:172:      _log('get_feature_policy ok: ${res is Map ? 'map' : res.runtimeType}', status: _QaStatus.pass);
+lib/pages/debug/qa_harness_page.dart.bak:175:      throw StateError('get_feature_policy RPC failed: ${e.message} (code=${e.code})');
+lib/pages/debug/qa_harness_page.dart.bak:192:    // Note: app-level feature flags are local-only (see FeatureFlagProvider), so there
+lib/pages/debug/qa_harness_page.dart.bak:670:          title: 'Admin controls + feature flags',
+lib/pages/debug/qa_harness_page.dart.bak:674:              title: 'Feature policy RPC',
+lib/pages/debug/qa_harness_page.dart.bak:675:              subtitle: 'get_feature_policy(role) returns map',
+lib/pages/debug/qa_harness_page.dart.bak:1489:        _QaAuditPhase.phase6LaunchSmoke => 'RPC get_feature_policy + table probes + MRCP edge functions.',
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:168:    _log('RPC get_feature_policy(role=$role)…');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:170:      final res = await _sb.rpc('get_feature_policy', params: {'role': role});
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:172:      _log('get_feature_policy ok: ${res is Map ? 'map' : res.runtimeType}', status: _QaStatus.pass);
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:175:      throw StateError('get_feature_policy RPC failed: ${e.message} (code=${e.code})');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:192:    // Note: app-level feature flags are local-only (see FeatureFlagProvider), so there
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:670:          title: 'Admin controls + feature flags',
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:674:              title: 'Feature policy RPC',
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:675:              subtitle: 'get_feature_policy(role) returns map',
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:1489:        _QaAuditPhase.phase6LaunchSmoke => 'RPC get_feature_policy + table probes + MRCP edge functions.',
+lib/pages/admin/admin_feature_controls_tab.dart:3:import 'package:spotlight_connect/models/progression_feature_policy_model.dart';
+lib/pages/admin/admin_feature_controls_tab.dart:53:  Map<String, bool> _policyFlags = <String, bool>{};
+lib/pages/admin/admin_feature_controls_tab.dart:87:      final policy = await _loadPolicyForRole(_selectedRoleKey);
+lib/pages/admin/admin_feature_controls_tab.dart:91:        _policyFlags = policy;
+lib/pages/admin/admin_feature_controls_tab.dart:105:    final row = await client.from('feature_policies').select('policy').eq('role_key', roleKey).maybeSingle();
+lib/pages/admin/admin_feature_controls_tab.dart:106:    final policy = (row == null ? null : row['policy']);
+lib/pages/admin/admin_feature_controls_tab.dart:108:    if (policy is Map) {
+lib/pages/admin/admin_feature_controls_tab.dart:110:        final v = policy[k];
+lib/pages/admin/admin_feature_controls_tab.dart:144:        policyKey: '${_selectedRoleKey}_$key', 
+lib/pages/admin/admin_feature_controls_tab.dart:151:      setState(() => _policyFlags[key] = enabled);
+lib/pages/admin/admin_feature_controls_tab.dart:248:            title: 'Progression policy',
+lib/pages/admin/admin_feature_controls_tab.dart:263:                          setState(() => _policyFlags = flags);
+lib/pages/admin/admin_feature_controls_tab.dart:273:                    value: _policyFlags[k] ?? false,
+lib/pages/shared/feature_disabled_page.dart:7:/// Full-page fallback used when a route is blocked by server-authoritative policy.
+lib/pages/progression/progress_page.dart.bak-20260718-204010:7:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/pages/progression/progress_page.dart.bak-20260718-204010:17:    final policy = context.watch<ProgressionFeaturePolicyProvider>().policy;
+lib/pages/progression/progress_page.dart.bak-20260718-204010:18:    if (!policy.progressionEnabled) {
+lib/pages/progression/progress_page.dart.bak3:7:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/pages/progression/progress_page.dart.bak3:17:    final policy = context.watch<ProgressionFeaturePolicyProvider>().policy;
+lib/pages/progression/progress_page.dart.bak3:18:    if (!policy.progressionEnabled) {
+lib/pages/progression/progress_page.dart.bak4:7:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/pages/progression/progress_page.dart.bak4:17:    final policy = context.watch<ProgressionFeaturePolicyProvider>().policy;
+lib/pages/progression/progress_page.dart.bak4:18:    if (!policy.progressionEnabled) {
+lib/pages/progression/missions_page.dart.full_broken_backup:9:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/pages/progression/missions_page.dart.full_broken_backup:20:    final policyProvider = context.watch<ProgressionFeaturePolicyProvider>();
+lib/pages/progression/missions_page.dart.full_broken_backup:21:    final policy = policyProvider.policy;
+lib/pages/progression/missions_page.dart.full_broken_backup:23:    if (!policy.progressionEnabled || !policy.missionsEnabled) {
+lib/pages/progression/missions_page.dart.full_broken_backup:113:    final policy = context.watch<ProgressionFeaturePolicyProvider>().policy;
+lib/pages/progression/missions_page.dart.full_broken_backup:133:      final writesAllowed = policy.allowAnyWrite;
+lib/pages/progression/missions_page.dart.full_broken_backup:138:          message: 'Progression write actions are currently disabled by server policy.',
+lib/pages/progression/missions_page.dart.full_broken_backup:145:        if (policy.killMissionClaims || !policy.missionClaimsEnabled) {
+lib/pages/progression/campaigns_page.dart.bak-fix-20260718-205221:9:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/pages/progression/campaigns_page.dart.bak-fix-20260718-205221:20:    final policy = context.select<ProgressionFeaturePolicyProvider, ProgressionFeaturePolicy>((p) => p.policy);
+lib/pages/progression/campaigns_page.dart.bak-fix-20260718-205221:22:    if (!policy.progressionEnabled || !policy.campaignsEnabled) {
+lib/pages/progression/campaigns_page.dart.bak-fix-20260718-205221:98:    final policy = context.watch<ProgressionFeaturePolicyProvider>().policy;
+lib/pages/progression/campaigns_page.dart.bak-fix-20260718-205221:101:      if (!policy.allowAnyWrite || policy.killCampaignJoins) {
+lib/pages/progression/campaigns_page.dart.bak-fix-20260718-205221:105:          message: 'Joining/leaving campaigns is currently disabled by server policy.',
+lib/pages/progression/campaigns_page.dart.bak-20260718-204010:9:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/pages/progression/campaigns_page.dart.bak-20260718-204010:20:    final policy = context.watch<ProgressionFeaturePolicyProvider>().policy;
+lib/pages/progression/campaigns_page.dart.bak-20260718-204010:22:    if (!policy.progressionEnabled || !policy.campaignsEnabled) {
+lib/pages/progression/campaigns_page.dart.bak-20260718-204010:98:    final policy = context.watch<ProgressionFeaturePolicyProvider>().policy;
+lib/pages/progression/campaigns_page.dart.bak-20260718-204010:101:      if (!policy.allowAnyWrite || policy.killCampaignJoins) {
+lib/pages/progression/campaigns_page.dart.bak-20260718-204010:105:          message: 'Joining/leaving campaigns is currently disabled by server policy.',
+lib/pages/progression/rewards_page.dart.bak-fix-20260718-205221:7:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/pages/progression/rewards_page.dart.bak-fix-20260718-205221:17:    final policy = context.select<ProgressionFeaturePolicyProvider, ProgressionFeaturePolicy>((p) => p.policy);
+lib/pages/progression/rewards_page.dart.bak-fix-20260718-205221:18:    if (!policy.progressionEnabled || !policy.redemptionsEnabled) {
+lib/pages/progression/campaigns_page.dart:9:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/pages/progression/campaigns_page.dart:20:    final policy = context.select<ProgressionFeaturePolicyProvider, dynamic>((p) => p.policy);
+lib/pages/progression/campaigns_page.dart:22:    if (!policy.progressionEnabled || !policy.campaignsEnabled) {
+lib/pages/progression/campaigns_page.dart:98:    final policy = context.watch<ProgressionFeaturePolicyProvider>().policy;
+lib/pages/progression/campaigns_page.dart:101:      if (!policy.allowAnyWrite || policy.killCampaignJoins) {
+lib/pages/progression/campaigns_page.dart:105:          message: 'Joining/leaving campaigns is currently disabled by server policy.',
+lib/pages/progression/rewards_page.dart.bak-20260717-231515:6:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/pages/progression/rewards_page.dart.bak-20260717-231515:16:    final policy = context.watch<ProgressionFeaturePolicyProvider>().policy;
+lib/pages/progression/rewards_page.dart.bak-20260717-231515:17:    if (!policy.progressionEnabled || !policy.redemptionsEnabled) {
+lib/pages/progression/rewards_page.dart:7:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/pages/progression/rewards_page.dart:17:    final policy = context.select<ProgressionFeaturePolicyProvider, dynamic>((p) => p.policy);
+lib/pages/progression/rewards_page.dart:18:    if (!policy.progressionEnabled || !policy.redemptionsEnabled) {
+lib/pages/progression/progress_page.dart:7:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/pages/progression/progress_page.dart:17:    final policy = context.select<ProgressionFeaturePolicyProvider, dynamic>((p) => p.policy);
+lib/pages/progression/progress_page.dart:18:    if (!policy.progressionEnabled) {
+lib/pages/progression/progress_page.dart.bak-fix-20260718-205221:7:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/pages/progression/progress_page.dart.bak-fix-20260718-205221:17:    final policy = context.select<ProgressionFeaturePolicyProvider, ProgressionFeaturePolicy>((p) => p.policy);
+lib/pages/progression/progress_page.dart.bak-fix-20260718-205221:18:    if (!policy.progressionEnabled) {
+lib/pages/progression/rewards_page.dart.bak-20260718-204010:7:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/pages/progression/rewards_page.dart.bak-20260718-204010:17:    final policy = context.watch<ProgressionFeaturePolicyProvider>().policy;
+lib/pages/progression/rewards_page.dart.bak-20260718-204010:18:    if (!policy.progressionEnabled || !policy.redemptionsEnabled) {
+lib/pages/progression/rewards_page.dart.bak-20260718-005446:7:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/pages/progression/rewards_page.dart.bak-20260718-005446:17:    final policy = context.watch<ProgressionFeaturePolicyProvider>().policy;
+lib/pages/progression/rewards_page.dart.bak-20260718-005446:18:    if (!policy.progressionEnabled || !policy.redemptionsEnabled) {
+lib/pages/progression/missions_page.dart.pre_python_fix:9:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/pages/progression/missions_page.dart.pre_python_fix:20:    final policyProvider = context.watch<ProgressionFeaturePolicyProvider>();
+lib/pages/progression/missions_page.dart.pre_python_fix:21:    final policy = policyProvider.policy;
+lib/pages/progression/missions_page.dart.pre_python_fix:23:    if (!policy.progressionEnabled || !policy.missionsEnabled) {
+lib/pages/progression/missions_page.dart.pre_python_fix:120:    final policy = context.watch<ProgressionFeaturePolicyProvider>().policy;
+lib/pages/progression/missions_page.dart.pre_python_fix:140:      final writesAllowed = policy.allowAnyWrite;
+lib/pages/progression/missions_page.dart.pre_python_fix:145:          message: 'Progression write actions are currently disabled by server policy.',
+lib/pages/progression/missions_page.dart.pre_python_fix:152:        if (policy.killMissionClaims || !policy.missionClaimsEnabled) {
+lib/features/verified_fandom/data/verified_fandom_client.dart:34:    required String policyKey,
+lib/features/verified_fandom/data/verified_fandom_client.dart:39:        action: 'set_feature_policy',
+lib/features/verified_fandom/data/verified_fandom_client.dart:41:          'policy_key': policyKey,
+lib/nav.dart:8:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/nav.dart:181:            final flags = context.read<FeatureFlagProvider>();
+lib/nav.dart:192:            final flags = context.read<FeatureFlagProvider>();
+lib/nav.dart:301:        // QA harness gating (admin OR feature flag) in non-release builds.
+lib/nav.dart:603:        // Progression route guards (server-authoritative feature policy).
+lib/nav.dart:614:            final policyProvider = context
+lib/nav.dart:615:                .read<ProgressionFeaturePolicyProvider>();
+lib/nav.dart:616:            if (!policyProvider.isLoading) {
+lib/nav.dart:617:              final policy = policyProvider.policy;
+lib/nav.dart:618:              final roleKey = policyProvider.roleKey;
+lib/nav.dart:625:              if (!policy.progressionEnabled) {
+lib/nav.dart:631:                if (!policy.missionsEnabled ||
+lib/nav.dart:632:                    !policy.roleMissionsEnabled(roleKey)) {
+lib/nav.dart:640:                if (!policy.campaignsEnabled) {
+lib/nav.dart:647:                if (!policy.redemptionsEnabled) {
+lib/nav.dart:655:                if (!policy.progressionEnabled) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:8:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:181:            final flags = context.read<FeatureFlagProvider>();
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:192:            final flags = context.read<FeatureFlagProvider>();
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:301:        // QA harness gating (admin OR feature flag) in non-release builds.
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:602:        // Progression route guards (server-authoritative feature policy).
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:613:            final policyProvider = context
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:614:                .read<ProgressionFeaturePolicyProvider>();
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:615:            if (!policyProvider.isLoading) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:616:              final policy = policyProvider.policy;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:617:              final roleKey = policyProvider.roleKey;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:624:              if (!policy.progressionEnabled) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:630:                if (!policy.missionsEnabled ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:631:                    !policy.roleMissionsEnabled(roleKey)) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:639:                if (!policy.campaignsEnabled) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:646:                if (!policy.redemptionsEnabled) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:654:                if (!policy.progressionEnabled) {
+lib/nav.dart.bak-20260718-151023:10:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/nav.dart.bak-20260718-151023:148:            final flags = context.read<FeatureFlagProvider>();
+lib/nav.dart.bak-20260718-151023:159:            final flags = context.read<FeatureFlagProvider>();
+lib/nav.dart.bak-20260718-151023:239:        // QA harness gating (admin OR feature flag) in non-release builds.
+lib/nav.dart.bak-20260718-151023:504:        // Progression route guards (server-authoritative feature policy).
+lib/nav.dart.bak-20260718-151023:514:            final policyProvider = context.read<ProgressionFeaturePolicyProvider>();
+lib/nav.dart.bak-20260718-151023:515:            if (!policyProvider.isLoading) {
+lib/nav.dart.bak-20260718-151023:516:              final policy = policyProvider.policy;
+lib/nav.dart.bak-20260718-151023:517:              final roleKey = policyProvider.roleKey;
+lib/nav.dart.bak-20260718-151023:524:              if (!policy.progressionEnabled) {
+lib/nav.dart.bak-20260718-151023:529:                if (!policy.missionsEnabled || !policy.roleMissionsEnabled(roleKey)) {
+lib/nav.dart.bak-20260718-151023:536:                if (!policy.campaignsEnabled) {
+lib/nav.dart.bak-20260718-151023:543:                if (!policy.redemptionsEnabled) {
+lib/nav.dart.bak-20260718-151023:551:                if (!policy.progressionEnabled) {
+lib/services/fandom_hub_screen.dart:71:          const SnackBar(content: Text('TRANSMISSION BLOCK: Security policy restriction.')),
+lib/widgets/feature_flags_sheet.dart:8:import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
+lib/widgets/feature_flags_sheet.dart:14:  /// Opens the internal feature flags panel.
+lib/widgets/feature_flags_sheet.dart:20:    // Launch policy: keep feature flags invisible to normal users.
+lib/widgets/feature_flags_sheet.dart:51:    final provider = context.watch<FeatureFlagProvider>();
+lib/widgets/feature_flags_sheet.dart:88:                      for (final d in FeatureFlagProvider.descriptors)
+lib/widgets/feature_flags_sheet.dart:102:                            final ok = await context.read<FeatureFlagProvider>().unlockEditing(_unlockCtrl.text);
+lib/widgets/feature_flags_sheet.dart:117:                          await context.read<FeatureFlagProvider>().lockEditing();
+lib/widgets/feature_flags_sheet.dart:180:                final provider = context.read<FeatureFlagProvider>();
+lib/widgets/feature_flags_sheet.dart:227:    // Launch policy: the flags UI is primarily for QA.
+lib/widgets/feature_flags_sheet.dart:229:    final provider = context.watch<FeatureFlagProvider>();
+lib/widgets/feature_flags_sheet.dart:285:            onChanged: canToggle ? (v) => context.read<FeatureFlagProvider>().setEnabled(descriptor.feature, v) : null,
+lib/widgets/feature_flags_sheet.dart:375:    final provider = context.watch<ProgressionFeaturePolicyProvider>();
+lib/widgets/feature_flags_sheet.dart:376:    final policy = provider.policy;
+lib/widgets/feature_flags_sheet.dart:378:    final title = 'Server policy (Progression)';
+lib/widgets/feature_flags_sheet.dart:381:        : 'Role: ${provider.roleKey} • Source: ${policy.source} • Loaded: ${_time(policy.loadedAt)}';
+lib/widgets/feature_flags_sheet.dart:383:    final isOn = policy.progressionEnabled;
+lib/widgets/feature_flags_sheet.dart:437:              _MiniPill(label: 'Missions', enabled: policy.missionsEnabled),
+lib/widgets/feature_flags_sheet.dart:438:              _MiniPill(label: 'Campaigns', enabled: policy.campaignsEnabled),
+lib/widgets/feature_flags_sheet.dart:439:              _MiniPill(label: 'Rewards', enabled: policy.redemptionsEnabled),
+lib/widgets/feature_flags_sheet.dart:440:              _MiniPill(label: 'Writes', enabled: policy.allowAnyWrite),
+lib/widgets/feature_flags_sheet.dart:451:              onPressed: provider.isLoading ? null : () => context.read<ProgressionFeaturePolicyProvider>().refresh(),
+lib/widgets/feature_flags_sheet.dart:453:              label: Text('Refresh server policy', style: theme.textTheme.labelLarge?.bold.withColor(theme.colorScheme.onSurface)),
+lib/supabase/supabase_config.dart:23:  /// Telemetry hook to pull progression policy mappings directly from the database layer
+lib/supabase/database.types.ts:729:          policy: Json
+lib/supabase/database.types.ts:737:          policy: Json
+lib/supabase/database.types.ts:745:          policy?: Json
+lib/supabase/database.types.ts:751:      feature_policy_audit: {
+lib/supabase/database.types.ts:787:            foreignKeyName: "feature_policy_audit_actor_user_id_fkey"
+lib/supabase/database.types.ts:3115:      get_feature_policy: { Args: { role: string }; Returns: Json }
+lib/supabase/supabase_tables.sql:256:  policy jsonb not null,
+lib/supabase/supabase_tables.sql:273:create table if not exists public.feature_policy_audit (
+lib/supabase/supabase_tables.sql:285:-- RPC: stable DTO-like contract for the progression feature policy.
+lib/supabase/supabase_tables.sql:296:-- - Kill switches always merge in (even if the role policy row is disabled).
+lib/supabase/supabase_tables.sql:297:create or replace function public.get_feature_policy(role text)
+lib/supabase/supabase_tables.sql:305:  v_policy jsonb;
+lib/supabase/supabase_tables.sql:306:  v_policy_enabled boolean := true;
+lib/supabase/supabase_tables.sql:310:  select fp.policy, fp.is_enabled
+lib/supabase/supabase_tables.sql:311:    into v_policy, v_policy_enabled
+lib/supabase/supabase_tables.sql:316:  if v_policy_enabled and v_policy is not null then
+lib/supabase/supabase_tables.sql:317:    v_flags := v_policy;
+lib/supabase/supabase_tables.sql:320:  -- Baseline: if no configured policy exists, return a launch-friendly read posture.
+lib/supabase/functions/campaign_join/index.ts:27:    const { data, error } = await svc.rpc("get_feature_policy", { role: roleKey });
+lib/supabase/functions/campaign_join/index.ts:46:  const { data: policyRow } = await svc
+lib/supabase/functions/campaign_join/index.ts:48:    .select("policy,is_enabled")
+lib/supabase/functions/campaign_join/index.ts:52:  const policyEnabled = (policyRow?.is_enabled as boolean | undefined) ?? true;
+lib/supabase/functions/campaign_join/index.ts:53:  const rawPolicy = policyRow?.policy;
+lib/supabase/functions/campaign_join/index.ts:54:  if (policyEnabled && rawPolicy && typeof rawPolicy === "object") {
+lib/supabase/functions/campaign_join/index.ts:74:  // Safe-by-default: if anything goes wrong loading policy, we block writes.
+lib/supabase/functions/campaign_join/index.ts:90:    return { ok: false, reason: "Progression policy unavailable" };
+lib/supabase/functions/mission_claim/index.ts:27:    const { data, error } = await svc.rpc("get_feature_policy", { role: roleKey });
+lib/supabase/functions/mission_claim/index.ts:46:  const { data: policyRow } = await svc
+lib/supabase/functions/mission_claim/index.ts:48:    .select("policy,is_enabled")
+lib/supabase/functions/mission_claim/index.ts:52:  const policyEnabled = (policyRow?.is_enabled as boolean | undefined) ?? true;
+lib/supabase/functions/mission_claim/index.ts:53:  const rawPolicy = policyRow?.policy;
+lib/supabase/functions/mission_claim/index.ts:54:  if (policyEnabled && rawPolicy && typeof rawPolicy === "object") {
+lib/supabase/functions/mission_claim/index.ts:74:  // Safe-by-default: if anything goes wrong loading policy, we block writes.
+lib/supabase/functions/mission_claim/index.ts:92:    return { ok: false, reason: "Progression policy unavailable" };
+lib/supabase/functions/campaign_leave/index.ts:27:    const { data, error } = await svc.rpc("get_feature_policy", { role: roleKey });
+lib/supabase/functions/campaign_leave/index.ts:46:  const { data: policyRow } = await svc
+lib/supabase/functions/campaign_leave/index.ts:48:    .select("policy,is_enabled")
+lib/supabase/functions/campaign_leave/index.ts:52:  const policyEnabled = (policyRow?.is_enabled as boolean | undefined) ?? true;
+lib/supabase/functions/campaign_leave/index.ts:53:  const rawPolicy = policyRow?.policy;
+lib/supabase/functions/campaign_leave/index.ts:54:  if (policyEnabled && rawPolicy && typeof rawPolicy === "object") {
+lib/supabase/functions/campaign_leave/index.ts:84:    return { ok: false, reason: "Progression policy unavailable" };
+lib/supabase/functions/mission_start/index.ts:42:    const { data, error } = await svc.rpc("get_feature_policy", { role: roleKey });
+lib/supabase/functions/mission_start/index.ts:61:  const { data: policyRow } = await svc
+lib/supabase/functions/mission_start/index.ts:63:    .select("policy,is_enabled")
+lib/supabase/functions/mission_start/index.ts:67:  const policyEnabled = (policyRow?.is_enabled as boolean | undefined) ?? true;
+lib/supabase/functions/mission_start/index.ts:68:  const rawPolicy = policyRow?.policy;
+lib/supabase/functions/mission_start/index.ts:69:  if (policyEnabled && rawPolicy && typeof rawPolicy === "object") {
+lib/supabase/functions/mission_start/index.ts:90:  // Safe-by-default: if anything goes wrong loading policy, we block writes.
+lib/supabase/functions/mission_start/index.ts:104:    return { ok: false, reason: "Progression policy unavailable" };
+lib/supabase/supabase_policies.sql:27:alter table public.feature_policy_audit enable row level security;
+lib/supabase/supabase_policies.sql:30:drop policy if exists users_select_own on public.users;
+lib/supabase/supabase_policies.sql:31:create policy users_select_own on public.users
+lib/supabase/supabase_policies.sql:38:drop policy if exists users_insert_any on public.users;
+lib/supabase/supabase_policies.sql:39:create policy users_insert_any on public.users
+lib/supabase/supabase_policies.sql:44:drop policy if exists users_update_any on public.users;
+lib/supabase/supabase_policies.sql:45:create policy users_update_any on public.users
+lib/supabase/supabase_policies.sql:60:drop policy if exists posts_all_authed on public.posts;
+lib/supabase/supabase_policies.sql:61:create policy posts_all_authed on public.posts for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:63:drop policy if exists comments_all_authed on public.comments;
+lib/supabase/supabase_policies.sql:64:create policy comments_all_authed on public.comments for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:66:drop policy if exists stories_all_authed on public.stories;
+lib/supabase/supabase_policies.sql:67:create policy stories_all_authed on public.stories for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:69:drop policy if exists message_threads_all_authed on public.message_threads;
+lib/supabase/supabase_policies.sql:70:create policy message_threads_all_authed on public.message_threads for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:72:drop policy if exists messages_all_authed on public.messages;
+lib/supabase/supabase_policies.sql:73:create policy messages_all_authed on public.messages for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:75:drop policy if exists groups_all_authed on public.groups;
+lib/supabase/supabase_policies.sql:76:create policy groups_all_authed on public.groups for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:78:drop policy if exists group_members_all_authed on public.group_members;
+lib/supabase/supabase_policies.sql:79:create policy group_members_all_authed on public.group_members for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:81:drop policy if exists studio_sessions_all_authed on public.studio_sessions;
+lib/supabase/supabase_policies.sql:82:create policy studio_sessions_all_authed on public.studio_sessions for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:84:drop policy if exists opportunities_all_authed on public.opportunities;
+lib/supabase/supabase_policies.sql:85:create policy opportunities_all_authed on public.opportunities for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:87:drop policy if exists opportunity_applications_all_authed on public.opportunity_applications;
+lib/supabase/supabase_policies.sql:88:create policy opportunity_applications_all_authed on public.opportunity_applications for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:90:drop policy if exists monetization_transactions_all_authed on public.monetization_transactions;
+lib/supabase/supabase_policies.sql:91:create policy monetization_transactions_all_authed on public.monetization_transactions for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:93:drop policy if exists notifications_all_authed on public.notifications;
+lib/supabase/supabase_policies.sql:94:create policy notifications_all_authed on public.notifications for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:96:drop policy if exists early_access_requests_all_authed on public.early_access_requests;
+lib/supabase/supabase_policies.sql:97:create policy early_access_requests_all_authed on public.early_access_requests for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:99:drop policy if exists portfolio_items_all_authed on public.portfolio_items;
+lib/supabase/supabase_policies.sql:100:create policy portfolio_items_all_authed on public.portfolio_items for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:102:drop policy if exists campaigns_all_authed on public.campaigns;
+lib/supabase/supabase_policies.sql:103:create policy campaigns_all_authed on public.campaigns for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:105:drop policy if exists missions_all_authed on public.missions;
+lib/supabase/supabase_policies.sql:106:create policy missions_all_authed on public.missions for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:108:drop policy if exists rewards_all_authed on public.rewards;
+lib/supabase/supabase_policies.sql:109:create policy rewards_all_authed on public.rewards for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:111:drop policy if exists user_campaign_memberships_all_authed on public.user_campaign_memberships;
+lib/supabase/supabase_policies.sql:112:create policy user_campaign_memberships_all_authed on public.user_campaign_memberships for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:114:drop policy if exists user_mission_progress_all_authed on public.user_mission_progress;
+lib/supabase/supabase_policies.sql:115:create policy user_mission_progress_all_authed on public.user_mission_progress for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:117:drop policy if exists user_rewards_all_authed on public.user_rewards;
+lib/supabase/supabase_policies.sql:118:create policy user_rewards_all_authed on public.user_rewards for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:120:drop policy if exists feature_policies_all_authed on public.feature_policies;
+lib/supabase/supabase_policies.sql:121:create policy feature_policies_all_authed on public.feature_policies for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:123:drop policy if exists kill_switches_all_authed on public.kill_switches;
+lib/supabase/supabase_policies.sql:124:create policy kill_switches_all_authed on public.kill_switches for all to authenticated using (true) with check (true);
+lib/supabase/supabase_policies.sql:126:drop policy if exists feature_policy_audit_all_authed on public.feature_policy_audit;
+lib/supabase/supabase_policies.sql:127:create policy feature_policy_audit_all_authed on public.feature_policy_audit for all to authenticated using (true) with check (true);

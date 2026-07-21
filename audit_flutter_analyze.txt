@@ -1,0 +1,12 @@
+Resolving dependencies...
+Note: meta is pinned to version 1.16.0 by flutter_test from the flutter SDK.
+See https://dart.dev/go/sdk-version-pinning for details.
+
+
+Because every version of flutter_test from sdk depends on meta 1.16.0 and livekit_client >=2.6.5 depends on meta ^1.17.0, flutter_test from sdk is incompatible with livekit_client >=2.6.5.
+So, because spotlight_connect depends on both livekit_client ^2.8.1 and flutter_test from sdk, version solving failed.
+
+
+You can try the following suggestion to make the pubspec resolve:
+* Consider downgrading your constraint on livekit_client: flutter pub add livekit_client:^2.6.4
+Failed to update packages.
