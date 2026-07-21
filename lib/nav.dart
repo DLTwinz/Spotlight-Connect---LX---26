@@ -361,7 +361,7 @@ class AppRouter {
           return AppRoutes.login;
         }
 
-        final currentUser = user!;
+        final currentUser = user;
 
         // Logged in but hasn't completed onboarding
         // Admin redirect
@@ -397,7 +397,9 @@ class AppRouter {
           logRedirect(AppRoutes.waitingApproval);
           return AppRoutes.waitingApproval;
         }
-        if (currentUser.isRejected || currentUser.isRestricted || currentUser.isSuspended) {
+        if (currentUser.isRejected ||
+            currentUser.isRestricted ||
+            currentUser.isSuspended) {
           if (isAccessDeniedRoute) return null;
           final target = accessDenied(
             missing: currentUser.isRejected
