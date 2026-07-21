@@ -54,6 +54,27 @@ class SupabaseAuthProvider extends AppAuthProvider {
     });
   }
 
+  String? _pendingRoleValue(String selectedRole) {
+    final normalized = selectedRole.trim().toLowerCase();
+    if (normalized == 'talent' || normalized == 'business') return normalized;
+    return null;
+  }
+
+  String? _mapProfileRoleToLedgerRole(String profileRole) {
+    switch (profileRole.trim().toLowerCase()) {
+      case 'audience':
+        return 'fan';
+      case 'talent':
+        return 'creator';
+      case 'business':
+        return 'brand';
+      case 'admin':
+        return 'admin';
+      default:
+        return null;
+    }
+  }
+
   Future<void> refreshProfile(String uid, String? email) async {
     if (_isLoading) return;
     _isLoading = true;
@@ -69,25 +90,32 @@ class SupabaseAuthProvider extends AppAuthProvider {
 
       if (response == null) {
         _currentUser = UserModel.fromJson({
-          'id': uid,
           'user_id': uid,
           'email': email ?? '',
+          'display_name': 'User',
           'username': '',
           'onboarding_complete': false,
           'approved_roles': ['audience'],
           'active_role': 'audience',
           'application_status_summary': 'none',
+          'requested_role_pending': null,
+          'approved': false,
           'is_admin': false,
+          'admin_role_edit_enabled': false,
         });
       } else {
         final hydrated = Map<String, dynamic>.from(response);
-        hydrated['email'] = hydrated['email'] ?? email ?? '';
+        hydrated['email'] = email ?? '';
         hydrated['user_id'] = hydrated['user_id'] ?? uid;
         hydrated['approved_roles'] = hydrated['approved_roles'] ?? ['audience'];
         hydrated['active_role'] = hydrated['active_role'] ?? 'audience';
         hydrated['application_status_summary'] =
             hydrated['application_status_summary'] ?? 'none';
+        hydrated['requested_role_pending'] = hydrated['requested_role_pending'];
+        hydrated['approved'] = hydrated['approved'] ?? false;
         hydrated['is_admin'] = hydrated['is_admin'] ?? false;
+        hydrated['admin_role_edit_enabled'] =
+            hydrated['admin_role_edit_enabled'] ?? false;
         hydrated['onboarding_complete'] =
             hydrated['onboarding_complete'] ?? false;
         _currentUser = UserModel.fromJson(hydrated);
@@ -148,13 +176,16 @@ class SupabaseAuthProvider extends AppAuthProvider {
       if (uid != null) {
         await Supabase.instance.client.from('profiles').upsert({
           'user_id': uid,
-          'email': email,
-          'username': '',
+          'display_name': 'User',
+          'username': null,
           'active_role': 'audience',
+          'approved': false,
           'approved_roles': ['audience'],
+          'requested_role_pending': null,
           'onboarding_complete': false,
           'application_status_summary': 'none',
           'is_admin': false,
+          'admin_role_edit_enabled': false,
         }, onConflict: 'user_id');
       }
       await refreshCurrentUser();
@@ -186,40 +217,39 @@ class SupabaseAuthProvider extends AppAuthProvider {
       throw Exception('No active session.');
     }
 
-    final selectedRole = (role ?? '').trim();
+    final selectedRole = (role ?? '').trim().toLowerCase();
+    final pendingRole = _pendingRoleValue(selectedRole);
     final approvedRoles = <String>['audience'];
-    var requestedRolePending = false;
-    var applicationStatusSummary = 'none';
-
-    if (selectedRole == 'talent' || selectedRole == 'business') {
-      requestedRolePending = true;
-      applicationStatusSummary = 'pending';
-    }
 
     await Supabase.instance.client.from('profiles').upsert({
       'user_id': session.user.id,
-      'email': session.user.email,
-      'username': (username ?? '').trim(),
-      'active_role': selectedRole.isEmpty ? 'audience' : 'audience',
+      'display_name': _currentUser?.displayName.isNotEmpty == true
+          ? _currentUser!.displayName
+          : 'User',
+      'username': (username ?? '').trim().isEmpty
+          ? null
+          : (username ?? '').trim(),
+      'approved': false,
       'approved_roles': approvedRoles,
+      'requested_role_pending': pendingRole,
       'onboarding_complete': true,
-      'requested_role_pending': requestedRolePending,
-      'application_status_summary': applicationStatusSummary,
-      'is_admin': false,
+      'application_status_summary': pendingRole == null
+          ? 'approved'
+          : 'pending',
+      'is_admin': _currentUser?.isAdminFlag ?? false,
+      'admin_role_edit_enabled': _currentUser?.adminRoleEditEnabled ?? false,
     }, onConflict: 'user_id');
 
-    if (selectedRole == 'talent' || selectedRole == 'business') {
-      final profile = await Supabase.instance.client
-          .from('profiles')
-          .select('id')
-          .eq('user_id', session.user.id)
-          .single();
+    final ledgerRole = _mapProfileRoleToLedgerRole(
+      pendingRole == null ? 'audience' : pendingRole,
+    );
 
+    if (ledgerRole != null) {
       await Supabase.instance.client.from('user_roles').upsert({
-        'profile_id': profile['id'],
-        'role': selectedRole,
-        'status': 'pending',
-      }, onConflict: 'profile_id,role');
+        'user_id': session.user.id,
+        'role_key': ledgerRole,
+        'is_active': pendingRole == null,
+      }, onConflict: 'user_id,role_key');
     }
 
     await refreshCurrentUser();
@@ -227,20 +257,9 @@ class SupabaseAuthProvider extends AppAuthProvider {
 
   @override
   Future<void> setActiveRole(String role) async {
-    final session = Supabase.instance.client.auth.currentSession;
-    if (session == null) {
-      throw Exception('No active session.');
-    }
-
-    final normalized = role.trim().toLowerCase();
-    if (normalized.isEmpty) return;
-
-    await Supabase.instance.client
-        .from('profiles')
-        .update({'active_role': normalized})
-        .eq('user_id', session.user.id);
-
-    await refreshCurrentUser();
+    throw UnsupportedError(
+      'active_role cannot be changed client-side after signup; use approved admin workflow.',
+    );
   }
 
   @override
