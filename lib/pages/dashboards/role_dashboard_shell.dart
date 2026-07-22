@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spotlight_connect/theme.dart';
 import 'package:spotlight_connect/models/dashboard_tab_spec.dart';
 
 class RoleDashboardShell extends StatefulWidget {
@@ -20,27 +21,46 @@ class _RoleDashboardShellState extends State<RoleDashboardShell> {
 
   @override
   Widget build(BuildContext context) {
-    final String activeRole = widget.role.trim().toLowerCase();
-    final bool isTalent = activeRole == 'talent';
-    
-    // Theme accents synchronized across active workspaces
-    final Color accentColor = isTalent ? const Color(0xFF39FF14) : const Color(0xFFD4AF37);
+    final accentColor = context.roleAccent(widget.role);
+    final shellBackground = context.roleShellBackground(widget.role);
+    final navBackground = context.roleNavBackground(widget.role);
+    final navBorder = context.rolePanelBorder(widget.role);
 
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: IndexedStack(
-        index: _currentIndex,
-        children: widget.tabs.map((tab) => tab.builder()).toList(),
+      backgroundColor: shellBackground,
+      body: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              shellBackground,
+              navBackground.withValues(alpha: 0.92),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: IndexedStack(
+          index: _currentIndex,
+          children: widget.tabs.map((tab) => tab.builder()).toList(),
+        ),
       ),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
+          color: navBackground,
           border: Border(
-            top: BorderSide(color: Color(0xFF111111), width: 1.0),
+            top: BorderSide(color: navBorder, width: 1.0),
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.24),
+              blurRadius: 18,
+              offset: const Offset(0, -4),
+            ),
+          ],
         ),
         child: Theme(
           data: Theme.of(context).copyWith(
-            canvasColor: const Color(0xFF0A0A0A),
+            canvasColor: navBackground,
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
           ),
@@ -48,14 +68,14 @@ class _RoleDashboardShellState extends State<RoleDashboardShell> {
             currentIndex: _currentIndex,
             onTap: (index) => setState(() => _currentIndex = index),
             type: BottomNavigationBarType.fixed,
-            backgroundColor: const Color(0xFF0A0A0A),
+            backgroundColor: navBackground,
             selectedItemColor: accentColor,
-            unselectedItemColor: Colors.white.withValues(alpha: 0.3),
+            unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.72),
             selectedFontSize: 10,
             unselectedFontSize: 10,
             iconSize: 22,
-            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5),
-            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, letterSpacing: 0.5),
+            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, letterSpacing: 0.5),
+            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, letterSpacing: 0.4),
             items: widget.tabs.map((tab) {
               return BottomNavigationBarItem(
                 icon: Padding(

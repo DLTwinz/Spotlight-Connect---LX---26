@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -176,16 +177,8 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp.router(
         title: 'SPOTLIGHT Connect',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          brightness: Brightness.dark,
-          scaffoldBackgroundColor: Colors.black,
-          primaryColor: const Color(0xFF39FF14),
-          colorScheme: const ColorScheme.dark(
-            primary: Color(0xFF39FF14),
-            secondary: Color(0xFFD4AF37),
-            surface: Color(0xFF1A1A1A),
-          ),
-        ),
+        theme: lightTheme,
+        darkTheme: darkTheme,
         themeMode: ThemeMode.dark,
         routerConfig: _router,
       ),
