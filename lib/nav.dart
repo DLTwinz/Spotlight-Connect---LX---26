@@ -363,7 +363,7 @@ class AppRouter {
 
         final currentUser = user!;
         final canAccessAdmin =
-            currentUser.isAdmin || currentUser.approvedRoles.contains('admin');
+            currentUser.isAdmin;
 
         // Logged in but hasn't completed onboarding
         if (canAccessAdmin && location.startsWith("/admin")) return null;
@@ -449,7 +449,7 @@ class AppRouter {
 
         String defaultDashboardRouteFor(UserModel u) {
           final canAccessAdmin =
-              u.isAdmin || u.approvedRoles.contains('admin');
+              u.isAdmin;
           if (canAccessAdmin) {
             if (u.activeRole == 'talent') return AppRoutes.talent;
             if (u.activeRole == 'business') return AppRoutes.business;
@@ -576,7 +576,7 @@ class AppRouter {
           return target;
         }
         if (location == AppRoutes.admin &&
-            !(user.isAdmin || user.approvedRoles.contains('admin'))) {
+            !user.isAdmin) {
           final target = accessDenied(missing: 'role', requiredRole: 'admin');
           logRedirect(target);
           return target;
@@ -586,7 +586,7 @@ class AppRouter {
         final isAdminTooling =
             location == AppRoutes.adminMissions ||
             location == AppRoutes.adminCampaigns;
-        if (isAdminTooling && !(user.isAdmin || user.approvedRoles.contains('admin'))) {
+        if (isAdminTooling && !user.isAdmin) {
           final target = accessDenied(missing: 'role', requiredRole: 'admin');
           logRedirect(target);
           return target;
