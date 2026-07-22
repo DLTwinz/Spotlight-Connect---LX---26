@@ -159,7 +159,7 @@ class FeedTab extends StatelessWidget {
                           Text(
                             '${index + 1}h ago',
                             style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.2),
+                              color: context.roleTextSubtle(role).withValues(alpha: 0.6),
                               fontSize: 10,
                             ),
                           ),
@@ -171,7 +171,7 @@ class FeedTab extends StatelessWidget {
                             ? 'Attribution node #8902 generated safe conversion signature via TikTok link-out.'
                             : 'Campaign contract Alpha-Omicron verified proof-of-impact payload from Node 4.',
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.5),
+                          color: context.roleTextMuted(role),
                           fontSize: 11,
                           height: 1.4,
                         ),
@@ -203,7 +203,7 @@ class ReelsTab extends StatelessWidget {
         child: Text(
           "REELS TELEMETRY EMBEDDED",
           style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.38),
+            color: context.roleTextSubtle(role),
             fontSize: 11,
             letterSpacing: 2,
           ),
@@ -290,7 +290,7 @@ class DiscoverTab extends StatelessWidget {
                             ? 'Requires verified proof of conversions. Vanity metrics ignored.'
                             : 'Specialized in tech and infrastructure integration. Direct ROI focus.',
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.4),
+                          color: context.roleTextFaint(role),
                           fontSize: 11,
                         ),
                       ),
@@ -312,7 +312,7 @@ class DiscoverTab extends StatelessWidget {
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: accentColor,
-                              foregroundColor: Colors.black,
+                              foregroundColor: context.roleOnAccent(role),
                               minimumSize: const Size(80, 32),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(6),
@@ -553,7 +553,7 @@ class _StudioTabState extends State<StudioTab> {
         Text(
           'REALTIME SIGNAL FLOWS',
           style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.3),
+            color: context.roleTextSubtle(widget.role),
             fontSize: 10,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
@@ -583,8 +583,8 @@ class _StudioTabState extends State<StudioTab> {
                       ? 'CREATOR ATTRIBUTION SIGNALS LOCKED TO VERIFIED SUMMARY LAYER'
                       : 'BRAND ATTRIBUTION SIGNALS LOCKED TO VERIFIED SUMMARY LAYER',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.white38,
+                  style: TextStyle(
+                    color: context.roleTextSubtle(widget.role),
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1,
@@ -631,7 +631,7 @@ class _StudioTabState extends State<StudioTab> {
             subtitle,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.45),
+              color: context.roleTextFaint(widget.role),
               fontSize: 11,
               height: 1.4,
             ),
@@ -657,7 +657,7 @@ class OpportunitiesTab extends StatelessWidget {
         child: Text(
           "PIPELINE CONTRACTS ENCRYPTED",
           style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.24),
+            color: context.roleTextSubtle(role),
             fontSize: 11,
             letterSpacing: 2,
           ),
