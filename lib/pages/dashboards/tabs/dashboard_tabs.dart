@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spotlight_connect/theme.dart';
 import 'package:spotlight_connect/services/database_service.dart';
 import 'package:spotlight_connect/models/brand_attribution_summary_model.dart';
 import 'package:spotlight_connect/models/creator_attribution_summary_model.dart';
@@ -92,13 +93,13 @@ class FeedTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isTalent = (role ?? 'talent').trim().toLowerCase() == 'talent';
     final Color accentColor = isTalent
-        ? const Color(0xFF39FF14)
-        : const Color(0xFFD4AF37);
+        ? const Color(0xFF7CFFB2)
+        : SpotlightColors.accentTeal;
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: context.roleShellBackground(role),
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: context.roleShellBackground(role),
         title: Text(
           isTalent ? 'TALENT ACTIVITY MATRIX' : 'BUSINESS ATTRIBUTION LOG',
           style: const TextStyle(
@@ -123,9 +124,9 @@ class FeedTab extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF0A0A0A),
+              color: context.rolePanelBackground(role),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFF141414)),
+              border: Border.all(color: context.rolePanelBorder(role)),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -225,13 +226,13 @@ class DiscoverTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isTalent = (role ?? 'talent').trim().toLowerCase() == 'talent';
     final Color accentColor = isTalent
-        ? const Color(0xFF39FF14)
-        : const Color(0xFFD4AF37);
+        ? const Color(0xFF7CFFB2)
+        : SpotlightColors.accentTeal;
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: context.roleShellBackground(role),
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: context.roleShellBackground(role),
         title: Text(
           isTalent ? 'DISCOVER MISSIONS' : 'DISCOVER TALENT ECOSYSTEM',
           style: const TextStyle(
@@ -249,9 +250,9 @@ class DiscoverTab extends StatelessWidget {
           return Container(
             margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
-              color: const Color(0xFF0D0D0D),
+              color: context.rolePanelBackground(role),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFF1C1C1C)),
+              border: Border.all(color: context.rolePanelBorder(role)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -365,7 +366,7 @@ class _StudioTabState extends State<StudioTab> {
       (widget.role ?? 'talent').trim().toLowerCase() == 'talent';
 
   Color get _accentColor =>
-      _isTalent ? const Color(0xFF39FF14) : const Color(0xFFD4AF37);
+      _isTalent ? const Color(0xFF7CFFB2) : SpotlightColors.accentTeal;
 
   @override
   void initState() {
@@ -427,9 +428,9 @@ class _StudioTabState extends State<StudioTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: context.roleShellBackground(widget.role),
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: context.roleShellBackground(widget.role),
         title: Text(
           _isTalent ? 'CREATOR OPERATIONS ENGINE' : 'BRAND IMPACT ENGINE',
           style: const TextStyle(
@@ -569,9 +570,9 @@ class _StudioTabState extends State<StudioTab> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF060606),
+              color: context.rolePanelBackground(widget.role),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFF111111)),
+              border: Border.all(color: context.rolePanelBorder(widget.role)),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -611,9 +612,9 @@ class _StudioTabState extends State<StudioTab> {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFF060606),
+        color: context.rolePanelBackground(widget.role),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF141414)),
+        border: Border.all(color: context.rolePanelBorder(widget.role)),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -682,11 +683,11 @@ class ProfileTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isTalent = (role ?? 'talent').trim().toLowerCase() == 'talent';
     final Color accentColor = isTalent
-        ? const Color(0xFF39FF14)
-        : const Color(0xFFD4AF37);
+        ? const Color(0xFF7CFFB2)
+        : SpotlightColors.accentTeal;
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: context.roleShellBackground(role),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -728,9 +729,9 @@ class ProfileTab extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0D0D0D),
+                  color: context.rolePanelBackground(role),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFF1A1A1A)),
+                  border: Border.all(color: context.rolePanelBorder(role)),
                 ),
                 child: Column(
                   children: [
