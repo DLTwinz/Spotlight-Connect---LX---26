@@ -801,6 +801,7 @@ class ProfileTab extends StatelessWidget {
       ],
     );
   }
+<<<<<<< HEAD
 }        children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1543,4 +1544,6 @@ class ProfileTab extends StatelessWidget {
       ],
     );
   }
+=======
+>>>>>>> ddc2e22e2384e0aeffeb207456d79041fcc6f937
 }
