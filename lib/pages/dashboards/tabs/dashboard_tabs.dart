@@ -8,6 +8,7 @@ import 'package:spotlight_connect/models/creator_attribution_summary_model.dart'
 // SHARED UTILITIES & COMPONENTS FOR HUD LABELS
 // ==========================================
 class _TelemetryCard extends StatelessWidget {
+  final String? role;
   final String title;
   final String value;
   final String trend;
@@ -15,6 +16,7 @@ class _TelemetryCard extends StatelessWidget {
   final Color accentColor;
 
   const _TelemetryCard({
+    required this.role,
     required this.title,
     required this.value,
     required this.trend,
@@ -41,7 +43,7 @@ class _TelemetryCard extends StatelessWidget {
               Text(
                 title.toUpperCase(),
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.4),
+                  color: context.roleTextSubtle(role),
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.0,
@@ -56,8 +58,8 @@ class _TelemetryCard extends StatelessWidget {
             children: [
               Text(
                 value,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: context.roleTextPrimary(role),
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   letterSpacing: -0.5,
@@ -69,7 +71,7 @@ class _TelemetryCard extends StatelessWidget {
                 style: TextStyle(
                   color: trend.contains('+') || trend.contains('SECURE')
                       ? accentColor
-                      : Colors.redAccent,
+                      : context.roleDanger(role),
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                 ),
@@ -101,7 +103,7 @@ class FeedTab extends StatelessWidget {
         title: Text(
           isTalent ? 'TALENT ACTIVITY MATRIX' : 'BUSINESS ATTRIBUTION LOG',
           style: const TextStyle(
-            color: Colors.white,
+            color: context.roleTextPrimary(role),
             fontSize: 14,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
@@ -151,7 +153,7 @@ class FeedTab extends StatelessWidget {
                                 ? 'CONVERSION CAPTURED'
                                 : 'PROMPT IMPACT METRIC',
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: context.roleTextPrimary(role),
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
@@ -232,7 +234,7 @@ class DiscoverTab extends StatelessWidget {
         title: Text(
           isTalent ? 'DISCOVER MISSIONS' : 'DISCOVER TALENT ECOSYSTEM',
           style: const TextStyle(
-            color: Colors.white,
+            color: context.roleTextPrimary(role),
             fontSize: 14,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
@@ -279,7 +281,7 @@ class DiscoverTab extends StatelessWidget {
                             ? 'SQUADRON AUDIO // IMPACT MISSION'
                             : 'CREATOR NODE #${4022 + index}',
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: context.roleTextPrimary(role),
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
@@ -429,7 +431,7 @@ class _StudioTabState extends State<StudioTab> {
         title: Text(
           _isTalent ? 'CREATOR OPERATIONS ENGINE' : 'BRAND IMPACT ENGINE',
           style: const TextStyle(
-            color: Colors.white,
+            color: context.roleTextPrimary(widget.role),
             fontSize: 14,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
@@ -488,6 +490,7 @@ class _StudioTabState extends State<StudioTab> {
           children: _isTalent
               ? [
                   _TelemetryCard(
+                    role: widget.role,
                     title: 'Total Earnings',
                     value: _formatCurrency(_creatorSummary?.totalEarnings),
                     trend: 'CREATOR ATTRIBUTION LIVE',
@@ -495,6 +498,7 @@ class _StudioTabState extends State<StudioTab> {
                     accentColor: _accentColor,
                   ),
                   _TelemetryCard(
+                    role: widget.role,
                     title: 'Pipeline Value',
                     value: _formatCurrency(_creatorSummary?.pipelineValue),
                     trend: 'SUMMARY RESOLVED',
@@ -502,6 +506,7 @@ class _StudioTabState extends State<StudioTab> {
                     accentColor: _accentColor,
                   ),
                   _TelemetryCard(
+                    role: widget.role,
                     title: 'Completion Rate',
                     value: _formatPercent(_creatorSummary?.completionRatePct),
                     trend: 'SYSTEM SECURE',
@@ -509,6 +514,7 @@ class _StudioTabState extends State<StudioTab> {
                     accentColor: _accentColor,
                   ),
                   _TelemetryCard(
+                    role: widget.role,
                     title: 'Creator',
                     value: _creatorSummary?.creatorName ?? '--',
                     trend: _formatTimestamp(
@@ -520,6 +526,7 @@ class _StudioTabState extends State<StudioTab> {
                 ]
               : [
                   _TelemetryCard(
+                    role: widget.role,
                     title: 'Total Spend',
                     value: _formatCurrency(_brandSummary?.totalSpend),
                     trend: 'BRAND ATTRIBUTION LIVE',
@@ -527,6 +534,7 @@ class _StudioTabState extends State<StudioTab> {
                     accentColor: _accentColor,
                   ),
                   _TelemetryCard(
+                    role: widget.role,
                     title: 'Avg Deal Value',
                     value: _formatCurrency(_brandSummary?.avgDealValue),
                     trend: 'SUMMARY RESOLVED',
@@ -534,6 +542,7 @@ class _StudioTabState extends State<StudioTab> {
                     accentColor: _accentColor,
                   ),
                   _TelemetryCard(
+                    role: widget.role,
                     title: 'Completion Rate',
                     value: _formatPercent(_brandSummary?.completionRatePct),
                     trend: 'SYSTEM SECURE',
@@ -541,6 +550,7 @@ class _StudioTabState extends State<StudioTab> {
                     accentColor: _accentColor,
                   ),
                   _TelemetryCard(
+                    role: widget.role,
                     title: 'Brand',
                     value: _brandSummary?.brandName ?? '--',
                     trend: _formatTimestamp(_brandSummary?.summaryGeneratedAt),
@@ -620,7 +630,7 @@ class _StudioTabState extends State<StudioTab> {
             title,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              color: Colors.white,
+              color: context.roleTextPrimary(widget.role),
               fontSize: 12,
               fontWeight: FontWeight.bold,
               letterSpacing: 1.2,
@@ -698,10 +708,10 @@ class ProfileTab extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'CORE PROFILE ATTESTATION',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: context.roleTextPrimary(role),
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1,
@@ -727,11 +737,13 @@ class ProfileTab extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    _buildIdentityRow('Ecosystem Identity Key', '0x71C...392A'),
+                    _buildIdentityRow(context, role, 'Ecosystem Identity Key', '0x71C...392A'),
                     Divider(color: context.rolePanelBorder(role), height: 24),
-                    _buildIdentityRow('Routing Token Claim', 'Valid'),
+                    _buildIdentityRow(context, role, 'Routing Token Claim', 'Valid'),
                     Divider(color: context.rolePanelBorder(role), height: 24),
                     _buildIdentityRow(
+                      context,
+                      role,
                       'Database Protocol',
                       'Supabase Realtime RLS',
                     ),
@@ -745,18 +757,18 @@ class ProfileTab extends StatelessWidget {
     );
   }
 
-  Widget _buildIdentityRow(String label, String status) {
+  Widget _buildIdentityRow(BuildContext context, String? role, String label, String status) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: const TextStyle(color: Colors.white54, fontSize: 12),
+          style: TextStyle(color: context.roleTextFaint(role), fontSize: 12),
         ),
         Text(
           status,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: context.roleTextPrimary(role),
             fontSize: 12,
             fontFamily: 'monospace',
             fontWeight: FontWeight.bold,
