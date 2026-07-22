@@ -27,9 +27,9 @@ class _TelemetryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D0D0D),
+        color: context.panelBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF1A1A1A)),
+        border: Border.all(color: context.panelBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,9 +92,7 @@ class FeedTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isTalent = (role ?? 'talent').trim().toLowerCase() == 'talent';
-    final Color accentColor = isTalent
-        ? const Color(0xFF7CFFB2)
-        : SpotlightColors.accentTeal;
+    final Color accentColor = context.roleAccent(role);
 
     return Scaffold(
       backgroundColor: context.roleShellBackground(role),
@@ -199,13 +197,13 @@ class ReelsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Colors.black,
+    return Scaffold(
+      backgroundColor: context.roleShellBackground(role),
       body: Center(
         child: Text(
           "REELS TELEMETRY EMBEDDED",
           style: TextStyle(
-            color: Colors.white38,
+            color: Colors.white.withValues(alpha: 0.38),
             fontSize: 11,
             letterSpacing: 2,
           ),
@@ -225,9 +223,7 @@ class DiscoverTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isTalent = (role ?? 'talent').trim().toLowerCase() == 'talent';
-    final Color accentColor = isTalent
-        ? const Color(0xFF7CFFB2)
-        : SpotlightColors.accentTeal;
+    final Color accentColor = context.roleAccent(role);
 
     return Scaffold(
       backgroundColor: context.roleShellBackground(role),
@@ -365,8 +361,7 @@ class _StudioTabState extends State<StudioTab> {
   bool get _isTalent =>
       (widget.role ?? 'talent').trim().toLowerCase() == 'talent';
 
-  Color get _accentColor =>
-      _isTalent ? const Color(0xFF7CFFB2) : SpotlightColors.accentTeal;
+  Color get _accentColor => context.roleAccent(widget.role);
 
   @override
   void initState() {
@@ -656,13 +651,13 @@ class OpportunitiesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Colors.black,
+    return Scaffold(
+      backgroundColor: context.roleShellBackground(role),
       body: Center(
         child: Text(
           "PIPELINE CONTRACTS ENCRYPTED",
           style: TextStyle(
-            color: Colors.white24,
+            color: Colors.white.withValues(alpha: 0.24),
             fontSize: 11,
             letterSpacing: 2,
           ),
@@ -681,10 +676,7 @@ class ProfileTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isTalent = (role ?? 'talent').trim().toLowerCase() == 'talent';
-    final Color accentColor = isTalent
-        ? const Color(0xFF7CFFB2)
-        : SpotlightColors.accentTeal;
+    final Color accentColor = context.roleAccent(role);
 
     return Scaffold(
       backgroundColor: context.roleShellBackground(role),
@@ -697,7 +689,7 @@ class ProfileTab extends StatelessWidget {
               Center(
                 child: CircleAvatar(
                   radius: 40,
-                  backgroundColor: const Color(0xFF111111),
+                  backgroundColor: context.rolePanelBackground(role),
                   child: Icon(
                     Icons.account_circle_outlined,
                     color: accentColor,
@@ -736,9 +728,9 @@ class ProfileTab extends StatelessWidget {
                 child: Column(
                   children: [
                     _buildIdentityRow('Ecosystem Identity Key', '0x71C...392A'),
-                    const Divider(color: Color(0xFF1A1A1A), height: 24),
+                    Divider(color: context.rolePanelBorder(role), height: 24),
                     _buildIdentityRow('Routing Token Claim', 'Valid'),
-                    const Divider(color: Color(0xFF1A1A1A), height: 24),
+                    Divider(color: context.rolePanelBorder(role), height: 24),
                     _buildIdentityRow(
                       'Database Protocol',
                       'Supabase Realtime RLS',
