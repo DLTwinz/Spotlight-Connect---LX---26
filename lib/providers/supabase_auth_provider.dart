@@ -97,7 +97,7 @@ class SupabaseAuthProvider extends AppAuthProvider {
   }
 
   @override
-  Future<void> login(String email, String password, [String? extra]) async {
+  Future<void> login(String email, String password, {String? extra}) async {
     try {
       _isLoading = true;
       _lastError = null;
@@ -112,7 +112,7 @@ class SupabaseAuthProvider extends AppAuthProvider {
   }
 
   @override
-  Future<void> signup(String email, String password, [String? extra]) async {
+  Future<void> signup(String email, String password, {String? extra}) async {
     await Supabase.instance.client.auth.signUp(email: email, password: password);
   }
 
@@ -134,7 +134,7 @@ class SupabaseAuthProvider extends AppAuthProvider {
   }
 
   @override
-  Future<void> completeOnboarding([String? a, String? b]) async {}
+  Future<void> completeOnboarding(String? username, String? requestedRole) async {}
 
   @override
   Future<void> setActiveRole(String role) async {
