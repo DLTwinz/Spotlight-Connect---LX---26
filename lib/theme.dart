@@ -289,6 +289,31 @@ extension SpotlightDashboardThemeX on BuildContext {
         return const Color(0xFF0D1319);
     }
   }
+
+  Color roleTextPrimary(String? role) => Colors.white;
+
+  Color roleTextMuted(String? role) => Colors.white.withValues(alpha: 0.72);
+
+  Color roleTextFaint(String? role) => Colors.white.withValues(alpha: 0.48);
+
+  Color roleTextSubtle(String? role) => Colors.white.withValues(alpha: 0.38);
+
+  Color roleDanger(String? role) {
+    switch (dashboardRoleVariant(role)) {
+      case DashboardRoleVariant.admin:
+        return const Color(0xFFFF6B6B);
+      case DashboardRoleVariant.business:
+        return const Color(0xFFFF7A7A);
+      case DashboardRoleVariant.audience:
+        return const Color(0xFFFF8A80);
+      case DashboardRoleVariant.talent:
+        return const Color(0xFFFF7D7D);
+    }
+  }
+
+  Color roleShadow(String? role) => Colors.black.withValues(alpha: 0.24);
+
+  Color roleOnAccent(String? role) => Colors.black;
 }
 
 class FontSizes {

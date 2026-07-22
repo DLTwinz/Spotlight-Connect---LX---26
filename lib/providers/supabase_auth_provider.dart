@@ -159,7 +159,63 @@ class SupabaseAuthProvider extends AppAuthProvider {
   Future<void> completeOnboarding(
     String? username,
     String? requestedRole,
-  ) async {}
+  ) async {
+    final authUser = Supabase.instance.client.auth.currentUser;
+    if (authUser == null) {
+      throw Exception('ONBOARDING_DENIED: No authenticated user found.');
+    }
+
+    final normalizedUsername = (username ?? '').trim();
+    final normalizedRequestedRole = (requestedRole ?? '').trim().toLowerCase();
+    final selectedRole = normalizedRequestedRole.isEmpty
+        ? 'audience'
+        : normalizedRequestedRole;
+
+    final approvedRoles = <String>['audience'];
+    if (selectedRole == 'admin') {
+      throw Exception('ONBOARDING_DENIED: Admin access cannot be self-requested.');
+    }
+    if (selectedRole == 'talent' || selectedRole == 'business') {
+      approvedRoles.add(selectedRole);
+    }
+
+    final applicationStatusSummary =
+        selectedRole == 'talent' || selectedRole == 'business'
+            ? 'pending'
+            : 'none';
+
+    try {
+      _isLoading = true;
+      _lastError = null;
+      notifyListeners();
+
+      final payload = <String, dynamic>{
+        'id': authUser.id,
+        'user_id': authUser.id,
+        'email': authUser.email,
+        'display_name': normalizedUsername,
+        'username': normalizedUsername,
+        'requested_role': selectedRole,
+        'approved_roles': approvedRoles,
+        'active_role': approvedRoles.contains(selectedRole) ? selectedRole : 'audience',
+        'onboarding_complete': true,
+        'application_status_summary': applicationStatusSummary,
+        'is_admin': false,
+        'admin_role_edit_enabled': false,
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+
+      await Supabase.instance.client.from('profiles').upsert(payload);
+      await refreshProfile(authUser.id, authUser.email);
+    } catch (e) {
+      _lastError = e.toString();
+      debugPrint('🚨 ONBOARDING WRITE FAILURE: $e');
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 
   @override
   Future<void> setActiveRole(String role) async {
