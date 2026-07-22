@@ -17,7 +17,6 @@ class SupabaseAuthProvider extends AppAuthProvider {
   bool get isLoggedIn => Supabase.instance.client.auth.currentSession != null;
 
   @override
-  @override
   UserModel? get currentUser => _currentUser;
 
   @override
@@ -37,10 +36,12 @@ class SupabaseAuthProvider extends AppAuthProvider {
 
   void _initializeAuthListener() {
     debugPrint('🚨 AUTH: Initializing onAuthStateChange listener...');
-    _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((data) async {
+    _authSubscription =
+        Supabase.instance.client.auth.onAuthStateChange.listen((data) async {
       final session = data.session;
       final event = data.event;
       debugPrint('🚨 AUTH EVENT TRIGGERED: $event');
+
       if (session == null) {
         debugPrint('🚨 AUTH: No session found.');
         _currentUser = null;
@@ -48,7 +49,10 @@ class SupabaseAuthProvider extends AppAuthProvider {
         notifyListeners();
         return;
       }
-      debugPrint('🚨 AUTH: Session captured for UID: ${session.user.id}. Hydrating...');
+
+      debugPrint(
+        '🚨 AUTH: Session captured for UID: ${session.user.id}. Hydrating...',
+      );
       await refreshProfile(session.user.id, session.user.email);
     });
   }
@@ -58,6 +62,7 @@ class SupabaseAuthProvider extends AppAuthProvider {
     _isLoading = true;
     _lastError = null;
     notifyListeners();
+
     try {
       debugPrint('🚨 DB REQUEST: Fetching profile row for UID: $uid');
       final response = await Supabase.instance.client
@@ -65,18 +70,27 @@ class SupabaseAuthProvider extends AppAuthProvider {
           .select()
           .or('id.eq.$uid,user_id.eq.$uid')
           .maybeSingle();
+
       debugPrint('🚨 DB RESPONSE: Payload received: $response');
+
       if (response == null) {
         _currentUser = UserModel.fromJson({
           'id': uid,
-          'email': email ?? '',
+          'email': email,
+          'display_name': '',
+          'username': '',
           'onboarding_complete': false,
           'approved_roles': ['audience'],
           'active_role': 'audience',
-          'application_status_summary': 'none'
+          'application_status_summary': 'none',
+          'is_admin': false,
+          'admin_role_edit_enabled': false,
         });
       } else {
-        _currentUser = UserModel.fromJson(response);
+        _currentUser = UserModel.fromJson({
+          ...response,
+          'email': email ?? response['email'],
+        });
       }
     } catch (e, stackTrace) {
       _lastError = e.toString();
@@ -102,7 +116,10 @@ class SupabaseAuthProvider extends AppAuthProvider {
       _isLoading = true;
       _lastError = null;
       notifyListeners();
-      await Supabase.instance.client.auth.signInWithPassword(email: email, password: password);
+      await Supabase.instance.client.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
     } catch (e) {
       _lastError = e.toString();
       _isLoading = false;
@@ -113,7 +130,10 @@ class SupabaseAuthProvider extends AppAuthProvider {
 
   @override
   Future<void> signup(String email, String password, {String? extra}) async {
-    await Supabase.instance.client.auth.signUp(email: email, password: password);
+    await Supabase.instance.client.auth.signUp(
+      email: email,
+      password: password,
+    );
   }
 
   @override
@@ -125,7 +145,9 @@ class SupabaseAuthProvider extends AppAuthProvider {
   @override
   Future<void> refreshCurrentUser() async {
     final user = Supabase.instance.client.auth.currentUser;
-    if (user != null) await refreshProfile(user.id, user.email);
+    if (user != null) {
+      await refreshProfile(user.id, user.email);
+    }
   }
 
   @override
@@ -134,14 +156,20 @@ class SupabaseAuthProvider extends AppAuthProvider {
   }
 
   @override
-  Future<void> completeOnboarding(String? username, String? requestedRole) async {}
+  Future<void> completeOnboarding(
+    String? username,
+    String? requestedRole,
+  ) async {}
 
   @override
   Future<void> setActiveRole(String role) async {
-    // 1. HARD SECURITY WALL: Immediate ejection if the session context isn't an explicit admin
     if (!isAdmin) {
-      debugPrint('🚨 SECURITY VIOLATION: Unauthorized role switch attempt to [$role] was rejected.');
-      throw Exception('UNAUTHORIZED: Profile mutation and role switching is strictly locked for standard accounts.');
+      debugPrint(
+        '🚨 SECURITY VIOLATION: Unauthorized role switch attempt to [$role] was rejected.',
+      );
+      throw Exception(
+        'UNAUTHORIZED: Profile mutation and role switching is strictly locked for standard accounts.',
+      );
     }
 
     final uid = Supabase.instance.client.auth.currentUser?.id;
@@ -152,15 +180,15 @@ class SupabaseAuthProvider extends AppAuthProvider {
       _lastError = null;
       notifyListeners();
 
-      debugPrint('🚨 DB REQUEST: Admin authorized. Shifting runtime perspective to [$role] for UID: $uid');
-      
-      // 2. Perform authenticated backend state mutation inside the centralized profile relation
+      debugPrint(
+        '🚨 DB REQUEST: Admin authorized. Shifting runtime perspective to [$role] for UID: $uid',
+      );
+
       await Supabase.instance.client
           .from('profiles')
           .update({'active_role': role})
           .or('id.eq.$uid,user_id.eq.$uid');
 
-      // 3. Re-hydrate local session state directly from data source to preserve single source of truth
       await refreshProfile(uid, Supabase.instance.client.auth.currentUser?.email);
     } catch (e) {
       _lastError = e.toString();

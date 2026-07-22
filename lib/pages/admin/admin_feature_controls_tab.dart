@@ -14,7 +14,6 @@ class AdminFeatureControlsTab extends StatefulWidget {
 }
 
 class _AdminFeatureControlsTabState extends State<AdminFeatureControlsTab> {
-  static const String _defaultOwnerEmail = 'bakertwin9@gmail.com';
   static const _roleKeys = <String>['audience', 'talent', 'business', 'admin'];
   static const _flagKeys = <String>[
     'progression_enabled',
@@ -57,10 +56,7 @@ class _AdminFeatureControlsTabState extends State<AdminFeatureControlsTab> {
     final auth = context.read<AppAuthProvider>();
     final user = auth.currentUser;
     if (user == null) return false;
-    if (!user.isAdmin) return false;
-    const envOwnerEmail = String.fromEnvironment('SPOTLIGHT_ADMIN_OWNER_EMAIL');
-    final ownerEmail = envOwnerEmail.trim().isEmpty ? _defaultOwnerEmail : envOwnerEmail;
-    return user.email.trim().toLowerCase() == ownerEmail.trim().toLowerCase();
+    return user.isAdmin && user.adminRoleEditEnabled;
   }
 
   @override
@@ -184,8 +180,6 @@ class _AdminFeatureControlsTabState extends State<AdminFeatureControlsTab> {
     final isProcessing = _loading || vf.isWriting;
 
     if (!_canControl) {
-      const envOwnerEmail = String.fromEnvironment('SPOTLIGHT_ADMIN_OWNER_EMAIL');
-      final ownerEmail = envOwnerEmail.trim().isEmpty ? _defaultOwnerEmail : envOwnerEmail;
       return Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 520),
@@ -199,7 +193,7 @@ class _AdminFeatureControlsTabState extends State<AdminFeatureControlsTab> {
                 Text('Admin controls are restricted.', style: theme.textTheme.titleLarge, textAlign: TextAlign.center),
                 const SizedBox(height: 8),
                 Text(
-                  'This panel is locked to the owner account only.\n\nOwner: $ownerEmail',
+                  'This panel is locked to authorized platform administrators only.',
                   style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                   textAlign: TextAlign.center,
                 ),

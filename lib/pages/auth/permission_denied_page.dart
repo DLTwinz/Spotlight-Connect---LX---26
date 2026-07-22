@@ -139,9 +139,9 @@ class PermissionDeniedPage extends StatelessWidget {
                             const SizedBox(height: 8),
                             if (me != null)
                               _AccountPill(
-                                email: me.email,
+                                email: me.email ?? '',
                                 userId: me.userId,
-                                role: me.activeRole,
+                                role: me.activeRole.isEmpty ? 'audience' : me.activeRole,
                                 approvedRoles: me.approvedRoles,
                               ),
                           ],

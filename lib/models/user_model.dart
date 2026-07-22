@@ -6,6 +6,8 @@ enum UserRole {
   unknown,
 }
 
+const Object _unset = Object();
+
 enum UserAccessState {
   loggedOut,
   registeredUnonboarded,
@@ -21,20 +23,22 @@ enum UserAccessState {
 
 class UserModel {
   final String userId;
-  final String email;
+  final String? email;
   final String displayName;
   final String username;
   final String? profilePhoto;
   final String? coverPhoto;
-  final String baseRole; // default: 'audience'
-  final List<String> approvedRoles; // e.g. ['audience', 'talent']
+  final String baseRole;
+  final List<String> approvedRoles;
   final String activeRole;
   final bool onboardingComplete;
-  final String applicationStatusSummary; // 'none', 'pending', 'approved', 'rejected'
+  final String applicationStatusSummary;
+  final bool isAdminFlag;
+  final bool adminRoleEditEnabled;
 
   UserModel({
     required this.userId,
-    required this.email,
+    this.email,
     required this.displayName,
     required this.username,
     this.profilePhoto,
@@ -44,11 +48,13 @@ class UserModel {
     required this.activeRole,
     required this.onboardingComplete,
     required this.applicationStatusSummary,
+    required this.isAdminFlag,
+    required this.adminRoleEditEnabled,
   });
 
   UserModel copyWith({
     String? userId,
-    String? email,
+    Object? email = _unset,
     String? displayName,
     String? username,
     String? profilePhoto,
@@ -58,10 +64,12 @@ class UserModel {
     String? activeRole,
     bool? onboardingComplete,
     String? applicationStatusSummary,
+    Object? isAdminFlag = _unset,
+    Object? adminRoleEditEnabled = _unset,
   }) {
     return UserModel(
       userId: userId ?? this.userId,
-      email: email ?? this.email,
+      email: identical(email, _unset) ? this.email : email as String?,
       displayName: displayName ?? this.displayName,
       username: username ?? this.username,
       profilePhoto: profilePhoto ?? this.profilePhoto,
@@ -70,27 +78,47 @@ class UserModel {
       approvedRoles: approvedRoles ?? this.approvedRoles,
       activeRole: activeRole ?? this.activeRole,
       onboardingComplete: onboardingComplete ?? this.onboardingComplete,
-      applicationStatusSummary: applicationStatusSummary ?? this.applicationStatusSummary,
+      applicationStatusSummary:
+          applicationStatusSummary ?? this.applicationStatusSummary,
+      isAdminFlag: identical(isAdminFlag, _unset)
+          ? this.isAdminFlag
+          : isAdminFlag as bool,
+      adminRoleEditEnabled: identical(adminRoleEditEnabled, _unset)
+          ? this.adminRoleEditEnabled
+          : adminRoleEditEnabled as bool,
     );
   }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      userId: (json['userId'] ?? json['id'] ?? '').toString(),
-      email: (json['email'] ?? '').toString(),
+      userId: (json['userId'] ?? json['user_id'] ?? json['id'] ?? '').toString(),
+      email: json['email']?.toString(),
       displayName: (json['displayName'] ?? json['display_name'] ?? '').toString(),
       username: (json['username'] ?? '').toString(),
       profilePhoto: json['profilePhoto'] ?? json['profile_photo'],
       coverPhoto: json['coverPhoto'] ?? json['cover_photo'],
       baseRole: (json['baseRole'] ?? json['base_role'] ?? 'audience').toString(),
-      approvedRoles: json['approvedRoles'] != null 
+      approvedRoles: json['approvedRoles'] != null
           ? List<String>.from(json['approvedRoles'])
-          : json['approved_roles'] != null 
+          : json['approved_roles'] != null
               ? List<String>.from(json['approved_roles'])
               : ['audience'],
-      activeRole: (json['activeRole'] ?? json['active_role'] ?? 'audience').toString(),
-      onboardingComplete: json['onboardingComplete'] ?? json['onboarding_complete'] ?? false,
-      applicationStatusSummary: (json['applicationStatusSummary'] ?? json['application_status_summary'] ?? 'none').toString(),
+      activeRole: (json['activeRole'] ?? json['active_role'] ?? 'audience')
+          .toString(),
+      onboardingComplete:
+          (json['onboardingComplete'] ?? json['onboarding_complete'] ?? false) ==
+              true,
+      applicationStatusSummary:
+          (json['applicationStatusSummary'] ??
+                  json['application_status_summary'] ??
+                  'none')
+              .toString(),
+      isAdminFlag: (json['isAdmin'] ?? json['is_admin'] ?? false) == true,
+      adminRoleEditEnabled:
+          (json['adminRoleEditEnabled'] ??
+                  json['admin_role_edit_enabled'] ??
+                  false) ==
+              true,
     );
   }
 
@@ -111,6 +139,7 @@ class UserModel {
       parsedApprovedRoles.contains(UserRole.business);
 
   bool get isAdmin =>
+      isAdminFlag ||
       parsedActiveRole == UserRole.admin ||
       parsedApprovedRoles.contains(UserRole.admin);
 
@@ -118,11 +147,13 @@ class UserModel {
       parsedApprovedRoles.isNotEmpty ||
       applicationStatusSummary.trim().toLowerCase() == 'approved';
 
-  bool get isOnboardingComplete => onboardingComplete == true;
+  bool get isOnboardingComplete => onboardingComplete;
 
   bool get isPendingReview {
     final status = applicationStatusSummary.trim().toLowerCase();
-    return status == 'pending' || status == 'pending_review' || status == 'submitted';
+    return status == 'pending' ||
+        status == 'pending_review' ||
+        status == 'submitted';
   }
 
   bool get isRejected {
@@ -171,8 +202,8 @@ class RoleApplication {
   final String userId;
   final String applicantEmail;
   final String applicantName;
-  final String requestedRole; 
-  final String status; 
+  final String requestedRole;
+  final String status;
   final DateTime submittedAt;
   final DateTime? reviewedAt;
   final String? reviewNote;
@@ -213,31 +244,28 @@ class RoleApplication {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'applicationId': applicationId,
-      'userId': userId,
-      'applicantEmail': applicantEmail,
-      'applicantName': applicantName,
-      'requestedRole': requestedRole,
-      'status': status,
-      'submittedAt': submittedAt.toIso8601String(),
-      'reviewedAt': reviewedAt?.toIso8601String(),
-      'reviewNote': reviewNote,
-    };
-  }
-
   factory RoleApplication.fromJson(Map<String, dynamic> json) {
     return RoleApplication(
-      applicationId: (json['applicationId'] ?? '').toString(),
-      userId: (json['userId'] ?? '').toString(),
-      applicantEmail: (json['applicantEmail'] ?? '').toString(),
-      applicantName: (json['applicantName'] ?? '').toString(),
-      requestedRole: (json['requestedRole'] ?? '').toString(),
+      applicationId:
+          (json['applicationId'] ?? json['application_id'] ?? '').toString(),
+      userId: (json['userId'] ?? json['user_id'] ?? '').toString(),
+      applicantEmail:
+          (json['applicantEmail'] ?? json['applicant_email'] ?? '').toString(),
+      applicantName:
+          (json['applicantName'] ?? json['applicant_name'] ?? '').toString(),
+      requestedRole:
+          (json['requestedRole'] ?? json['requested_role'] ?? '').toString(),
       status: (json['status'] ?? '').toString(),
-      submittedAt: DateTime.tryParse((json['submittedAt'] ?? '').toString()) ?? DateTime.now(),
-      reviewedAt: DateTime.tryParse((json['reviewedAt'] ?? '').toString()),
-      reviewNote: (json['reviewNote'] ?? '').toString().trim().isEmpty ? null : (json['reviewNote'] ?? '').toString(),
+      submittedAt: DateTime.tryParse(
+            (json['submittedAt'] ?? json['submitted_at'] ?? '').toString(),
+          ) ??
+          DateTime.now(),
+      reviewedAt: json['reviewedAt'] != null || json['reviewed_at'] != null
+          ? DateTime.tryParse(
+              (json['reviewedAt'] ?? json['reviewed_at']).toString(),
+            )
+          : null,
+      reviewNote: (json['reviewNote'] ?? json['review_note'])?.toString(),
     );
   }
 }
