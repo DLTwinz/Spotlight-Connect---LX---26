@@ -362,28 +362,18 @@ class AppRouter {
         }
 
         final currentUser = user!;
+        final canAccessAdmin =
+            currentUser.isAdmin || currentUser.approvedRoles.contains('admin');
 
         // Logged in but hasn't completed onboarding
-        // Admin redirect
-        if (currentUser.activeRole == "admin") {
-          if (location.startsWith("/admin")) return null;
-          logRedirect(AppRoutes.admin);
-          return AppRoutes.admin;
-        }
+        if (canAccessAdmin && location.startsWith("/admin")) return null;
+
         if (!currentUser.onboardingComplete) {
-          // Admin redirect
-          if (currentUser.activeRole == "admin") {
-            if (location.startsWith("/admin")) return null;
+          if (canAccessAdmin) {
             logRedirect(AppRoutes.admin);
             return AppRoutes.admin;
           }
           if (isOnboardingRoute) return null;
-          // Admin redirect
-          if (currentUser.activeRole == "admin") {
-            if (location.startsWith("/admin")) return null;
-            logRedirect(AppRoutes.admin);
-            return AppRoutes.admin;
-          }
           logRedirect(AppRoutes.onboarding);
           return AppRoutes.onboarding;
         }
@@ -458,7 +448,9 @@ class AppRouter {
         }
 
         String defaultDashboardRouteFor(UserModel u) {
-          if (u.approvedRoles.contains('admin')) {
+          final canAccessAdmin =
+              u.isAdmin || u.approvedRoles.contains('admin');
+          if (canAccessAdmin) {
             if (u.activeRole == 'talent') return AppRoutes.talent;
             if (u.activeRole == 'business') return AppRoutes.business;
             if (u.activeRole == 'audience') return AppRoutes.audience;
@@ -584,7 +576,7 @@ class AppRouter {
           return target;
         }
         if (location == AppRoutes.admin &&
-            !user.approvedRoles.contains('admin')) {
+            !(user.isAdmin || user.approvedRoles.contains('admin'))) {
           final target = accessDenied(missing: 'role', requiredRole: 'admin');
           logRedirect(target);
           return target;
@@ -594,7 +586,7 @@ class AppRouter {
         final isAdminTooling =
             location == AppRoutes.adminMissions ||
             location == AppRoutes.adminCampaigns;
-        if (isAdminTooling && !user.approvedRoles.contains('admin')) {
+        if (isAdminTooling && !(user.isAdmin || user.approvedRoles.contains('admin'))) {
           final target = accessDenied(missing: 'role', requiredRole: 'admin');
           logRedirect(target);
           return target;
