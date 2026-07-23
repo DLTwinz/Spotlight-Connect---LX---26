@@ -78,10 +78,18 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         final hasAuthParams = hasFragmentTokens || hasPkceCode || hasRecoveryType;
 
         if (hasAuthParams && SupabaseConfig.client.auth.currentSession == null) {
-          if (kDebugMode) debugPrint('ResetPasswordPage: detected Supabase email-link params; forwarding to ${AppRoutes.authCallback}');
-          final target = Uri(path: AppRoutes.authCallback, queryParameters: qp, fragment: frag).toString();
-          context.go(target);
-        }
+  if (kDebugMode) {
+    debugPrint(
+      'ResetPasswordPage: detected Supabase email-link params; forwarding to ${AppRoutes.authCallback}',
+    );
+  }
+  final target = Uri(
+    path: AppRoutes.authCallback,
+    queryParameters: qp,
+    fragment: frag,
+  ).toString();
+  context.go(target);
+}
       } catch (e) {
         debugPrint('ResetPasswordPage: failed to inspect Uri.base for email-link params: $e');
       }
