@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spotlight_connect/theme.dart';
 import 'package:spotlight_connect/services/database_service.dart';
 import 'package:spotlight_connect/models/brand_attribution_summary_model.dart';
 import 'package:spotlight_connect/models/creator_attribution_summary_model.dart';
@@ -7,6 +8,7 @@ import 'package:spotlight_connect/models/creator_attribution_summary_model.dart'
 // SHARED UTILITIES & COMPONENTS FOR HUD LABELS
 // ==========================================
 class _TelemetryCard extends StatelessWidget {
+  final String? role;
   final String title;
   final String value;
   final String trend;
@@ -14,6 +16,7 @@ class _TelemetryCard extends StatelessWidget {
   final Color accentColor;
 
   const _TelemetryCard({
+    required this.role,
     required this.title,
     required this.value,
     required this.trend,
@@ -26,9 +29,9 @@ class _TelemetryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D0D0D),
+        color: context.panelBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF1A1A1A)),
+        border: Border.all(color: context.panelBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +43,7 @@ class _TelemetryCard extends StatelessWidget {
               Text(
                 title.toUpperCase(),
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.4),
+                  color: context.roleTextSubtle(role),
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.0,
@@ -55,8 +58,8 @@ class _TelemetryCard extends StatelessWidget {
             children: [
               Text(
                 value,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: context.roleTextPrimary(role),
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   letterSpacing: -0.5,
@@ -68,7 +71,7 @@ class _TelemetryCard extends StatelessWidget {
                 style: TextStyle(
                   color: trend.contains('+') || trend.contains('SECURE')
                       ? accentColor
-                      : Colors.redAccent,
+                      : context.roleDanger(role),
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                 ),
@@ -91,18 +94,16 @@ class FeedTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isTalent = (role ?? 'talent').trim().toLowerCase() == 'talent';
-    final Color accentColor = isTalent
-        ? const Color(0xFF39FF14)
-        : const Color(0xFFD4AF37);
+    final Color accentColor = context.roleAccent(role);
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: context.roleShellBackground(role),
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: context.roleShellBackground(role),
         title: Text(
           isTalent ? 'TALENT ACTIVITY MATRIX' : 'BUSINESS ATTRIBUTION LOG',
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: context.roleTextPrimary(role),
             fontSize: 14,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
@@ -123,9 +124,9 @@ class FeedTab extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF0A0A0A),
+              color: context.rolePanelBackground(role),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFF141414)),
+              border: Border.all(color: context.rolePanelBorder(role)),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,8 +152,8 @@ class FeedTab extends StatelessWidget {
                             isTalent
                                 ? 'CONVERSION CAPTURED'
                                 : 'PROMPT IMPACT METRIC',
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: context.roleTextPrimary(role),
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
@@ -160,7 +161,8 @@ class FeedTab extends StatelessWidget {
                           Text(
                             '${index + 1}h ago',
                             style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.2),
+                              color: context.roleTextSubtle(role)
+                                  .withValues(alpha: 0.6),
                               fontSize: 10,
                             ),
                           ),
@@ -172,7 +174,7 @@ class FeedTab extends StatelessWidget {
                             ? 'Attribution node #8902 generated safe conversion signature via TikTok link-out.'
                             : 'Campaign contract Alpha-Omicron verified proof-of-impact payload from Node 4.',
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.5),
+                          color: context.roleTextMuted(role),
                           fontSize: 11,
                           height: 1.4,
                         ),
@@ -198,13 +200,13 @@ class ReelsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Colors.black,
+    return Scaffold(
+      backgroundColor: context.roleShellBackground(role),
       body: Center(
         child: Text(
-          "REELS TELEMETRY EMBEDDED",
+          'REELS TELEMETRY EMBEDDED',
           style: TextStyle(
-            color: Colors.white38,
+            color: context.roleTextSubtle(role),
             fontSize: 11,
             letterSpacing: 2,
           ),
@@ -224,18 +226,16 @@ class DiscoverTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isTalent = (role ?? 'talent').trim().toLowerCase() == 'talent';
-    final Color accentColor = isTalent
-        ? const Color(0xFF39FF14)
-        : const Color(0xFFD4AF37);
+    final Color accentColor = context.roleAccent(role);
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: context.roleShellBackground(role),
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: context.roleShellBackground(role),
         title: Text(
           isTalent ? 'DISCOVER MISSIONS' : 'DISCOVER TALENT ECOSYSTEM',
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: context.roleTextPrimary(role),
             fontSize: 14,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
@@ -249,9 +249,9 @@ class DiscoverTab extends StatelessWidget {
           return Container(
             margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
-              color: const Color(0xFF0D0D0D),
+              color: context.rolePanelBackground(role),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFF1C1C1C)),
+              border: Border.all(color: context.rolePanelBorder(role)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,8 +281,8 @@ class DiscoverTab extends StatelessWidget {
                         isTalent
                             ? 'SQUADRON AUDIO // IMPACT MISSION'
                             : 'CREATOR NODE #${4022 + index}',
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: context.roleTextPrimary(role),
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
@@ -293,7 +293,7 @@ class DiscoverTab extends StatelessWidget {
                             ? 'Requires verified proof of conversions. Vanity metrics ignored.'
                             : 'Specialized in tech and infrastructure integration. Direct ROI focus.',
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.4),
+                          color: context.roleTextFaint(role),
                           fontSize: 11,
                         ),
                       ),
@@ -315,7 +315,7 @@ class DiscoverTab extends StatelessWidget {
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: accentColor,
-                              foregroundColor: Colors.black,
+                              foregroundColor: context.roleOnAccent(role),
                               minimumSize: const Size(80, 32),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(6),
@@ -364,8 +364,7 @@ class _StudioTabState extends State<StudioTab> {
   bool get _isTalent =>
       (widget.role ?? 'talent').trim().toLowerCase() == 'talent';
 
-  Color get _accentColor =>
-      _isTalent ? const Color(0xFF39FF14) : const Color(0xFFD4AF37);
+  Color get _accentColor => context.roleAccent(widget.role);
 
   @override
   void initState() {
@@ -427,13 +426,13 @@ class _StudioTabState extends State<StudioTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: context.roleShellBackground(widget.role),
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: context.roleShellBackground(widget.role),
         title: Text(
           _isTalent ? 'CREATOR OPERATIONS ENGINE' : 'BRAND IMPACT ENGINE',
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: context.roleTextPrimary(widget.role),
             fontSize: 14,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
@@ -446,7 +445,10 @@ class _StudioTabState extends State<StudioTab> {
           ),
         ],
       ),
-      body: Padding(padding: const EdgeInsets.all(16.0), child: _buildBody()),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: _buildBody(),
+      ),
     );
   }
 
@@ -492,6 +494,7 @@ class _StudioTabState extends State<StudioTab> {
           children: _isTalent
               ? [
                   _TelemetryCard(
+                    role: widget.role,
                     title: 'Total Earnings',
                     value: _formatCurrency(_creatorSummary?.totalEarnings),
                     trend: 'CREATOR ATTRIBUTION LIVE',
@@ -499,6 +502,7 @@ class _StudioTabState extends State<StudioTab> {
                     accentColor: _accentColor,
                   ),
                   _TelemetryCard(
+                    role: widget.role,
                     title: 'Pipeline Value',
                     value: _formatCurrency(_creatorSummary?.pipelineValue),
                     trend: 'SUMMARY RESOLVED',
@@ -506,6 +510,7 @@ class _StudioTabState extends State<StudioTab> {
                     accentColor: _accentColor,
                   ),
                   _TelemetryCard(
+                    role: widget.role,
                     title: 'Completion Rate',
                     value: _formatPercent(_creatorSummary?.completionRatePct),
                     trend: 'SYSTEM SECURE',
@@ -513,6 +518,7 @@ class _StudioTabState extends State<StudioTab> {
                     accentColor: _accentColor,
                   ),
                   _TelemetryCard(
+                    role: widget.role,
                     title: 'Creator',
                     value: _creatorSummary?.creatorName ?? '--',
                     trend: _formatTimestamp(
@@ -524,6 +530,7 @@ class _StudioTabState extends State<StudioTab> {
                 ]
               : [
                   _TelemetryCard(
+                    role: widget.role,
                     title: 'Total Spend',
                     value: _formatCurrency(_brandSummary?.totalSpend),
                     trend: 'BRAND ATTRIBUTION LIVE',
@@ -531,6 +538,7 @@ class _StudioTabState extends State<StudioTab> {
                     accentColor: _accentColor,
                   ),
                   _TelemetryCard(
+                    role: widget.role,
                     title: 'Avg Deal Value',
                     value: _formatCurrency(_brandSummary?.avgDealValue),
                     trend: 'SUMMARY RESOLVED',
@@ -538,6 +546,7 @@ class _StudioTabState extends State<StudioTab> {
                     accentColor: _accentColor,
                   ),
                   _TelemetryCard(
+                    role: widget.role,
                     title: 'Completion Rate',
                     value: _formatPercent(_brandSummary?.completionRatePct),
                     trend: 'SYSTEM SECURE',
@@ -545,6 +554,7 @@ class _StudioTabState extends State<StudioTab> {
                     accentColor: _accentColor,
                   ),
                   _TelemetryCard(
+                    role: widget.role,
                     title: 'Brand',
                     value: _brandSummary?.brandName ?? '--',
                     trend: _formatTimestamp(_brandSummary?.summaryGeneratedAt),
@@ -557,7 +567,7 @@ class _StudioTabState extends State<StudioTab> {
         Text(
           'REALTIME SIGNAL FLOWS',
           style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.3),
+            color: context.roleTextSubtle(widget.role),
             fontSize: 10,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
@@ -569,9 +579,9 @@ class _StudioTabState extends State<StudioTab> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF060606),
+              color: context.rolePanelBackground(widget.role),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFF111111)),
+              border: Border.all(color: context.rolePanelBorder(widget.role)),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -587,8 +597,8 @@ class _StudioTabState extends State<StudioTab> {
                       ? 'CREATOR ATTRIBUTION SIGNALS LOCKED TO VERIFIED SUMMARY LAYER'
                       : 'BRAND ATTRIBUTION SIGNALS LOCKED TO VERIFIED SUMMARY LAYER',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.white38,
+                  style: TextStyle(
+                    color: context.roleTextSubtle(widget.role),
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1,
@@ -611,9 +621,9 @@ class _StudioTabState extends State<StudioTab> {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFF060606),
+        color: context.rolePanelBackground(widget.role),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF141414)),
+        border: Border.all(color: context.rolePanelBorder(widget.role)),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -623,8 +633,8 @@ class _StudioTabState extends State<StudioTab> {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: context.roleTextPrimary(widget.role),
               fontSize: 12,
               fontWeight: FontWeight.bold,
               letterSpacing: 1.2,
@@ -635,7 +645,7 @@ class _StudioTabState extends State<StudioTab> {
             subtitle,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.45),
+              color: context.roleTextFaint(widget.role),
               fontSize: 11,
               height: 1.4,
             ),
@@ -655,13 +665,13 @@ class OpportunitiesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Colors.black,
+    return Scaffold(
+      backgroundColor: context.roleShellBackground(role),
       body: Center(
         child: Text(
-          "PIPELINE CONTRACTS ENCRYPTED",
+          'PIPELINE CONTRACTS ENCRYPTED',
           style: TextStyle(
-            color: Colors.white24,
+            color: context.roleTextSubtle(role),
             fontSize: 11,
             letterSpacing: 2,
           ),
@@ -680,13 +690,10 @@ class ProfileTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isTalent = (role ?? 'talent').trim().toLowerCase() == 'talent';
-    final Color accentColor = isTalent
-        ? const Color(0xFF39FF14)
-        : const Color(0xFFD4AF37);
+    final Color accentColor = context.roleAccent(role);
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: context.roleShellBackground(role),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -696,7 +703,7 @@ class ProfileTab extends StatelessWidget {
               Center(
                 child: CircleAvatar(
                   radius: 40,
-                  backgroundColor: const Color(0xFF111111),
+                  backgroundColor: context.rolePanelBackground(role),
                   child: Icon(
                     Icons.account_circle_outlined,
                     color: accentColor,
@@ -705,10 +712,10 @@ class ProfileTab extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'CORE PROFILE ATTESTATION',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: context.roleTextPrimary(role),
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1,
@@ -728,17 +735,29 @@ class ProfileTab extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0D0D0D),
+                  color: context.rolePanelBackground(role),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFF1A1A1A)),
+                  border: Border.all(color: context.rolePanelBorder(role)),
                 ),
                 child: Column(
                   children: [
-                    _buildIdentityRow('Ecosystem Identity Key', '0x71C...392A'),
-                    const Divider(color: Color(0xFF1A1A1A), height: 24),
-                    _buildIdentityRow('Routing Token Claim', 'Valid'),
-                    const Divider(color: Color(0xFF1A1A1A), height: 24),
                     _buildIdentityRow(
+                      context,
+                      role,
+                      'Ecosystem Identity Key',
+                      '0x71C...392A',
+                    ),
+                    Divider(color: context.rolePanelBorder(role), height: 24),
+                    _buildIdentityRow(
+                      context,
+                      role,
+                      'Routing Token Claim',
+                      'Valid',
+                    ),
+                    Divider(color: context.rolePanelBorder(role), height: 24),
+                    _buildIdentityRow(
+                      context,
+                      role,
                       'Database Protocol',
                       'Supabase Realtime RLS',
                     ),
@@ -752,18 +771,26 @@ class ProfileTab extends StatelessWidget {
     );
   }
 
-  Widget _buildIdentityRow(String label, String status) {
+  Widget _buildIdentityRow(
+    BuildContext context,
+    String? role,
+    String label,
+    String status,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: const TextStyle(color: Colors.white54, fontSize: 12),
+          style: TextStyle(
+            color: context.roleTextFaint(role),
+            fontSize: 12,
+          ),
         ),
         Text(
           status,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: context.roleTextPrimary(role),
             fontSize: 12,
             fontFamily: 'monospace',
             fontWeight: FontWeight.bold,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -22,43 +23,13 @@ import 'package:spotlight_connect/services/monetization_service.dart';
 import 'package:spotlight_connect/storage/key_value_store.dart';
 
 abstract class EnvConfig {
-  static const String _placeholderUrl =
-      'https://mdwvokenmehdfybgujpa.supabase.co';
-  static const String _placeholderAnonKey =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kd3Zva2VubWVoZGZ5Ymd1anBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODAzMzUsImV4cCI6MjA5MTg1NjMzNX0.tds2VeVEl05jd3cbaC4vutxnLRtTF6i2d5MMAJS3KJk';
-
-  static const String supabaseUrl = String.fromEnvironment(
-    'SUPABASE_URL',
-    defaultValue: _placeholderUrl,
-  );
-
-  static const String supabaseKey = String.fromEnvironment(
-    'SUPABASE_ANON_KEY',
-    defaultValue: _placeholderAnonKey,
-  );
+  static const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+  static const String supabaseKey = String.fromEnvironment('SUPABASE_ANON_KEY');
 
   static void validate() {
-    final url = supabaseUrl.trim();
-    final key = supabaseKey.trim();
-
-    final badUrl =
-        url.isEmpty ||
-        url == _placeholderUrl ||
-        !url.startsWith('https://') ||
-        !url.contains('.supabase.co');
-
-    final badKey =
-        key.isEmpty ||
-        key == _placeholderAnonKey ||
-        key.startsWith('<') ||
-        key.endsWith('>') ||
-        key.length < 100;
-
-    if (badUrl || badKey) {
+    if (supabaseUrl.isEmpty || supabaseKey.isEmpty) {
       throw Exception(
-        'PRODUCTION BOOT DENIED: Live Supabase credentials are empty or misconfigured. '
-        'Pass real values with --dart-define=SUPABASE_URL=... and '
-        '--dart-define=SUPABASE_ANON_KEY=...',
+        'PRODUCTION BOOT DENIED: SUPABASE_URL and SUPABASE_ANON_KEY must be provided via --dart-define.',
       );
     }
   }
@@ -94,7 +65,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+
     _dbClient = Supabase.instance.client;
+
     _authProvider = SupabaseAuthProvider();
     _featureFlagProvider = FeatureFlagProvider(store: createKeyValueStore());
     _progressionFeaturePolicyProvider = ProgressionFeaturePolicyProvider(
@@ -102,16 +75,15 @@ class _MyAppState extends State<MyApp> {
     );
     _router = AppRouter.createRouter(_authProvider);
 
-    Future.microtask(() async {
-      await _authProvider.ensureInitialized();
-      await _featureFlagProvider.ensureInitialized();
-    });
+    Future.microtask(_featureFlagProvider.ensureInitialized);
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider<SupabaseClient>.value(value: _dbClient),
+
         ChangeNotifierProvider<AppAuthProvider>.value(value: _authProvider),
         ChangeNotifierProvider<FeatureFlagProvider>.value(
           value: _featureFlagProvider,
@@ -119,50 +91,95 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider<ProgressionFeaturePolicyProvider>.value(
           value: _progressionFeaturePolicyProvider,
         ),
-        ChangeNotifierProvider(
-          create: (_) => NotificationService(client: _dbClient),
+
+        ChangeNotifierProxyProvider<SupabaseClient, NotificationService>(
+          create: (context) =>
+              NotificationService(client: context.read<SupabaseClient>()),
+          update: (context, client, previous) =>
+              previous ?? NotificationService(client: client),
         ),
-        ChangeNotifierProvider(
-          create: (_) => MessageService(client: _dbClient),
+        ChangeNotifierProxyProvider<SupabaseClient, MessageService>(
+          create: (context) =>
+              MessageService(client: context.read<SupabaseClient>()),
+          update: (context, client, previous) =>
+              previous ?? MessageService(client: client),
         ),
-        ChangeNotifierProvider(create: (_) => PostService(client: _dbClient)),
-        ChangeNotifierProvider(
-          create: (_) => GroupService(
-            client: _dbClient,
+        ChangeNotifierProxyProvider<SupabaseClient, PostService>(
+          create: (context) =>
+              PostService(client: context.read<SupabaseClient>()),
+          update: (context, client, previous) =>
+              previous ?? PostService(client: client),
+        ),
+        ChangeNotifierProxyProvider<SupabaseClient, GroupService>(
+          create: (context) => GroupService(
+            client: context.read<SupabaseClient>(),
             localCache: createKeyValueStore(),
           ),
+          update: (context, client, previous) =>
+              previous ??
+              GroupService(client: client, localCache: createKeyValueStore()),
         ),
-        ChangeNotifierProvider(
-          create: (_) => PortfolioService(
-            client: _dbClient,
+        ChangeNotifierProxyProvider<SupabaseClient, PortfolioService>(
+          create: (context) => PortfolioService(
+            client: context.read<SupabaseClient>(),
             localCache: createKeyValueStore(),
           ),
+          update: (context, client, previous) =>
+              previous ??
+              PortfolioService(
+                client: client,
+                localCache: createKeyValueStore(),
+              ),
         ),
-        ChangeNotifierProvider(
-          create: (_) => StoryService(
-            client: _dbClient,
+        ChangeNotifierProxyProvider<SupabaseClient, StoryService>(
+          create: (context) => StoryService(
+            client: context.read<SupabaseClient>(),
             localCache: createKeyValueStore(),
           ),
+          update: (context, client, previous) =>
+              previous ??
+              StoryService(client: client, localCache: createKeyValueStore()),
         ),
-        ChangeNotifierProvider(
-          create: (_) => OpportunityService(
-            client: _dbClient,
+        ChangeNotifierProxyProvider<SupabaseClient, OpportunityService>(
+          create: (context) => OpportunityService(
+            client: context.read<SupabaseClient>(),
             localCache: createKeyValueStore(),
           ),
+          update: (context, client, previous) =>
+              previous ??
+              OpportunityService(
+                client: client,
+                localCache: createKeyValueStore(),
+              ),
         ),
-        ChangeNotifierProvider(
-          create: (_) => MonetizationService(client: _dbClient),
+        ChangeNotifierProxyProvider<SupabaseClient, MonetizationService>(
+          create: (context) =>
+              MonetizationService(client: context.read<SupabaseClient>()),
+          update: (context, client, previous) =>
+              previous ?? MonetizationService(client: client),
         ),
-        ChangeNotifierProvider(
-          create: (_) => ProgressionService(client: _dbClient),
+        ChangeNotifierProxyProvider<SupabaseClient, ProgressionService>(
+          create: (context) =>
+              ProgressionService(client: context.read<SupabaseClient>()),
+          update: (context, client, previous) =>
+              previous ?? ProgressionService(client: client),
         ),
-        Provider(create: (_) => StudioService(client: _dbClient)),
-        Provider(create: (_) => MissionComposerService(client: _dbClient)),
+
+        ProxyProvider<SupabaseClient, StudioService>(
+          update: (context, client, previous) =>
+              previous ?? StudioService(client: client),
+        ),
+        ProxyProvider<SupabaseClient, MissionComposerService>(
+          update: (context, client, previous) =>
+              previous ?? MissionComposerService(client: client),
+        ),
       ],
       child: MaterialApp.router(
         title: 'SPOTLIGHT Connect',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(brightness: Brightness.dark, useMaterial3: true),
+        theme: lightTheme,
+        darkTheme: darkTheme,
+        themeMode: ThemeMode.dark,
         routerConfig: _router,
       ),
     );

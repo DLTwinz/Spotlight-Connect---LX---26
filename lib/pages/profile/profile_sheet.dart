@@ -303,7 +303,7 @@ class _Header extends StatelessWidget {
 
           // Restore role navigation surfaces (launch-critical): if the user is approved
           // for Admin, ensure they can always reach the Admin console.
-          if (viewerUser?.approvedRoles.contains('admin') ?? false) ...[
+          if ((viewerUser?.isAdmin ?? false)) ...[
             const SizedBox(height: AppSpacing.sm),
             Container(
               padding: AppSpacing.paddingMd,

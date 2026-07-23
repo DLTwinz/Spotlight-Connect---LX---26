@@ -23,13 +23,16 @@ class FeatureDisabledPage extends StatelessWidget {
 
     String defaultTarget() {
       if (!auth.isLoggedIn) return '/login';
-      final user = auth.currentUser;
-      if (user == null) return '/';
-      if (user.approvedRoles.contains('admin')) return '/admin';
-      if (user.activeRole == 'talent' && user.approvedRoles.contains('talent')) return '/talent';
-      if (user.activeRole == 'business' && user.approvedRoles.contains('business')) return '/business';
-      return '/audience';
-    }
+final user = auth.currentUser;
+if (user == null) return '/';
+if (user.approvedRoles.contains('admin')) return '/admin';
+if (user.activeRole == 'talent' && user.approvedRoles.contains('talent')) {
+  return '/talent';
+}
+if (user.activeRole == 'business' && user.approvedRoles.contains('business')) {
+  return '/business';
+}
+return '/audience';
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,

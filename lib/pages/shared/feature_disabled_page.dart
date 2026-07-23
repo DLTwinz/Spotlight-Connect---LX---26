@@ -25,9 +25,18 @@ class FeatureDisabledPage extends StatelessWidget {
       if (!auth.isLoggedIn) return '/login';
       final user = auth.currentUser;
       if (user == null) return '/';
-      if (user.approvedRoles.contains('admin')) return '/admin';
-      if (user.activeRole == 'talent' && user.approvedRoles.contains('talent')) return '/talent';
-      if (user.activeRole == 'business' && user.approvedRoles.contains('business')) return '/business';
+
+      if (user.isAdmin) return '/admin';
+
+      final active = user.activeRole.trim().toLowerCase();
+      final approved = user.approvedRoles.map((r) => r.trim().toLowerCase()).toSet();
+
+      if (active == 'talent' && approved.contains('talent')) return '/talent';
+      if (active == 'business' && approved.contains('business')) return '/business';
+      if (active == 'audience' && approved.contains('audience')) return '/audience';
+
+      if (approved.contains('talent')) return '/talent';
+      if (approved.contains('business')) return '/business';
       return '/audience';
     }
 

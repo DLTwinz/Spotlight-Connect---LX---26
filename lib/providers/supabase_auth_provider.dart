@@ -143,7 +143,7 @@ class SupabaseAuthProvider extends AppAuthProvider {
   }
 
   @override
-  Future<void> login(String email, String password, [String? extra]) async {
+  Future<void> login(String email, String password, {String? extra}) async {
     _isLoading = true;
     _lastError = null;
     notifyListeners();
@@ -163,7 +163,7 @@ class SupabaseAuthProvider extends AppAuthProvider {
   }
 
   @override
-  Future<void> signup(String email, String password, [String? extra]) async {
+  Future<void> signup(String email, String password, {String? extra}) async {
     _isLoading = true;
     _lastError = null;
     notifyListeners();
@@ -211,13 +211,13 @@ class SupabaseAuthProvider extends AppAuthProvider {
   }
 
   @override
-  Future<void> completeOnboarding([String? username, String? role]) async {
+  Future<void> completeOnboarding([String? username, String?  requestedRole]) async {
     final session = Supabase.instance.client.auth.currentSession;
     if (session == null) {
       throw Exception('No active session.');
     }
 
-    final selectedRole = (role ?? '').trim().toLowerCase();
+    final selectedRole = (Role ?? '').trim().toLowerCase();
     final pendingRole = _pendingRoleValue(selectedRole);
     final approvedRoles = <String>['audience'];
 

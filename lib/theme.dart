@@ -156,6 +156,166 @@ class DarkModeColors {
 }
 
 /// Font size constants
+
+class SpotlightColors {
+  static const Color canvasDark = Color(0xFF06070A);
+  static const Color shellDark = Color(0xFF0B0F14);
+  static const Color panelDark = Color(0xFF10161D);
+  static const Color panelDarkAlt = Color(0xFF151C24);
+  static const Color borderDark = Color(0xFF223041);
+
+  static const Color canvasLight = Color(0xFFF4F7FB);
+  static const Color shellLight = Color(0xFFFFFFFF);
+  static const Color panelLight = Color(0xFFFFFFFF);
+  static const Color panelLightAlt = Color(0xFFEDF3F8);
+  static const Color borderLight = Color(0xFFD7E0EA);
+
+  static const Color accentTeal = Color(0xFF18C7C9);
+  static const Color accentTealSoft = Color(0xFF7EE7E7);
+  static const Color accentGold = Color(0xFFD4AF37);
+
+  static const Color success = Color(0xFF34C759);
+  static const Color warning = Color(0xFFFFB020);
+  static const Color danger = Color(0xFFFF5D73);
+}
+
+extension SpotlightThemeX on BuildContext {
+  ThemeData get appTheme => Theme.of(this);
+  ColorScheme get colors => Theme.of(this).colorScheme;
+
+  Color get shellBg => Theme.of(this).brightness == Brightness.dark
+      ? SpotlightColors.shellDark
+      : SpotlightColors.shellLight;
+
+  Color get panelBg => Theme.of(this).brightness == Brightness.dark
+      ? SpotlightColors.panelDark
+      : SpotlightColors.panelLight;
+
+  Color get panelAltBg => Theme.of(this).brightness == Brightness.dark
+      ? SpotlightColors.panelDarkAlt
+      : SpotlightColors.panelLightAlt;
+
+  Color get panelBorder => Theme.of(this).brightness == Brightness.dark
+      ? SpotlightColors.borderDark
+      : SpotlightColors.borderLight;
+
+  Color get spotlightAccent => SpotlightColors.accentTeal;
+}
+
+
+enum DashboardRoleVariant { admin, business, talent, audience }
+
+extension DashboardRoleVariantX on DashboardRoleVariant {
+  static DashboardRoleVariant fromRole(String? role) {
+    switch ((role ?? '').trim().toLowerCase()) {
+      case 'admin':
+        return DashboardRoleVariant.admin;
+      case 'business':
+        return DashboardRoleVariant.business;
+      case 'audience':
+        return DashboardRoleVariant.audience;
+      case 'talent':
+      default:
+        return DashboardRoleVariant.talent;
+    }
+  }
+}
+
+extension SpotlightDashboardThemeX on BuildContext {
+  DashboardRoleVariant dashboardRoleVariant(String? role) =>
+      DashboardRoleVariantX.fromRole(role);
+
+  Color roleAccent(String? role) {
+    switch (dashboardRoleVariant(role)) {
+      case DashboardRoleVariant.admin:
+        return const Color(0xFFFF6B6B);
+      case DashboardRoleVariant.business:
+        return SpotlightColors.accentTeal;
+      case DashboardRoleVariant.audience:
+        return const Color(0xFF8EBCFF);
+      case DashboardRoleVariant.talent:
+        return const Color(0xFF7CFFB2);
+    }
+  }
+
+  Color roleShellBackground(String? role) {
+    switch (dashboardRoleVariant(role)) {
+      case DashboardRoleVariant.admin:
+        return const Color(0xFF090B10);
+      case DashboardRoleVariant.business:
+        return const Color(0xFF071118);
+      case DashboardRoleVariant.audience:
+        return const Color(0xFF0B1016);
+      case DashboardRoleVariant.talent:
+        return const Color(0xFF0A0D12);
+    }
+  }
+
+  Color rolePanelBackground(String? role) {
+    switch (dashboardRoleVariant(role)) {
+      case DashboardRoleVariant.admin:
+        return const Color(0xFF12161D);
+      case DashboardRoleVariant.business:
+        return const Color(0xFF0E1821);
+      case DashboardRoleVariant.audience:
+        return const Color(0xFF111925);
+      case DashboardRoleVariant.talent:
+        return const Color(0xFF11161F);
+    }
+  }
+
+  Color rolePanelBorder(String? role) {
+    switch (dashboardRoleVariant(role)) {
+      case DashboardRoleVariant.admin:
+        return const Color(0xFF303846);
+      case DashboardRoleVariant.business:
+        return const Color(0xFF1D4E59);
+      case DashboardRoleVariant.audience:
+        return const Color(0xFF314760);
+      case DashboardRoleVariant.talent:
+        return const Color(0xFF28433A);
+    }
+  }
+
+  Color roleNavBackground(String? role) {
+    switch (dashboardRoleVariant(role)) {
+      case DashboardRoleVariant.admin:
+        return const Color(0xFF0D1117);
+      case DashboardRoleVariant.business:
+        return const Color(0xFF0B141B);
+      case DashboardRoleVariant.audience:
+        return const Color(0xFF101722);
+      case DashboardRoleVariant.talent:
+        return const Color(0xFF0D1319);
+    }
+  }
+
+  Color roleTextPrimary(String? role) => Colors.white;
+
+  Color roleTextMuted(String? role) => Colors.white.withValues(alpha: 0.72);
+
+  Color roleTextFaint(String? role) => Colors.white.withValues(alpha: 0.48);
+
+  Color roleTextSubtle(String? role) => Colors.white.withValues(alpha: 0.38);
+
+  Color roleDanger(String? role) {
+    switch (dashboardRoleVariant(role)) {
+      case DashboardRoleVariant.admin:
+        return const Color(0xFFFF6B6B);
+      case DashboardRoleVariant.business:
+        return const Color(0xFFFF7A7A);
+      case DashboardRoleVariant.audience:
+        return const Color(0xFFFF8A80);
+      case DashboardRoleVariant.talent:
+        return const Color(0xFFFF7D7D);
+    }
+  }
+
+  Color roleShadow(String? role) => Colors.black.withValues(alpha: 0.24);
+
+  Color roleOnAccent(String? role) => Colors.black;
+}
+
 class FontSizes {
   static const double displayLarge = 57.0;
   static const double displayMedium = 45.0;
