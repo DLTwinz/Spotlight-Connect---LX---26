@@ -107,9 +107,10 @@ class _LiveKitRoomPageState extends State<LiveKitRoomPage> {
 
       // ignore: do_not_use_environment
       const liveKitUrl = String.fromEnvironment('SPOTLIGHT_LIVEKIT_URL');
-      if (liveKitUrl.trim().isEmpty) throw StateError('Missing SPOTLIGHT_LIVEKIT_URL.');
-
-      final room = Room();
+      if (liveKitUrl.trim().isEmpty) {
+  throw StateError('Missing SPOTLIGHT_LIVEKIT_URL.');
+}
+     final room = Room();
       try {
         await room.connect(liveKitUrl.trim(), token);
       } catch (e) {
