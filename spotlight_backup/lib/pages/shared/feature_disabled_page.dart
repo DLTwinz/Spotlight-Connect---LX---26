@@ -22,14 +22,19 @@ class FeatureDisabledPage extends StatelessWidget {
     final auth = context.watch<AppAuthProvider>();
 
     String defaultTarget() {
-      if (!auth.isLoggedIn) return '/login';
-      final user = auth.currentUser;
-      if (user == null) return '/';
-      if (user.approvedRoles.contains('admin')) return '/admin';
-      if (user.activeRole == 'talent' && user.approvedRoles.contains('talent')) return '/talent';
-      if (user.activeRole == 'business' && user.approvedRoles.contains('business')) return '/business';
-      return '/audience';
-    }
+      if (hasAuthParams && SupabaseConfig.client.auth.currentSession == null) {
+  if (kDebugMode) {
+    debugPrint(
+      'ResetPasswordPage: detected Supabase email-link params; forwarding to ${AppRoutes.authCallback}',
+    );
+  }
+  final target = Uri(
+    path: AppRoutes.authCallback,
+    queryParameters: qp,
+    fragment: frag,
+  ).toString();
+  context.go(target);
+}
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
