@@ -11,7 +11,7 @@ git branch --show-current
 git status --short
 git log --oneline -n 5
 echo
-git diff main...HEAD --stat || true
+git diff main...HEAD --stat | tail -n 120 || true
 echo
 
 echo "=== Flutter clean ==="
