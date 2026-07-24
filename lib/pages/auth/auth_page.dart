@@ -15,10 +15,13 @@ class _AuthPageState extends State<AuthPage> {
   final _passCtrl = TextEditingController();
   bool _isLogin = true;
 
-Future<void> _submit() async {
+  Future<void> _submit() async {
     debugPrint("Submit button pressed!"); // New debug print
-    
-    final authProvider = Provider.of<SupabaseAuthProvider>(context, listen: false);
+
+    final authProvider = Provider.of<SupabaseAuthProvider>(
+      context,
+      listen: false,
+    );
     final email = _emailCtrl.text.trim();
     final password = _passCtrl.text.trim();
 
@@ -40,9 +43,9 @@ Future<void> _submit() async {
     } catch (e) {
       debugPrint("CAUGHT ERROR: $e"); // New debug print
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
       }
     }
   }
@@ -55,15 +58,24 @@ Future<void> _submit() async {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(controller: _emailCtrl, decoration: const InputDecoration(labelText: 'Email')),
-            TextField(controller: _passCtrl, decoration: const InputDecoration(labelText: 'Password'), obscureText: true),
+            TextField(
+              controller: _emailCtrl,
+              decoration: const InputDecoration(labelText: 'Email'),
+            ),
+            TextField(
+              controller: _passCtrl,
+              decoration: const InputDecoration(labelText: 'Password'),
+              obscureText: true,
+            ),
             ElevatedButton(
               onPressed: _submit, // This now calls your fixed _submit
               child: Text(_isLogin ? 'Login' : 'Sign Up'),
             ),
             TextButton(
               onPressed: () => setState(() => _isLogin = !_isLogin),
-              child: Text(_isLogin ? 'Create Account' : 'Have an account? Login'),
+              child: Text(
+                _isLogin ? 'Create Account' : 'Have an account? Login',
+              ),
             ),
           ],
         ),

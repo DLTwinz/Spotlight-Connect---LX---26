@@ -14,11 +14,14 @@ class RewardsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final policy = context.select<ProgressionFeaturePolicyProvider, dynamic>((p) => p.policy);
+    final policy = context.select<ProgressionFeaturePolicyProvider, dynamic>(
+      (p) => p.policy,
+    );
     if (!policy.progressionEnabled || !policy.redemptionsEnabled) {
       return const FeatureDisabledPage(
         title: 'Rewards are disabled',
-        message: 'Rewards and redemptions are currently unavailable. Please check back later.',
+        message:
+            'Rewards and redemptions are currently unavailable. Please check back later.',
         icon: Icons.redeem_outlined,
       );
     }
@@ -28,7 +31,13 @@ class RewardsPage extends StatelessWidget {
         child: Consumer<ProgressionService>(
           builder: (context, svc, _) {
             if (!svc.isInitialized) {
-              unawaited(svc.ensureInitialized().catchError((e, st) => debugPrint('RewardsPage ensureInitialized failed: $e\n$st')));
+              unawaited(
+                svc.ensureInitialized().catchError(
+                  (e, st) => debugPrint(
+                    'RewardsPage ensureInitialized failed: $e\n$st',
+                  ),
+                ),
+              );
             }
             final prog = svc.progression;
             if (svc.isLoading && prog == null) {
@@ -49,7 +58,10 @@ class RewardsPage extends StatelessWidget {
               child: ListView(
                 padding: AppSpacing.paddingLg,
                 children: [
-                  Text('Your balance', style: theme.textTheme.titleMedium?.bold),
+                  Text(
+                    'Your balance',
+                    style: theme.textTheme.titleMedium?.bold,
+                  ),
                   const SizedBox(height: AppSpacing.sm),
                   _BalanceCard(
                     prestige: prog?.prestigeTotal ?? 0,
@@ -73,7 +85,10 @@ class RewardsPage extends StatelessWidget {
                   _ProofHistoryPanel(events: svc.proofEvents),
                   if (svc.lastError != null) ...[
                     const SizedBox(height: AppSpacing.md),
-                    ProgressionInlineErrorBanner(message: svc.lastError!, onRetry: () => unawaited(svc.refreshHome())),
+                    ProgressionInlineErrorBanner(
+                      message: svc.lastError!,
+                      onRetry: () => unawaited(svc.refreshHome()),
+                    ),
                   ],
                 ],
               ),
@@ -86,7 +101,12 @@ class RewardsPage extends StatelessWidget {
 }
 
 class _BalanceCard extends StatelessWidget {
-  const _BalanceCard({required this.prestige, required this.momentum, required this.tier, required this.nextTierPrestigeRequired});
+  const _BalanceCard({
+    required this.prestige,
+    required this.momentum,
+    required this.tier,
+    required this.nextTierPrestigeRequired,
+  });
 
   final int prestige;
   final int momentum;
@@ -97,14 +117,18 @@ class _BalanceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final nextReq = nextTierPrestigeRequired;
-    final pct = (nextReq == null || nextReq <= 0) ? 0.0 : (prestige / nextReq).clamp(0, 1).toDouble();
+    final pct = (nextReq == null || nextReq <= 0)
+        ? 0.0
+        : (prestige / nextReq).clamp(0, 1).toDouble();
 
     return Container(
       padding: AppSpacing.paddingLg,
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,25 +138,51 @@ class _BalanceCard extends StatelessWidget {
               Container(
                 width: 40,
                 height: 40,
-                decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(AppRadius.md)),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
                 alignment: Alignment.center,
-                child: Icon(Icons.workspace_premium_outlined, color: theme.colorScheme.primary),
+                child: Icon(
+                  Icons.workspace_premium_outlined,
+                  color: theme.colorScheme.primary,
+                ),
               ),
               const SizedBox(width: AppSpacing.md),
-              Expanded(child: Text('Tier: $tier', style: theme.textTheme.titleMedium?.bold)),
+              Expanded(
+                child: Text(
+                  'Tier: $tier',
+                  style: theme.textTheme.titleMedium?.bold,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
           Row(
             children: [
-              Expanded(child: _Metric(label: 'Prestige', value: prestige.toString(), icon: Icons.workspace_premium_outlined)),
+              Expanded(
+                child: _Metric(
+                  label: 'Prestige',
+                  value: prestige.toString(),
+                  icon: Icons.workspace_premium_outlined,
+                ),
+              ),
               const SizedBox(width: AppSpacing.md),
-              Expanded(child: _Metric(label: 'Momentum', value: momentum.toString(), icon: Icons.auto_graph)),
+              Expanded(
+                child: _Metric(
+                  label: 'Momentum',
+                  value: momentum.toString(),
+                  icon: Icons.auto_graph,
+                ),
+              ),
             ],
           ),
           if (nextReq != null && nextReq > 0) ...[
             const SizedBox(height: AppSpacing.lg),
-            Text('Next tier requirement', style: theme.textTheme.labelLarge?.bold),
+            Text(
+              'Next tier requirement',
+              style: theme.textTheme.labelLarge?.bold,
+            ),
             const SizedBox(height: AppSpacing.xs),
             ClipRRect(
               borderRadius: BorderRadius.circular(999),
@@ -144,7 +194,12 @@ class _BalanceCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.xs),
-            Text('$prestige / $nextReq Prestige', style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant)),
+            Text(
+              '$prestige / $nextReq Prestige',
+              style: theme.textTheme.bodySmall?.withColor(
+                theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
           ],
         ],
       ),
@@ -166,7 +221,9 @@ class _Metric extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22),
+        ),
       ),
       child: Row(
         children: [
@@ -176,7 +233,12 @@ class _Metric extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: theme.textTheme.labelSmall?.withColor(theme.colorScheme.onSurfaceVariant)),
+                Text(
+                  label,
+                  style: theme.textTheme.labelSmall?.withColor(
+                    theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
                 const SizedBox(height: 2),
                 Text(value, style: theme.textTheme.titleMedium?.bold),
               ],
@@ -201,16 +263,23 @@ class _BadgesPanel extends StatelessWidget {
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22)),
+          border: Border.all(
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22),
+          ),
         ),
         child: Row(
           children: [
-            Icon(Icons.emoji_events_outlined, color: theme.colorScheme.onSurfaceVariant),
+            Icon(
+              Icons.emoji_events_outlined,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Text(
                 'No badges yet. Complete missions and participate in campaigns to earn recognizable proof.',
-                style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+                style: theme.textTheme.bodyMedium?.withColor(
+                  theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
           ],
@@ -223,16 +292,23 @@ class _BadgesPanel extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.emoji_events_outlined, color: theme.colorScheme.primary),
+              Icon(
+                Icons.emoji_events_outlined,
+                color: theme.colorScheme.primary,
+              ),
               const SizedBox(width: AppSpacing.sm),
-              Expanded(child: Text('Badges', style: theme.textTheme.titleSmall?.bold)),
+              Expanded(
+                child: Text('Badges', style: theme.textTheme.titleSmall?.bold),
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
@@ -241,14 +317,20 @@ class _BadgesPanel extends StatelessWidget {
             runSpacing: AppSpacing.sm,
             children: [
               for (final b in badges.take(18))
-                _BadgeChip(name: b.name, badgeType: b.badgeType, description: b.description),
+                _BadgeChip(
+                  name: b.name,
+                  badgeType: b.badgeType,
+                  description: b.description,
+                ),
             ],
           ),
           if (badges.length > 18) ...[
             const SizedBox(height: AppSpacing.sm),
             Text(
               '+${badges.length - 18} more',
-              style: theme.textTheme.labelMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.labelMedium?.withColor(
+                theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ],
@@ -258,7 +340,11 @@ class _BadgesPanel extends StatelessWidget {
 }
 
 class _BadgeChip extends StatelessWidget {
-  const _BadgeChip({required this.name, required this.badgeType, required this.description});
+  const _BadgeChip({
+    required this.name,
+    required this.badgeType,
+    required this.description,
+  });
 
   final String name;
   final String? badgeType;
@@ -272,7 +358,9 @@ class _BadgeChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -291,7 +379,9 @@ class _BadgeChip extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               badgeType!,
-              style: theme.textTheme.labelSmall?.withColor(theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.labelSmall?.withColor(
+                theme.colorScheme.onSurfaceVariant,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ],
@@ -313,7 +403,9 @@ class _ProofHistoryPanel extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,14 +414,21 @@ class _ProofHistoryPanel extends StatelessWidget {
             children: [
               Icon(Icons.history, color: theme.colorScheme.primary),
               const SizedBox(width: AppSpacing.sm),
-              Expanded(child: Text('Proof history', style: theme.textTheme.titleSmall?.bold)),
+              Expanded(
+                child: Text(
+                  'Proof history',
+                  style: theme.textTheme.titleSmall?.bold,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
           if (events.isEmpty)
             Text(
               'Your completed missions and campaign participation will show up here as verifiable proof.',
-              style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodyMedium?.withColor(
+                theme.colorScheme.onSurfaceVariant,
+              ),
             )
           else
             Column(
@@ -377,14 +476,19 @@ class _ProofHistoryRow extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.18)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.18),
+        ),
       ),
       child: Row(
         children: [
           Container(
             width: 38,
             height: 38,
-            decoration: BoxDecoration(color: tint.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(AppRadius.md)),
+            decoration: BoxDecoration(
+              color: tint.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(AppRadius.md),
+            ),
             alignment: Alignment.center,
             child: Icon(icon, color: tint),
           ),
@@ -393,16 +497,28 @@ class _ProofHistoryRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(event.title, style: theme.textTheme.labelLarge?.bold, overflow: TextOverflow.ellipsis),
+                Text(
+                  event.title,
+                  style: theme.textTheme.labelLarge?.bold,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 const SizedBox(height: 2),
-                Text(event.subtitle, style: theme.textTheme.labelMedium?.withColor(theme.colorScheme.onSurfaceVariant), overflow: TextOverflow.ellipsis),
+                Text(
+                  event.subtitle,
+                  style: theme.textTheme.labelMedium?.withColor(
+                    theme.colorScheme.onSurfaceVariant,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
           Text(
             _formatShortDate(event.at),
-            style: theme.textTheme.labelSmall?.withColor(theme.colorScheme.onSurfaceVariant),
+            style: theme.textTheme.labelSmall?.withColor(
+              theme.colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -437,15 +553,35 @@ class _ProofCardsRow extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          _ProofCard(label: 'Tier', value: tier, icon: Icons.workspace_premium_outlined),
+          _ProofCard(
+            label: 'Tier',
+            value: tier,
+            icon: Icons.workspace_premium_outlined,
+          ),
           const SizedBox(width: AppSpacing.md),
-          _ProofCard(label: 'Badges', value: badgesEarned.toString(), icon: Icons.verified),
+          _ProofCard(
+            label: 'Badges',
+            value: badgesEarned.toString(),
+            icon: Icons.verified,
+          ),
           const SizedBox(width: AppSpacing.md),
-          _ProofCard(label: 'Prestige', value: prestige.toString(), icon: Icons.auto_graph),
+          _ProofCard(
+            label: 'Prestige',
+            value: prestige.toString(),
+            icon: Icons.auto_graph,
+          ),
           const SizedBox(width: AppSpacing.md),
-          _ProofCard(label: 'Missions', value: missionsCompleted.toString(), icon: Icons.task_alt),
+          _ProofCard(
+            label: 'Missions',
+            value: missionsCompleted.toString(),
+            icon: Icons.task_alt,
+          ),
           const SizedBox(width: AppSpacing.md),
-          _ProofCard(label: 'Campaigns', value: campaignsParticipated.toString(), icon: Icons.campaign_outlined),
+          _ProofCard(
+            label: 'Campaigns',
+            value: campaignsParticipated.toString(),
+            icon: Icons.campaign_outlined,
+          ),
         ],
       ),
     );
@@ -453,7 +589,11 @@ class _ProofCardsRow extends StatelessWidget {
 }
 
 class _ProofCard extends StatelessWidget {
-  const _ProofCard({required this.label, required this.value, required this.icon});
+  const _ProofCard({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
 
   final String label;
   final String value;
@@ -468,16 +608,28 @@ class _ProofCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, color: theme.colorScheme.primary),
           const SizedBox(height: 8),
-          Text(value, style: theme.textTheme.titleMedium?.bold, maxLines: 1, overflow: TextOverflow.ellipsis),
+          Text(
+            value,
+            style: theme.textTheme.titleMedium?.bold,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
           const SizedBox(height: 2),
-          Text(label, style: theme.textTheme.labelSmall?.withColor(theme.colorScheme.onSurfaceVariant)),
+          Text(
+            label,
+            style: theme.textTheme.labelSmall?.withColor(
+              theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
         ],
       ),
     );

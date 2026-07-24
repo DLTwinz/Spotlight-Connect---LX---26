@@ -9,7 +9,13 @@ import 'package:spotlight_connect/theme.dart';
 /// We use a page (not only a bottom sheet) so deep links and web refreshes have a
 /// deterministic, accessible destination.
 class FeatureDisabledPage extends StatelessWidget {
-  const FeatureDisabledPage({super.key, required this.title, required this.message, this.icon = Icons.lock_outline, this.backLabel = 'Back'});
+  const FeatureDisabledPage({
+    super.key,
+    required this.title,
+    required this.message,
+    this.icon = Icons.lock_outline,
+    this.backLabel = 'Back',
+  });
 
   final String title;
   final String message;
@@ -29,11 +35,15 @@ class FeatureDisabledPage extends StatelessWidget {
       if (user.isAdmin) return '/admin';
 
       final active = user.activeRole.trim().toLowerCase();
-      final approved = user.approvedRoles.map((r) => r.trim().toLowerCase()).toSet();
+      final approved = user.approvedRoles
+          .map((r) => r.trim().toLowerCase())
+          .toSet();
 
       if (active == 'talent' && approved.contains('talent')) return '/talent';
-      if (active == 'business' && approved.contains('business')) return '/business';
-      if (active == 'audience' && approved.contains('audience')) return '/audience';
+      if (active == 'business' && approved.contains('business'))
+        return '/business';
+      if (active == 'audience' && approved.contains('audience'))
+        return '/audience';
 
       if (approved.contains('talent')) return '/talent';
       if (approved.contains('business')) return '/business';
@@ -53,7 +63,11 @@ class FeatureDisabledPage extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(AppRadius.xl),
-                  border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35)),
+                  border: Border.all(
+                    color: theme.colorScheme.outlineVariant.withValues(
+                      alpha: 0.35,
+                    ),
+                  ),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -63,18 +77,38 @@ class FeatureDisabledPage extends StatelessWidget {
                       children: [
                         Icon(icon, color: theme.colorScheme.onSurface),
                         const SizedBox(width: AppSpacing.sm),
-                        Expanded(child: Text(title, style: theme.textTheme.titleLarge?.bold.withColor(theme.colorScheme.onSurface))),
+                        Expanded(
+                          child: Text(
+                            title,
+                            style: theme.textTheme.titleLarge?.bold.withColor(
+                              theme.colorScheme.onSurface,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: AppSpacing.sm),
-                    Text(message, style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant)),
+                    Text(
+                      message,
+                      style: theme.textTheme.bodyMedium?.withColor(
+                        theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                     const SizedBox(height: AppSpacing.lg),
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton.icon(
                         onPressed: () => context.go(defaultTarget()),
-                        icon: Icon(Icons.arrow_back, color: theme.colorScheme.onPrimary),
-                        label: Text(backLabel, style: theme.textTheme.labelLarge?.bold.withColor(theme.colorScheme.onPrimary)),
+                        icon: Icon(
+                          Icons.arrow_back,
+                          color: theme.colorScheme.onPrimary,
+                        ),
+                        label: Text(
+                          backLabel,
+                          style: theme.textTheme.labelLarge?.bold.withColor(
+                            theme.colorScheme.onPrimary,
+                          ),
+                        ),
                       ),
                     ),
                   ],

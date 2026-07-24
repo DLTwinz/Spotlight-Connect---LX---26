@@ -6,9 +6,9 @@ class GroupService extends ChangeNotifier {
   final dynamic _localCache; // ignore: unused_field
   List<Map<String, dynamic>> _joinedGroups = [];
 
-  GroupService({required SupabaseClient client, required dynamic localCache}) 
-      : _client = client, 
-        _localCache = localCache;
+  GroupService({required SupabaseClient client, required dynamic localCache})
+    : _client = client,
+      _localCache = localCache;
 
   List<Map<String, dynamic>> get joinedGroups => _joinedGroups;
 

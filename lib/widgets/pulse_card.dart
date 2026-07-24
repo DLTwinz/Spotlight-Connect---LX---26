@@ -20,13 +20,30 @@ class PulseCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const CircleAvatar(radius: 4, backgroundColor: Colors.greenAccent), // The "Live" Pulse
+              const CircleAvatar(
+                radius: 4,
+                backgroundColor: Colors.greenAccent,
+              ), // The "Live" Pulse
               const SizedBox(width: 8),
-              Text(label, style: const TextStyle(color: Colors.white60, fontSize: 12, letterSpacing: 1.2)),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white60,
+                  fontSize: 12,
+                  letterSpacing: 1.2,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 16),
-          Text(value, style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );

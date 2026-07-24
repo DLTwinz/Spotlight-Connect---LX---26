@@ -51,7 +51,9 @@ class MessageModel {
       senderUserId: (json['senderUserId'] ?? '').toString(),
       senderName: (json['senderName'] ?? '').toString(),
       body: (json['body'] ?? '').toString(),
-      createdAt: DateTime.tryParse((json['createdAt'] ?? '').toString()) ?? DateTime.now(),
+      createdAt:
+          DateTime.tryParse((json['createdAt'] ?? '').toString()) ??
+          DateTime.now(),
     );
   }
 }

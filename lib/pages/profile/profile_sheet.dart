@@ -41,7 +41,13 @@ class ProfileSheet extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => ViewportConstrainedSheet(child: ProfileSheet(userId: userId, displayName: displayName, primaryRole: primaryRole)),
+      builder: (_) => ViewportConstrainedSheet(
+        child: ProfileSheet(
+          userId: userId,
+          displayName: displayName,
+          primaryRole: primaryRole,
+        ),
+      ),
     );
   }
 
@@ -70,7 +76,10 @@ class _ProfileSheetState extends State<ProfileSheet> {
 
       // Prefer Supabase when authenticated.
       if (uid != null) {
-        final rows = await _db.from('user_follows').select('following_user_id').eq('follower_user_id', uid);
+        final rows = await _db
+            .from('user_follows')
+            .select('following_user_id')
+            .eq('follower_user_id', uid);
         final ids = (rows as List)
             .map((e) => (e is Map ? e['following_user_id'] : null)?.toString())
             .whereType<String>()
@@ -117,9 +126,16 @@ class _ProfileSheetState extends State<ProfileSheet> {
       // Prefer Supabase when authenticated.
       if (uid != null) {
         if (_isFollowing) {
-          await _db.from('user_follows').delete().eq('follower_user_id', uid).eq('following_user_id', widget.userId);
+          await _db
+              .from('user_follows')
+              .delete()
+              .eq('follower_user_id', uid)
+              .eq('following_user_id', widget.userId);
         } else {
-          await _db.from('user_follows').insert({'follower_user_id': uid, 'following_user_id': widget.userId});
+          await _db.from('user_follows').insert({
+            'follower_user_id': uid,
+            'following_user_id': widget.userId,
+          });
         }
       } else {
         final raw = await _store.getString(_followKey);
@@ -138,13 +154,23 @@ class _ProfileSheetState extends State<ProfileSheet> {
         _busy = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_isFollowing ? 'Following ${widget.displayName}' : 'Unfollowed ${widget.displayName}')),
+        SnackBar(
+          content: Text(
+            _isFollowing
+                ? 'Following ${widget.displayName}'
+                : 'Unfollowed ${widget.displayName}',
+          ),
+        ),
       );
     } catch (e) {
       debugPrint('ProfileSheet toggle follow failed: $e');
       if (!mounted) return;
       setState(() => _busy = false);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not update follow. Please try again.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not update follow. Please try again.'),
+        ),
+      );
     }
   }
 
@@ -152,7 +178,9 @@ class _ProfileSheetState extends State<ProfileSheet> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final allPosts = context.select<PostService, List<dynamic>>((svc) => svc.posts);
+    final allPosts = context.select<PostService, List<dynamic>>(
+      (svc) => svc.posts,
+    );
     final posts = allPosts
         .where((p) => p != null && p.authorId == widget.userId)
         .cast<dynamic>()
@@ -165,7 +193,9 @@ class _ProfileSheetState extends State<ProfileSheet> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35),
+        ),
       ),
       child: SafeArea(
         child: CustomScrollView(
@@ -186,13 +216,21 @@ class _ProfileSheetState extends State<ProfileSheet> {
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.lg),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                0,
+                AppSpacing.lg,
+                AppSpacing.lg,
+              ),
               sliver: posts.isEmpty
-                  ? SliverToBoxAdapter(child: _EmptyState(displayName: widget.displayName))
+                  ? SliverToBoxAdapter(
+                      child: _EmptyState(displayName: widget.displayName),
+                    )
                   : SliverList.separated(
                       itemCount: posts.length,
                       itemBuilder: (context, i) => PostCard(post: posts[i]),
-                      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
+                      separatorBuilder: (_, _) =>
+                          const SizedBox(height: AppSpacing.md),
                     ),
             ),
           ],
@@ -232,7 +270,9 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final viewerUser = context.select<AppAuthProvider, UserModel?>((auth) => auth.currentUser);
+    final viewerUser = context.select<AppAuthProvider, UserModel?>(
+      (auth) => auth.currentUser,
+    );
     final (IconData icon, Color tint) = switch (primaryRole) {
       'talent' => (Icons.mic_none, theme.colorScheme.primary),
       'business' => (Icons.handshake_outlined, theme.colorScheme.secondary),
@@ -241,16 +281,26 @@ class _Header extends StatelessWidget {
     };
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.lg),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        AppSpacing.lg,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Expanded(child: Text('Profile', style: theme.textTheme.titleLarge?.bold)),
+              Expanded(
+                child: Text('Profile', style: theme.textTheme.titleLarge?.bold),
+              ),
               IconButton(
                 onPressed: () => context.pop(),
-                icon: Icon(Icons.close, color: theme.colorScheme.onSurfaceVariant),
+                icon: Icon(
+                  Icons.close,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ),
@@ -259,8 +309,12 @@ class _Header extends StatelessWidget {
             padding: AppSpacing.paddingMd,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(AppRadius.lg),
-              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.18),
-              border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+              color: theme.colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.18,
+              ),
+              border: Border.all(
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25),
+              ),
             ),
             child: Row(
               children: [
@@ -279,11 +333,17 @@ class _Header extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(displayName, style: theme.textTheme.titleLarge?.bold, overflow: TextOverflow.ellipsis),
+                      Text(
+                        displayName,
+                        style: theme.textTheme.titleLarge?.bold,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       const SizedBox(height: 2),
                       Text(
                         _roleLabel(primaryRole),
-                        style: theme.textTheme.labelMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+                        style: theme.textTheme.labelMedium?.withColor(
+                          theme.colorScheme.onSurfaceVariant,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
@@ -293,9 +353,24 @@ class _Header extends StatelessWidget {
                 OutlinedButton.icon(
                   onPressed: busy ? null : onToggleFollow,
                   icon: busy
-                      ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: theme.colorScheme.onSurfaceVariant))
-                      : Icon(isFollowing ? Icons.check : Icons.add, color: theme.colorScheme.onSurfaceVariant),
-                  label: Text(isFollowing ? 'Following' : 'Follow', style: theme.textTheme.labelLarge?.withColor(theme.colorScheme.onSurfaceVariant)),
+                      ? SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        )
+                      : Icon(
+                          isFollowing ? Icons.check : Icons.add,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                  label: Text(
+                    isFollowing ? 'Following' : 'Follow',
+                    style: theme.textTheme.labelLarge?.withColor(
+                      theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -310,21 +385,33 @@ class _Header extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppRadius.lg),
                 color: theme.colorScheme.surface,
-                border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+                border: Border.all(
+                  color: theme.colorScheme.outlineVariant.withValues(
+                    alpha: 0.25,
+                  ),
+                ),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.admin_panel_settings_outlined, color: theme.colorScheme.primary),
+                  Icon(
+                    Icons.admin_panel_settings_outlined,
+                    color: theme.colorScheme.primary,
+                  ),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Admin Console', style: theme.textTheme.labelLarge?.bold),
+                        Text(
+                          'Admin Console',
+                          style: theme.textTheme.labelLarge?.bold,
+                        ),
                         const SizedBox(height: 2),
                         Text(
                           'Switch into Admin and open approvals + operations tools.',
-                          style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant),
+                          style: theme.textTheme.bodySmall?.withColor(
+                            theme.colorScheme.onSurfaceVariant,
+                          ),
                         ),
                       ],
                     ),
@@ -336,11 +423,18 @@ class _Header extends StatelessWidget {
                       try {
                         await auth.setActiveRole('admin');
                       } catch (e) {
-                        debugPrint('ProfileSheet: failed to setActiveRole(admin): $e');
+                        debugPrint(
+                          'ProfileSheet: failed to setActiveRole(admin): $e',
+                        );
                       }
                       if (context.mounted) context.go('/admin');
                     },
-                    child: Text('Open', style: theme.textTheme.labelLarge?.bold.withColor(theme.colorScheme.onSurface)),
+                    child: Text(
+                      'Open',
+                      style: theme.textTheme.labelLarge?.bold.withColor(
+                        theme.colorScheme.onSurface,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -354,11 +448,18 @@ class _Header extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppRadius.lg),
                 color: theme.colorScheme.surface,
-                border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+                border: Border.all(
+                  color: theme.colorScheme.outlineVariant.withValues(
+                    alpha: 0.25,
+                  ),
+                ),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.workspace_premium_outlined, color: theme.colorScheme.primary),
+                  Icon(
+                    Icons.workspace_premium_outlined,
+                    color: theme.colorScheme.primary,
+                  ),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
@@ -368,21 +469,24 @@ class _Header extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  TextButton(onPressed: () => context.push('/progress'), child: const Text('View')),
+                  TextButton(
+                    onPressed: () => context.push('/progress'),
+                    child: const Text('View'),
+                  ),
                 ],
               ),
             ),
-              const SizedBox(height: AppSpacing.md),
-              _ProfileProofCardsRow(
-                tier: tierName ?? 'Starter',
-                prestige: prestige ?? 0,
-                momentum: momentum ?? 0,
-                badgesEarned: badges.length,
-              ),
-              const SizedBox(height: AppSpacing.md),
-              _ProfileBadgesPanel(badges: badges),
-              const SizedBox(height: AppSpacing.md),
-              _ProfileProofHistoryPanel(events: proofEvents),
+            const SizedBox(height: AppSpacing.md),
+            _ProfileProofCardsRow(
+              tier: tierName ?? 'Starter',
+              prestige: prestige ?? 0,
+              momentum: momentum ?? 0,
+              badgesEarned: badges.length,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _ProfileBadgesPanel(badges: badges),
+            const SizedBox(height: AppSpacing.md),
+            _ProfileProofHistoryPanel(events: proofEvents),
           ],
           const SizedBox(height: AppSpacing.lg),
           Text('Recent posts', style: theme.textTheme.titleMedium?.bold),
@@ -412,17 +516,26 @@ class _ProfileBadgesPanel extends StatelessWidget {
         padding: AppSpacing.paddingMd,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.18),
-          border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+          color: theme.colorScheme.surfaceContainerHighest.withValues(
+            alpha: 0.18,
+          ),
+          border: Border.all(
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25),
+          ),
         ),
         child: Row(
           children: [
-            Icon(Icons.emoji_events_outlined, color: theme.colorScheme.onSurfaceVariant),
+            Icon(
+              Icons.emoji_events_outlined,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: Text(
                 'No badges yet — your earned proof will show here as you complete missions and campaigns.',
-                style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant),
+                style: theme.textTheme.bodySmall?.withColor(
+                  theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
           ],
@@ -434,17 +547,26 @@ class _ProfileBadgesPanel extends StatelessWidget {
       padding: AppSpacing.paddingMd,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.18),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(
+          alpha: 0.18,
+        ),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.emoji_events_outlined, color: theme.colorScheme.primary),
+              Icon(
+                Icons.emoji_events_outlined,
+                color: theme.colorScheme.primary,
+              ),
               const SizedBox(width: AppSpacing.sm),
-              Expanded(child: Text('Badges', style: theme.textTheme.labelLarge?.bold)),
+              Expanded(
+                child: Text('Badges', style: theme.textTheme.labelLarge?.bold),
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -459,7 +581,9 @@ class _ProfileBadgesPanel extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               '+${badges.length - 10} more',
-              style: theme.textTheme.labelSmall?.withColor(theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.labelSmall?.withColor(
+                theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ],
@@ -480,7 +604,9 @@ class _ProfileBadgeChip extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(999),
         color: theme.colorScheme.surface,
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -489,7 +615,11 @@ class _ProfileBadgeChip extends StatelessWidget {
           const SizedBox(width: 8),
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 180),
-            child: Text(name, style: theme.textTheme.labelMedium?.bold, overflow: TextOverflow.ellipsis),
+            child: Text(
+              name,
+              style: theme.textTheme.labelMedium?.bold,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
@@ -498,7 +628,12 @@ class _ProfileBadgeChip extends StatelessWidget {
 }
 
 class _ProfileProofCardsRow extends StatelessWidget {
-  const _ProfileProofCardsRow({required this.tier, required this.prestige, required this.momentum, required this.badgesEarned});
+  const _ProfileProofCardsRow({
+    required this.tier,
+    required this.prestige,
+    required this.momentum,
+    required this.badgesEarned,
+  });
 
   final String tier;
   final int prestige;
@@ -511,13 +646,29 @@ class _ProfileProofCardsRow extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          _ProfileProofCard(label: 'Tier', value: tier, icon: Icons.workspace_premium_outlined),
+          _ProfileProofCard(
+            label: 'Tier',
+            value: tier,
+            icon: Icons.workspace_premium_outlined,
+          ),
           const SizedBox(width: AppSpacing.sm),
-          _ProfileProofCard(label: 'Prestige', value: prestige.toString(), icon: Icons.auto_graph),
+          _ProfileProofCard(
+            label: 'Prestige',
+            value: prestige.toString(),
+            icon: Icons.auto_graph,
+          ),
           const SizedBox(width: AppSpacing.sm),
-          _ProfileProofCard(label: 'Momentum', value: momentum.toString(), icon: Icons.bolt),
+          _ProfileProofCard(
+            label: 'Momentum',
+            value: momentum.toString(),
+            icon: Icons.bolt,
+          ),
           const SizedBox(width: AppSpacing.sm),
-          _ProfileProofCard(label: 'Badges', value: badgesEarned.toString(), icon: Icons.verified),
+          _ProfileProofCard(
+            label: 'Badges',
+            value: badgesEarned.toString(),
+            icon: Icons.verified,
+          ),
         ],
       ),
     );
@@ -525,7 +676,11 @@ class _ProfileProofCardsRow extends StatelessWidget {
 }
 
 class _ProfileProofCard extends StatelessWidget {
-  const _ProfileProofCard({required this.label, required this.value, required this.icon});
+  const _ProfileProofCard({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
 
   final String label;
   final String value;
@@ -540,16 +695,28 @@ class _ProfileProofCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.lg),
         color: theme.colorScheme.surface,
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, color: theme.colorScheme.primary),
           const SizedBox(height: 8),
-          Text(value, style: theme.textTheme.titleMedium?.bold, maxLines: 1, overflow: TextOverflow.ellipsis),
+          Text(
+            value,
+            style: theme.textTheme.titleMedium?.bold,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
           const SizedBox(height: 2),
-          Text(label, style: theme.textTheme.labelSmall?.withColor(theme.colorScheme.onSurfaceVariant)),
+          Text(
+            label,
+            style: theme.textTheme.labelSmall?.withColor(
+              theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
         ],
       ),
     );
@@ -567,8 +734,12 @@ class _ProfileProofHistoryPanel extends StatelessWidget {
       padding: AppSpacing.paddingMd,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.18),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(
+          alpha: 0.18,
+        ),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -577,14 +748,21 @@ class _ProfileProofHistoryPanel extends StatelessWidget {
             children: [
               Icon(Icons.history, color: theme.colorScheme.primary),
               const SizedBox(width: AppSpacing.sm),
-              Expanded(child: Text('Proof history', style: theme.textTheme.labelLarge?.bold)),
+              Expanded(
+                child: Text(
+                  'Proof history',
+                  style: theme.textTheme.labelLarge?.bold,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
           if (events.isEmpty)
             Text(
               'Completed missions and campaign participation will appear here as verifiable proof.',
-              style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodySmall?.withColor(
+                theme.colorScheme.onSurfaceVariant,
+              ),
             )
           else
             Column(
@@ -610,8 +788,6 @@ class _ProfileProofHistoryRow extends StatelessWidget {
     final theme = Theme.of(context);
 
     final IconData icon = switch (event.kind) {
-
-
       ProofEventKind.purchase => Icons.shopping_bag_outlined,
       ProofEventKind.subscription => Icons.repeat_outlined,
       ProofEventKind.tip => Icons.volunteer_activism_outlined,
@@ -621,8 +797,6 @@ class _ProfileProofHistoryRow extends StatelessWidget {
     };
 
     final Color tint = switch (event.kind) {
-
-
       ProofEventKind.purchase => Colors.green,
       ProofEventKind.subscription => Colors.blue,
       ProofEventKind.tip => Colors.amber,
@@ -648,14 +822,29 @@ class _ProfileProofHistoryRow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(event.title, style: theme.textTheme.labelMedium?.bold, overflow: TextOverflow.ellipsis),
+              Text(
+                event.title,
+                style: theme.textTheme.labelMedium?.bold,
+                overflow: TextOverflow.ellipsis,
+              ),
               const SizedBox(height: 2),
-              Text(event.subtitle, style: theme.textTheme.labelSmall?.withColor(theme.colorScheme.onSurfaceVariant), overflow: TextOverflow.ellipsis),
+              Text(
+                event.subtitle,
+                style: theme.textTheme.labelSmall?.withColor(
+                  theme.colorScheme.onSurfaceVariant,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
             ],
           ),
         ),
         const SizedBox(width: AppSpacing.sm),
-        Text(_format(event.at), style: theme.textTheme.labelSmall?.withColor(theme.colorScheme.onSurfaceVariant)),
+        Text(
+          _format(event.at),
+          style: theme.textTheme.labelSmall?.withColor(
+            theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
       ],
     );
   }
@@ -678,8 +867,12 @@ class _EmptyState extends StatelessWidget {
       padding: AppSpacing.paddingLg,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.18),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(
+          alpha: 0.18,
+        ),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25),
+        ),
       ),
       child: Row(
         children: [
@@ -688,7 +881,9 @@ class _EmptyState extends StatelessWidget {
           Expanded(
             child: Text(
               '$displayName hasn\'t posted yet.',
-              style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodyMedium?.withColor(
+                theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
         ],

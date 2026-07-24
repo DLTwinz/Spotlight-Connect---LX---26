@@ -7,7 +7,9 @@ class StudioService extends ChangeNotifier {
   StudioService({required SupabaseClient client}) : _client = client;
 
   Future<Map<String, dynamic>> getAnalyticsSnapshot(String creatorId) async {
-    throw UnimplementedError('Studio analytics snapshot is not implemented yet.');
+    throw UnimplementedError(
+      'Studio analytics snapshot is not implemented yet.',
+    );
   }
 
   Future<void> endSession(String roomId) async {
@@ -18,7 +20,9 @@ class StudioService extends ChangeNotifier {
     required String title,
     required DateTime scheduledFor,
   }) async {
-    throw UnimplementedError('Studio session scheduling is not implemented yet.');
+    throw UnimplementedError(
+      'Studio session scheduling is not implemented yet.',
+    );
   }
 
   Future<void> startExternalConsoleLive({
@@ -27,7 +31,9 @@ class StudioService extends ChangeNotifier {
     required String? broadcasterUserId,
     required String? broadcasterDisplayName,
   }) async {
-    throw UnimplementedError('External console live start is not implemented yet.');
+    throw UnimplementedError(
+      'External console live start is not implemented yet.',
+    );
   }
 
   Future<void> startRtmpLive({
@@ -44,7 +50,9 @@ class StudioService extends ChangeNotifier {
     required String? broadcasterDisplayName,
     bool isAudioOnly = false,
   }) async {
-    throw UnimplementedError('LiveKit live session start is not implemented yet.');
+    throw UnimplementedError(
+      'LiveKit live session start is not implemented yet.',
+    );
   }
 
   Future<String?> createLiveKitToken({
@@ -52,10 +60,10 @@ class StudioService extends ChangeNotifier {
     required String participant,
   }) async {
     try {
-      final resp = await _client.rpc('livekit_token', params: {
-        'room': room,
-        'participant': participant,
-      });
+      final resp = await _client.rpc(
+        'livekit_token',
+        params: {'room': room, 'participant': participant},
+      );
 
       if (resp is Map && resp['token'] != null) {
         return resp['token']?.toString();
@@ -82,9 +90,15 @@ class StudioService extends ChangeNotifier {
 
   Future<List<StudioSessionModel>> fetchRemoteSessions({int limit = 30}) async {
     try {
-      final response = await _client.from('live_sessions').select().limit(limit);
+      final response = await _client
+          .from('live_sessions')
+          .select()
+          .limit(limit);
       return (response as List)
-          .map((e) => StudioSessionModel.fromSupabaseRow(e as Map<String, dynamic>))
+          .map(
+            (e) =>
+                StudioSessionModel.fromSupabaseRow(e as Map<String, dynamic>),
+          )
           .toList();
     } catch (e) {
       debugPrint('Failed to fetch remote sessions: $e');

@@ -13,6 +13,7 @@ class NotificationModel {
   });
 
   final String notificationId;
+
   /// like | comment | repost | opportunity_apply | opportunity_shortlist | role_approved | role_rejected
   final String type;
   final String title;
@@ -59,8 +60,12 @@ class NotificationModel {
       type: (json['type'] ?? '').toString(),
       title: (json['title'] ?? '').toString(),
       body: (json['body'] ?? '').toString(),
-      entityId: (json['entityId'] ?? '').toString().trim().isEmpty ? null : (json['entityId'] ?? '').toString(),
-      createdAt: DateTime.tryParse((json['createdAt'] ?? '').toString()) ?? DateTime.now(),
+      entityId: (json['entityId'] ?? '').toString().trim().isEmpty
+          ? null
+          : (json['entityId'] ?? '').toString(),
+      createdAt:
+          DateTime.tryParse((json['createdAt'] ?? '').toString()) ??
+          DateTime.now(),
       read: json['read'] == true,
     );
   }

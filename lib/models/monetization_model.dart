@@ -53,17 +53,22 @@ class SubscriptionPlan {
   factory SubscriptionPlan.fromJson(Map<String, dynamic> json) {
     DateTime dt(dynamic v) {
       if (v is DateTime) return v;
-      if (v is String) return DateTime.tryParse(v) ?? DateTime.fromMillisecondsSinceEpoch(0);
+      if (v is String)
+        return DateTime.tryParse(v) ?? DateTime.fromMillisecondsSinceEpoch(0);
       return DateTime.fromMillisecondsSinceEpoch(0);
     }
 
     final bulletsRaw = json['featureBullets'];
-    final bullets = bulletsRaw is List ? bulletsRaw.map((e) => e.toString()).toList() : <String>[];
+    final bullets = bulletsRaw is List
+        ? bulletsRaw.map((e) => e.toString()).toList()
+        : <String>[];
     return SubscriptionPlan(
       planId: (json['planId'] ?? '').toString(),
       title: (json['title'] ?? '').toString(),
       subtitle: (json['subtitle'] ?? '').toString(),
-      priceUsdMonthly: (json['priceUsdMonthly'] is num) ? (json['priceUsdMonthly'] as num).toDouble() : 0,
+      priceUsdMonthly: (json['priceUsdMonthly'] is num)
+          ? (json['priceUsdMonthly'] as num).toDouble()
+          : 0,
       featureBullets: bullets,
       createdAt: dt(json['createdAt']),
       updatedAt: dt(json['updatedAt']),
@@ -130,7 +135,8 @@ class MonetizationTransaction {
   factory MonetizationTransaction.fromJson(Map<String, dynamic> json) {
     DateTime dt(dynamic v) {
       if (v is DateTime) return v;
-      if (v is String) return DateTime.tryParse(v) ?? DateTime.fromMillisecondsSinceEpoch(0);
+      if (v is String)
+        return DateTime.tryParse(v) ?? DateTime.fromMillisecondsSinceEpoch(0);
       return DateTime.fromMillisecondsSinceEpoch(0);
     }
 
@@ -144,7 +150,9 @@ class MonetizationTransaction {
       type: (json['type'] ?? '').toString(),
       fromUserId: (json['fromUserId'] ?? '').toString(),
       toUserId: (json['toUserId'] ?? '').toString(),
-      amountUsd: (json['amountUsd'] is num) ? (json['amountUsd'] as num).toDouble() : 0,
+      amountUsd: (json['amountUsd'] is num)
+          ? (json['amountUsd'] as num).toDouble()
+          : 0,
       metadata: meta,
       createdAt: dt(json['createdAt']),
       updatedAt: dt(json['updatedAt']),
@@ -202,7 +210,8 @@ class CreatorPayoutProfile {
   factory CreatorPayoutProfile.fromJson(Map<String, dynamic> json) {
     DateTime dt(dynamic v) {
       if (v is DateTime) return v;
-      if (v is String) return DateTime.tryParse(v) ?? DateTime.fromMillisecondsSinceEpoch(0);
+      if (v is String)
+        return DateTime.tryParse(v) ?? DateTime.fromMillisecondsSinceEpoch(0);
       return DateTime.fromMillisecondsSinceEpoch(0);
     }
 

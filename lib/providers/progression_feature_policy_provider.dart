@@ -14,7 +14,8 @@ import 'package:spotlight_connect/supabase/supabase_config.dart';
 /// - If the policy cannot be loaded, it falls back to a conservative policy
 ///   where progression reads can render but all writes are blocked.
 class ProgressionFeaturePolicyProvider extends ChangeNotifier {
-  ProgressionFeaturePolicyProvider({required AppAuthProvider authProvider}) : _auth = authProvider {
+  ProgressionFeaturePolicyProvider({required AppAuthProvider authProvider})
+    : _auth = authProvider {
     _authListener = () {
       final uid = _auth.currentUser?.userId;
       final roleKey = _roleKeyFromUser(_auth.currentUser);
@@ -34,7 +35,9 @@ class ProgressionFeaturePolicyProvider extends ChangeNotifier {
 
   bool _isLoading = false;
   String? _lastError;
-  ProgressionFeaturePolicy _policy = ProgressionFeaturePolicy.safeFallback(source: 'startup');
+  ProgressionFeaturePolicy _policy = ProgressionFeaturePolicy.safeFallback(
+    source: 'startup',
+  );
 
   String? _lastUserId;
   String _lastRoleKey = 'unknown';
@@ -85,14 +88,18 @@ class ProgressionFeaturePolicyProvider extends ChangeNotifier {
 
     try {
       // RPC-first, then fallback to direct-table reads.
-      final payload = await SupabaseConfig.fetchProgressionFeaturePolicy(roleKey: roleKey);
+      final payload = await SupabaseConfig.fetchProgressionFeaturePolicy(
+        roleKey: roleKey,
+      );
       _policy = ProgressionFeaturePolicy.fromRpc(payload);
       _lastError = null;
     } catch (e, st) {
       debugPrint('ProgressionFeaturePolicyProvider.refresh failed: $e');
       debugPrint('$st');
       _lastError = e.toString();
-      _policy = ProgressionFeaturePolicy.safeFallback(source: 'fallback_provider_error');
+      _policy = ProgressionFeaturePolicy.safeFallback(
+        source: 'fallback_provider_error',
+      );
     } finally {
       _isLoading = false;
       notifyListeners();

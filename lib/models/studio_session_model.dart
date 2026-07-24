@@ -21,17 +21,22 @@ class StudioSessionModel {
   final String sessionId;
   final String title;
   final DateTime scheduledFor;
+
   /// scheduled | live | ended
   final String status;
+
   /// external | rtmp
   final String broadcastMethod;
+
   /// The user who started the broadcast (used for UI like “by @name” and host actions).
   final String? broadcasterUserId;
+
   /// Best-effort display name of the broadcaster.
   final String? broadcasterDisplayName;
   final String? externalStreamUrl;
   final String? rtmpIngestUrl;
   final String? rtmpStreamKey;
+
   /// LiveKit room name (required when [broadcastMethod] == 'livekit').
   final String? livekitRoom;
   final DateTime createdAt;
@@ -59,7 +64,8 @@ class StudioSessionModel {
       status: status ?? this.status,
       broadcastMethod: broadcastMethod ?? this.broadcastMethod,
       broadcasterUserId: broadcasterUserId ?? this.broadcasterUserId,
-      broadcasterDisplayName: broadcasterDisplayName ?? this.broadcasterDisplayName,
+      broadcasterDisplayName:
+          broadcasterDisplayName ?? this.broadcasterDisplayName,
       externalStreamUrl: externalStreamUrl ?? this.externalStreamUrl,
       rtmpIngestUrl: rtmpIngestUrl ?? this.rtmpIngestUrl,
       rtmpStreamKey: rtmpStreamKey ?? this.rtmpStreamKey,
@@ -110,7 +116,9 @@ class StudioSessionModel {
     return StudioSessionModel(
       sessionId: (json['sessionId'] ?? '').toString(),
       title: (json['title'] ?? '').toString(),
-      scheduledFor: DateTime.tryParse((json['scheduledFor'] ?? '').toString()) ?? DateTime.now(),
+      scheduledFor:
+          DateTime.tryParse((json['scheduledFor'] ?? '').toString()) ??
+          DateTime.now(),
       status: (json['status'] ?? 'scheduled').toString(),
       broadcastMethod: (json['broadcastMethod'] ?? 'external').toString(),
       broadcasterUserId: json['broadcasterUserId']?.toString(),
@@ -119,8 +127,12 @@ class StudioSessionModel {
       rtmpIngestUrl: json['rtmpIngestUrl']?.toString(),
       rtmpStreamKey: json['rtmpStreamKey']?.toString(),
       livekitRoom: json['livekitRoom']?.toString(),
-      createdAt: DateTime.tryParse((json['createdAt'] ?? '').toString()) ?? DateTime.now(),
-      updatedAt: DateTime.tryParse((json['updatedAt'] ?? '').toString()) ?? DateTime.now(),
+      createdAt:
+          DateTime.tryParse((json['createdAt'] ?? '').toString()) ??
+          DateTime.now(),
+      updatedAt:
+          DateTime.tryParse((json['updatedAt'] ?? '').toString()) ??
+          DateTime.now(),
     );
   }
 

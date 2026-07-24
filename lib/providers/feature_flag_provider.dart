@@ -26,8 +26,10 @@ enum AppFeature {
   verification,
   settings,
   landingMarketing,
+
   /// Admin-only: shows the early-access status checker UI on the waitlist page.
   earlyAccessStatusChecker,
+
   /// Allows non-admin QA/dev access to the in-app QA harness route (`/__qa`).
   ///
   /// Note: This is still blocked in release builds (defense-in-depth).
@@ -36,13 +38,21 @@ enum AppFeature {
 
 @immutable
 class AppFeatureDescriptor {
-  const AppFeatureDescriptor({required this.feature, required this.title, required this.description, required this.defaultEnabled, this.betaTag, this.adminOnlyEdit = false});
+  const AppFeatureDescriptor({
+    required this.feature,
+    required this.title,
+    required this.description,
+    required this.defaultEnabled,
+    this.betaTag,
+    this.adminOnlyEdit = false,
+  });
 
   final AppFeature feature;
   final String title;
   final String description;
   final bool defaultEnabled;
   final String? betaTag;
+
   /// If true, only admins can toggle this flag in the feature flags UI.
   final bool adminOnlyEdit;
 }
@@ -77,7 +87,8 @@ class FeatureFlagProvider extends ChangeNotifier {
     AppFeatureDescriptor(
       feature: AppFeature.roleBasedAccess,
       title: 'Role-based access',
-      description: 'Audience / Talent / Business / Admin dashboards with approval gates.',
+      description:
+          'Audience / Talent / Business / Admin dashboards with approval gates.',
       defaultEnabled: true,
     ),
     AppFeatureDescriptor(
@@ -89,7 +100,8 @@ class FeatureFlagProvider extends ChangeNotifier {
     AppFeatureDescriptor(
       feature: AppFeature.opportunities,
       title: 'Opportunities & campaigns',
-      description: 'Business opportunities + applications (currently partially local).',
+      description:
+          'Business opportunities + applications (currently partially local).',
       defaultEnabled: true,
       betaTag: kDebugMode ? 'Beta' : null,
     ),
@@ -132,7 +144,8 @@ class FeatureFlagProvider extends ChangeNotifier {
     AppFeatureDescriptor(
       feature: AppFeature.clips,
       title: 'Clips',
-      description: 'Short-form clips and media uploads (requires moderation + storage).',
+      description:
+          'Short-form clips and media uploads (requires moderation + storage).',
       defaultEnabled: false,
       betaTag: kDebugMode ? 'Planned' : null,
     ),
@@ -184,7 +197,8 @@ class FeatureFlagProvider extends ChangeNotifier {
     AppFeatureDescriptor(
       feature: AppFeature.earlyAccessStatusChecker,
       title: 'Early access status checker',
-      description: 'Shows the waitlist status lookup UI on the early-access page (admin-only).',
+      description:
+          'Shows the waitlist status lookup UI on the early-access page (admin-only).',
       defaultEnabled: false,
       betaTag: kDebugMode ? 'Internal' : null,
       adminOnlyEdit: true,
@@ -193,7 +207,8 @@ class FeatureFlagProvider extends ChangeNotifier {
     AppFeatureDescriptor(
       feature: AppFeature.qaHarness,
       title: 'QA Harness route',
-      description: 'Allows opening /__qa without admin role (non-release builds only).',
+      description:
+          'Allows opening /__qa without admin role (non-release builds only).',
       defaultEnabled: false,
       betaTag: kDebugMode ? 'Internal' : null,
     ),
@@ -206,7 +221,9 @@ class FeatureFlagProvider extends ChangeNotifier {
     notifyListeners();
     try {
       final raw = await _store.getString(_kFlagsKey);
-      final decoded = raw == null || raw.trim().isEmpty ? null : jsonDecode(raw);
+      final decoded = raw == null || raw.trim().isEmpty
+          ? null
+          : jsonDecode(raw);
       if (decoded is Map) {
         for (final entry in decoded.entries) {
           final key = entry.key.toString();
@@ -214,7 +231,8 @@ class FeatureFlagProvider extends ChangeNotifier {
           final parsed = AppFeature.values.where((f) => f.name == key).toList();
           if (parsed.isEmpty) continue;
           if (value is bool) _flags[parsed.first] = value;
-          if (value is String) _flags[parsed.first] = value.toLowerCase() == 'true';
+          if (value is String)
+            _flags[parsed.first] = value.toLowerCase() == 'true';
         }
       }
 
@@ -235,7 +253,9 @@ class FeatureFlagProvider extends ChangeNotifier {
       // Fall back to defaults (do not persist unlocked state).
       _flags
         ..clear()
-        ..addEntries(descriptors.map((d) => MapEntry(d.feature, d.defaultEnabled)));
+        ..addEntries(
+          descriptors.map((d) => MapEntry(d.feature, d.defaultEnabled)),
+        );
       _initialized = true;
     } finally {
       _isLoading = false;
@@ -314,7 +334,9 @@ class FeatureFlagProvider extends ChangeNotifier {
   }
 
   Future<void> _persist() async {
-    final map = <String, bool>{for (final e in _flags.entries) e.key.name: e.value};
+    final map = <String, bool>{
+      for (final e in _flags.entries) e.key.name: e.value,
+    };
     await _store.setString(_kFlagsKey, jsonEncode(map));
   }
 }

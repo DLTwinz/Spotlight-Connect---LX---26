@@ -11,7 +11,10 @@ class SupabaseConfig {
 
   /// Core initialization layer called during application startup sequence
   static Future<void> initialize() async {
-    await Supabase.initialize(url: 'https://mdwvokenmehdfybgujpa.supabase.co', publishableKey: 'YOUR_ANON_KEY_HERE');
+    await Supabase.initialize(
+      url: 'https://mdwvokenmehdfybgujpa.supabase.co',
+      publishableKey: 'YOUR_ANON_KEY_HERE',
+    );
   }
 
   /// Global telemetry client routing layer used across active operational services
