@@ -22,9 +22,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
     if (_busy) return;
     final username = _usernameCtrl.text.trim();
     if (username.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a username')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please enter a username')));
       return;
     }
 
@@ -38,7 +38,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
       context.go('/');
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Onboarding failed: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Onboarding failed: $e')));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -48,12 +50,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
   Widget build(BuildContext context) {
     final auth = context.watch<AppAuthProvider>();
     final user = auth.currentUser;
-    final isAlreadyApprovedForSelected = _selectedRole != null && (user?.approvedRoles.contains(_selectedRole) ?? false);
+    final isAlreadyApprovedForSelected =
+        _selectedRole != null &&
+        (user?.approvedRoles.contains(_selectedRole) ?? false);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Complete Profile'),
         automaticallyImplyLeading: false,
-        leading: AppBackButton(enabled: !auth.isLoading, fallbackLocation: AppRoutes.root),
+        leading: AppBackButton(
+          enabled: !auth.isLoading,
+          fallbackLocation: AppRoutes.root,
+        ),
       ),
       body: SingleChildScrollView(
         padding: AppSpacing.paddingLg,
@@ -77,7 +84,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: AppSpacing.xl),
-                
+
                 TextField(
                   controller: _usernameCtrl,
                   enabled: !_busy,
@@ -89,46 +96,55 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: AppSpacing.xxl),
-                
+
                 Text(
                   'Choose Your Experience',
                   style: Theme.of(context).textTheme.titleLarge?.bold,
                 ),
                 const SizedBox(height: AppSpacing.md),
-                
+
                 _buildRoleOption(
                   title: 'Audience & Community',
-                  description: 'Join immediately. View content, streams, and engage with creators and businesses.',
+                  description:
+                      'Join immediately. View content, streams, and engage with creators and businesses.',
                   icon: Icons.people_alt_outlined,
                   value: null,
                   isSelected: _selectedRole == null,
-                  onTap: _busy ? null : () => setState(() => _selectedRole = null),
+                  onTap: _busy
+                      ? null
+                      : () => setState(() => _selectedRole = null),
                 ),
                 const SizedBox(height: AppSpacing.md),
-                
+
                 _buildRoleOption(
                   title: 'Talent / Creator',
-                  description: 'Apply to broadcast, monetize, and access creator studio tools. Requires admin approval.',
+                  description:
+                      'Apply to broadcast, monetize, and access creator studio tools. Requires admin approval.',
                   icon: Icons.mic_none_outlined,
                   value: 'talent',
                   isSelected: _selectedRole == 'talent',
-                  onTap: _busy ? null : () => setState(() => _selectedRole = 'talent'),
+                  onTap: _busy
+                      ? null
+                      : () => setState(() => _selectedRole = 'talent'),
                 ),
                 const SizedBox(height: AppSpacing.md),
-                
+
                 _buildRoleOption(
                   title: 'Business / Agency',
-                  description: 'Apply to scout talent, post campaigns, and manage projects. Requires admin approval.',
+                  description:
+                      'Apply to scout talent, post campaigns, and manage projects. Requires admin approval.',
                   icon: Icons.business_center_outlined,
                   value: 'business',
                   isSelected: _selectedRole == 'business',
-                  onTap: _busy ? null : () => setState(() => _selectedRole = 'business'),
+                  onTap: _busy
+                      ? null
+                      : () => setState(() => _selectedRole = 'business'),
                 ),
-                
+
                 const SizedBox(height: AppSpacing.xxl),
-                
+
                 ElevatedButton(
                   onPressed: _busy ? null : _submit,
                   style: ElevatedButton.styleFrom(
@@ -143,12 +159,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ? SizedBox(
                           height: 18,
                           width: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2.4, color: Theme.of(context).colorScheme.onPrimary),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.4,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
                         )
                       : Text(
                           _selectedRole == null
                               ? 'Complete setup'
-                              : (isAlreadyApprovedForSelected ? 'Complete setup' : 'Submit application'),
+                              : (isAlreadyApprovedForSelected
+                                    ? 'Complete setup'
+                                    : 'Submit application'),
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -173,7 +194,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
+
     // No-splash interaction (matches app-wide modern style).
     final enabled = onTap != null;
     return MouseRegion(
@@ -187,7 +208,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.lg),
             border: Border.all(
-              color: isSelected ? colorScheme.primary : colorScheme.outline.withValues(alpha: 0.3),
+              color: isSelected
+                  ? colorScheme.primary
+                  : colorScheme.outline.withValues(alpha: 0.3),
               width: isSelected ? 2 : 1,
             ),
             color: isSelected
@@ -197,7 +220,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(icon, size: 32, color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant),
+              Icon(
+                icon,
+                size: 32,
+                color: isSelected
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant,
+              ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(
@@ -206,26 +235,42 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     Text(
                       title,
                       style: theme.textTheme.titleMedium?.bold.withColor(
-                        isSelected ? colorScheme.primary : colorScheme.onSurface,
+                        isSelected
+                            ? colorScheme.primary
+                            : colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xs),
-                    Text(description, style: theme.textTheme.bodyMedium?.withColor(colorScheme.onSurfaceVariant)),
+                    Text(
+                      description,
+                      style: theme.textTheme.bodyMedium?.withColor(
+                        colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                     if (isSelected && value != null) ...[
                       const SizedBox(height: AppSpacing.sm),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: colorScheme.secondary.withValues(alpha: 0.14),
                           borderRadius: BorderRadius.circular(999),
-                          border: Border.all(color: colorScheme.secondary.withValues(alpha: 0.25)),
+                          border: Border.all(
+                            color: colorScheme.secondary.withValues(
+                              alpha: 0.25,
+                            ),
+                          ),
                         ),
                         child: Text(
                           'Review expected: 24–48 hours',
-                          style: theme.textTheme.labelSmall?.bold.withColor(colorScheme.secondary),
+                          style: theme.textTheme.labelSmall?.bold.withColor(
+                            colorScheme.secondary,
+                          ),
                         ),
                       ),
-                    ]
+                    ],
                   ],
                 ),
               ),

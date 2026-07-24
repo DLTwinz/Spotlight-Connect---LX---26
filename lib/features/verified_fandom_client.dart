@@ -5,7 +5,7 @@ class VerifiedFandomClient {
   final SupabaseClient _supabase = Supabase.instance.client;
 
   Future<void> addStamp({
-    required String stampId, 
+    required String stampId,
     required String userId,
   }) async {
     try {

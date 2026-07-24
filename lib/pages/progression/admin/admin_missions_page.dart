@@ -34,10 +34,17 @@ class _AdminMissionsPageState extends State<AdminMissionsPage> {
       final rows = await _client
           .from('missions')
           // Include both mission_type + action_type (some schemas use one or the other).
-          .select('id, title, short_label, category, mission_type, action_type, time_window, target_value, prestige_reward, tier_progress_weight, status, campaign_id, updated_at')
+          .select(
+            'id, title, short_label, category, mission_type, action_type, time_window, target_value, prestige_reward, tier_progress_weight, status, campaign_id, updated_at',
+          )
           .order('updated_at', ascending: false)
           .limit(200);
-      setState(() => _missions = (rows as List).whereType<Map>().map((e) => Map<String, dynamic>.from(e)).toList());
+      setState(
+        () => _missions = (rows as List)
+            .whereType<Map>()
+            .map((e) => Map<String, dynamic>.from(e))
+            .toList(),
+      );
     } catch (e) {
       debugPrint('AdminMissionsPage failed to load: $e');
       setState(() => _error = e.toString());
@@ -57,12 +64,17 @@ class _AdminMissionsPageState extends State<AdminMissionsPage> {
     if (created == null) return;
     try {
       setState(() => _mutating = true);
-      await _client.functions.invoke('admin_mission_upsert', body: {'mission': created, 'reason': 'Admin create'});
+      await _client.functions.invoke(
+        'admin_mission_upsert',
+        body: {'mission': created, 'reason': 'Admin create'},
+      );
       await _load();
     } catch (e) {
       debugPrint('AdminMissionsPage create failed: $e');
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Create failed: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Create failed: $e')));
     } finally {
       if (mounted) setState(() => _mutating = false);
     }
@@ -74,17 +86,23 @@ class _AdminMissionsPageState extends State<AdminMissionsPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _MissionEditorSheet(initial: mission, missionTypes: missionTypes),
+      builder: (_) =>
+          _MissionEditorSheet(initial: mission, missionTypes: missionTypes),
     );
     if (edited == null) return;
     try {
       setState(() => _mutating = true);
-      await _client.functions.invoke('admin_mission_upsert', body: {'mission': edited, 'reason': 'Admin edit'});
+      await _client.functions.invoke(
+        'admin_mission_upsert',
+        body: {'mission': edited, 'reason': 'Admin edit'},
+      );
       await _load();
     } catch (e) {
       debugPrint('AdminMissionsPage edit failed: $e');
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Save failed: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Save failed: $e')));
     } finally {
       if (mounted) setState(() => _mutating = false);
     }
@@ -116,39 +134,64 @@ class _AdminMissionsPageState extends State<AdminMissionsPage> {
           child: Container(
             decoration: BoxDecoration(
               color: theme.colorScheme.surface,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(AppRadius.xl),
+              ),
             ),
             padding: AppSpacing.paddingLg,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text('Delete mission?', style: theme.textTheme.titleLarge?.bold),
+                Text(
+                  'Delete mission?',
+                  style: theme.textTheme.titleLarge?.bold,
+                ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   'This removes the mission definition. Existing user progress for this mission will also be removed where possible.',
-                  style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+                  style: theme.textTheme.bodyMedium?.withColor(
+                    theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Container(
                   padding: AppSpacing.paddingMd,
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.55),
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.55,
+                    ),
                     borderRadius: BorderRadius.circular(AppRadius.lg),
-                    border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22)),
+                    border: Border.all(
+                      color: theme.colorScheme.outlineVariant.withValues(
+                        alpha: 0.22,
+                      ),
+                    ),
                   ),
                   child: Text(title, style: theme.textTheme.titleMedium?.bold),
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 FilledButton(
                   onPressed: () => context.pop(true),
-                  style: FilledButton.styleFrom(backgroundColor: theme.colorScheme.error, foregroundColor: theme.colorScheme.onError, minimumSize: const Size.fromHeight(52), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg))),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: theme.colorScheme.error,
+                    foregroundColor: theme.colorScheme.onError,
+                    minimumSize: const Size.fromHeight(52),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                    ),
+                  ),
                   child: const Text('Delete'),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 OutlinedButton(
                   onPressed: () => context.pop(false),
-                  style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(52), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg))),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(52),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                    ),
+                  ),
                   child: const Text('Cancel'),
                 ),
               ],
@@ -161,12 +204,17 @@ class _AdminMissionsPageState extends State<AdminMissionsPage> {
 
     try {
       setState(() => _mutating = true);
-      await _client.functions.invoke('admin_mission_delete', body: {'mission_id': missionId, 'reason': 'Admin delete'});
+      await _client.functions.invoke(
+        'admin_mission_delete',
+        body: {'mission_id': missionId, 'reason': 'Admin delete'},
+      );
       await _load();
     } catch (e) {
       debugPrint('AdminMissionsPage delete failed: $e');
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Delete failed: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Delete failed: $e')));
     } finally {
       if (mounted) setState(() => _mutating = false);
     }
@@ -191,69 +239,98 @@ class _AdminMissionsPageState extends State<AdminMissionsPage> {
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
-                ? Center(child: Padding(padding: AppSpacing.paddingLg, child: Text(_error!, style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.error))))
-                : ListView.separated(
-                    padding: AppSpacing.paddingLg,
-                    itemBuilder: (context, i) {
-                      final m = _missions[i];
-                      final title = (m['title'] ?? '').toString();
-                      final category = (m['category'] ?? '').toString();
-                      final action = (m['action_type'] ?? '').toString();
-                      final timeWindow = (m['time_window'] ?? '').toString();
-                      final target = m['target_value'];
-                      final prestige = m['prestige_reward'];
-                      final tierWeight = m['tier_progress_weight'];
-                      final status = (m['status'] ?? '').toString();
-                      final campaignId = (m['campaign_id'] ?? '').toString();
-                      final id = (m['id'] ?? '').toString();
-                      return Container(
-                        padding: AppSpacing.paddingMd,
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surface,
-                          borderRadius: BorderRadius.circular(AppRadius.lg),
-                          border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22)),
+            ? Center(
+                child: Padding(
+                  padding: AppSpacing.paddingLg,
+                  child: Text(
+                    _error!,
+                    style: theme.textTheme.bodySmall?.withColor(
+                      theme.colorScheme.error,
+                    ),
+                  ),
+                ),
+              )
+            : ListView.separated(
+                padding: AppSpacing.paddingLg,
+                itemBuilder: (context, i) {
+                  final m = _missions[i];
+                  final title = (m['title'] ?? '').toString();
+                  final category = (m['category'] ?? '').toString();
+                  final action = (m['action_type'] ?? '').toString();
+                  final timeWindow = (m['time_window'] ?? '').toString();
+                  final target = m['target_value'];
+                  final prestige = m['prestige_reward'];
+                  final tierWeight = m['tier_progress_weight'];
+                  final status = (m['status'] ?? '').toString();
+                  final campaignId = (m['campaign_id'] ?? '').toString();
+                  final id = (m['id'] ?? '').toString();
+                  return Container(
+                    padding: AppSpacing.paddingMd,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surface,
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      border: Border.all(
+                        color: theme.colorScheme.outlineVariant.withValues(
+                          alpha: 0.22,
                         ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.flag_outlined, color: theme.colorScheme.primary),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(title, style: theme.textTheme.titleMedium?.bold),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    '${category.isEmpty ? '—' : category} • $action • ${timeWindow.isEmpty ? '—' : timeWindow} • target=$target • +$prestige prestige • w=$tierWeight • $status${campaignId.isEmpty ? '' : ' • campaign=${campaignId.substring(0, 6)}…'}',
-                                    style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant),
-                                  ),
-                                ],
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.flag_outlined,
+                          color: theme.colorScheme.primary,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                style: theme.textTheme.titleMedium?.bold,
                               ),
-                            ),
-                            const SizedBox(width: 6),
-                            PopupMenuButton<String>(
-                              tooltip: 'Manage',
-                              enabled: !_mutating,
-                              onSelected: (value) {
-                                if (value == 'edit') _edit(m);
-                                if (value == 'delete') _delete(id, title);
-                              },
-                              itemBuilder: (context) => const [
-                                PopupMenuItem(value: 'edit', child: Text('Edit')),
-                                PopupMenuItem(value: 'delete', child: Text('Delete')),
-                              ],
-                              child: Padding(
-                                padding: const EdgeInsets.all(6),
-                                child: Icon(Icons.more_horiz, color: theme.colorScheme.onSurfaceVariant),
+                              const SizedBox(height: 2),
+                              Text(
+                                '${category.isEmpty ? '—' : category} • $action • ${timeWindow.isEmpty ? '—' : timeWindow} • target=$target • +$prestige prestige • w=$tierWeight • $status${campaignId.isEmpty ? '' : ' • campaign=${campaignId.substring(0, 6)}…'}',
+                                style: theme.textTheme.bodySmall?.withColor(
+                                  theme.colorScheme.onSurfaceVariant,
+                                ),
                               ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        PopupMenuButton<String>(
+                          tooltip: 'Manage',
+                          enabled: !_mutating,
+                          onSelected: (value) {
+                            if (value == 'edit') _edit(m);
+                            if (value == 'delete') _delete(id, title);
+                          },
+                          itemBuilder: (context) => const [
+                            PopupMenuItem(value: 'edit', child: Text('Edit')),
+                            PopupMenuItem(
+                              value: 'delete',
+                              child: Text('Delete'),
                             ),
                           ],
+                          child: Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: Icon(
+                              Icons.more_horiz,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
                         ),
-                      );
-                    },
-                    separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
-                    itemCount: _missions.length,
-                  ),
+                      ],
+                    ),
+                  );
+                },
+                separatorBuilder: (_, _) =>
+                    const SizedBox(height: AppSpacing.md),
+                itemCount: _missions.length,
+              ),
       ),
     );
   }
@@ -293,16 +370,38 @@ class _MissionEditorSheetState extends State<_MissionEditorSheet> {
   void initState() {
     super.initState();
     final initial = widget.initial;
-    _editingId = (initial?['id'] ?? '').toString().trim().isEmpty ? null : (initial?['id'] ?? '').toString();
+    _editingId = (initial?['id'] ?? '').toString().trim().isEmpty
+        ? null
+        : (initial?['id'] ?? '').toString();
     _title = TextEditingController(text: (initial?['title'] ?? '').toString());
-    _shortLabel = TextEditingController(text: (initial?['short_label'] ?? '').toString());
-    _description = TextEditingController(text: (initial?['description'] ?? '').toString());
-    _category = TextEditingController(text: ((initial?['category'] ?? '').toString().isEmpty) ? 'content' : (initial?['category'] ?? '').toString());
-    _target = TextEditingController(text: ((initial?['target_value'] ?? initial?['target'] ?? 1) as Object).toString());
-    _prestige = TextEditingController(text: ((initial?['prestige_reward'] ?? 0) as Object).toString());
-    _tierWeight = TextEditingController(text: ((initial?['tier_progress_weight'] ?? 0) as Object).toString());
-    final initialType = (initial?['mission_type'] ?? initial?['action_type'] ?? '').toString().trim();
-    _actionType = initialType.isNotEmpty ? initialType : widget.missionTypes.first;
+    _shortLabel = TextEditingController(
+      text: (initial?['short_label'] ?? '').toString(),
+    );
+    _description = TextEditingController(
+      text: (initial?['description'] ?? '').toString(),
+    );
+    _category = TextEditingController(
+      text: ((initial?['category'] ?? '').toString().isEmpty)
+          ? 'content'
+          : (initial?['category'] ?? '').toString(),
+    );
+    _target = TextEditingController(
+      text: ((initial?['target_value'] ?? initial?['target'] ?? 1) as Object)
+          .toString(),
+    );
+    _prestige = TextEditingController(
+      text: ((initial?['prestige_reward'] ?? 0) as Object).toString(),
+    );
+    _tierWeight = TextEditingController(
+      text: ((initial?['tier_progress_weight'] ?? 0) as Object).toString(),
+    );
+    final initialType =
+        (initial?['mission_type'] ?? initial?['action_type'] ?? '')
+            .toString()
+            .trim();
+    _actionType = initialType.isNotEmpty
+        ? initialType
+        : widget.missionTypes.first;
     _timeWindow = ((initial?['time_window'] ?? 'daily') as Object).toString();
     _status = ((initial?['status'] ?? 'active') as Object).toString();
     _repeatable = (initial?['repeatable'] == true);
@@ -314,9 +413,18 @@ class _MissionEditorSheetState extends State<_MissionEditorSheet> {
 
   Future<void> _loadCampaigns() async {
     try {
-      final rows = await _client.from('campaigns').select('id, title, status').order('updated_at', ascending: false).limit(200);
+      final rows = await _client
+          .from('campaigns')
+          .select('id, title, status')
+          .order('updated_at', ascending: false)
+          .limit(200);
       if (!mounted) return;
-      setState(() => _campaigns = (rows as List).whereType<Map>().map((e) => Map<String, dynamic>.from(e)).toList());
+      setState(
+        () => _campaigns = (rows as List)
+            .whereType<Map>()
+            .map((e) => Map<String, dynamic>.from(e))
+            .toList(),
+      );
     } catch (e) {
       debugPrint('Admin mission editor: failed to load campaigns: $e');
     }
@@ -343,15 +451,27 @@ class _MissionEditorSheetState extends State<_MissionEditorSheet> {
       child: Container(
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppRadius.xl),
+          ),
         ),
-        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.92),
-        padding: EdgeInsets.only(left: AppSpacing.lg, right: AppSpacing.lg, top: AppSpacing.lg, bottom: bottomInset + AppSpacing.lg),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.92,
+        ),
+        padding: EdgeInsets.only(
+          left: AppSpacing.lg,
+          right: AppSpacing.lg,
+          top: AppSpacing.lg,
+          bottom: bottomInset + AppSpacing.lg,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(_editingId == null ? 'Create mission' : 'Edit mission', style: theme.textTheme.titleLarge?.bold),
+            Text(
+              _editingId == null ? 'Create mission' : 'Edit mission',
+              style: theme.textTheme.titleLarge?.bold,
+            ),
             const SizedBox(height: AppSpacing.md),
             Expanded(
               child: SingleChildScrollView(
@@ -359,49 +479,117 @@ class _MissionEditorSheetState extends State<_MissionEditorSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    TextField(controller: _title, decoration: const InputDecoration(labelText: 'Title')),
+                    TextField(
+                      controller: _title,
+                      decoration: const InputDecoration(labelText: 'Title'),
+                    ),
                     const SizedBox(height: AppSpacing.sm),
-                    TextField(controller: _shortLabel, decoration: const InputDecoration(labelText: 'Short label (optional)')),
+                    TextField(
+                      controller: _shortLabel,
+                      decoration: const InputDecoration(
+                        labelText: 'Short label (optional)',
+                      ),
+                    ),
                     const SizedBox(height: AppSpacing.sm),
-                    TextField(controller: _description, minLines: 2, maxLines: 4, decoration: const InputDecoration(labelText: 'Description')),
+                    TextField(
+                      controller: _description,
+                      minLines: 2,
+                      maxLines: 4,
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                      ),
+                    ),
                     const SizedBox(height: AppSpacing.sm),
-                    TextField(controller: _category, decoration: const InputDecoration(labelText: 'Category (e.g. content, live, opportunity)')),
+                    TextField(
+                      controller: _category,
+                      decoration: const InputDecoration(
+                        labelText: 'Category (e.g. content, live, opportunity)',
+                      ),
+                    ),
                     const SizedBox(height: AppSpacing.sm),
                     DropdownButtonFormField<String>(
                       initialValue: _actionType,
-                      items: [for (final v in widget.missionTypes) DropdownMenuItem(value: v, child: Text(v))],
-                      onChanged: (v) => setState(() => _actionType = v ?? _actionType),
-                      decoration: const InputDecoration(labelText: 'Action type'),
+                      items: [
+                        for (final v in widget.missionTypes)
+                          DropdownMenuItem(value: v, child: Text(v)),
+                      ],
+                      onChanged: (v) =>
+                          setState(() => _actionType = v ?? _actionType),
+                      decoration: const InputDecoration(
+                        labelText: 'Action type',
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     DropdownButtonFormField<String>(
                       initialValue: _timeWindow,
                       items: const [
                         DropdownMenuItem(value: 'daily', child: Text('Daily')),
-                        DropdownMenuItem(value: 'weekly', child: Text('Weekly')),
-                        DropdownMenuItem(value: 'campaign', child: Text('Campaign')),
-                        DropdownMenuItem(value: 'lifetime', child: Text('Lifetime')),
+                        DropdownMenuItem(
+                          value: 'weekly',
+                          child: Text('Weekly'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'campaign',
+                          child: Text('Campaign'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'lifetime',
+                          child: Text('Lifetime'),
+                        ),
                       ],
-                      onChanged: (v) => setState(() => _timeWindow = v ?? 'daily'),
-                      decoration: const InputDecoration(labelText: 'Time window'),
+                      onChanged: (v) =>
+                          setState(() => _timeWindow = v ?? 'daily'),
+                      decoration: const InputDecoration(
+                        labelText: 'Time window',
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     Row(
                       children: [
-                        Expanded(child: TextField(controller: _target, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Target'))),
+                        Expanded(
+                          child: TextField(
+                            controller: _target,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Target',
+                            ),
+                          ),
+                        ),
                         const SizedBox(width: AppSpacing.md),
-                        Expanded(child: TextField(controller: _prestige, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Prestige reward'))),
+                        Expanded(
+                          child: TextField(
+                            controller: _prestige,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Prestige reward',
+                            ),
+                          ),
+                        ),
                         const SizedBox(width: AppSpacing.md),
-                        Expanded(child: TextField(controller: _tierWeight, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Tier weight'))),
+                        Expanded(
+                          child: TextField(
+                            controller: _tierWeight,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Tier weight',
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     DropdownButtonFormField<String>(
                       initialValue: _status,
                       items: const [
-                        DropdownMenuItem(value: 'active', child: Text('Active')),
+                        DropdownMenuItem(
+                          value: 'active',
+                          child: Text('Active'),
+                        ),
                         DropdownMenuItem(value: 'draft', child: Text('Draft')),
-                        DropdownMenuItem(value: 'archived', child: Text('Archived')),
+                        DropdownMenuItem(
+                          value: 'archived',
+                          child: Text('Archived'),
+                        ),
                       ],
                       onChanged: (v) => setState(() => _status = v ?? 'active'),
                       decoration: const InputDecoration(labelText: 'Status'),
@@ -410,11 +598,21 @@ class _MissionEditorSheetState extends State<_MissionEditorSheet> {
                     DropdownButtonFormField<String?>(
                       initialValue: _campaignId,
                       items: [
-                        const DropdownMenuItem(value: null, child: Text('No campaign')),
-                        ..._campaigns.map((c) => DropdownMenuItem(value: (c['id'] ?? '').toString(), child: Text((c['title'] ?? '').toString()))),
+                        const DropdownMenuItem(
+                          value: null,
+                          child: Text('No campaign'),
+                        ),
+                        ..._campaigns.map(
+                          (c) => DropdownMenuItem(
+                            value: (c['id'] ?? '').toString(),
+                            child: Text((c['title'] ?? '').toString()),
+                          ),
+                        ),
                       ],
                       onChanged: (v) => setState(() => _campaignId = v),
-                      decoration: const InputDecoration(labelText: 'Attach to campaign'),
+                      decoration: const InputDecoration(
+                        labelText: 'Attach to campaign',
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     SwitchListTile.adaptive(
@@ -433,7 +631,9 @@ class _MissionEditorSheetState extends State<_MissionEditorSheet> {
                     const SizedBox(height: AppSpacing.sm),
                     Text(
                       'All mission mutations are audited and executed server-side.',
-                      style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant),
+                      style: theme.textTheme.bodySmall?.withColor(
+                        theme.colorScheme.onSurfaceVariant,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -444,7 +644,9 @@ class _MissionEditorSheetState extends State<_MissionEditorSheet> {
               onPressed: () {
                 final t = _title.text.trim();
                 if (t.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Title is required.')));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Title is required.')),
+                  );
                   return;
                 }
 
@@ -453,7 +655,9 @@ class _MissionEditorSheetState extends State<_MissionEditorSheet> {
                 context.pop({
                   if (_editingId != null) 'id': _editingId,
                   'title': t,
-                  'short_label': _shortLabel.text.trim().isEmpty ? null : _shortLabel.text.trim(),
+                  'short_label': _shortLabel.text.trim().isEmpty
+                      ? null
+                      : _shortLabel.text.trim(),
                   'description': _description.text.trim(),
                   'category': _category.text.trim(),
                   // Required by DB schema; keep `action_type` too for back-compat.
@@ -464,7 +668,8 @@ class _MissionEditorSheetState extends State<_MissionEditorSheet> {
                   'repeatable': _repeatable,
                   'requires_manual_review': _manualReview,
                   'prestige_reward': int.tryParse(_prestige.text.trim()) ?? 0,
-                  'tier_progress_weight': int.tryParse(_tierWeight.text.trim()) ?? 0,
+                  'tier_progress_weight':
+                      int.tryParse(_tierWeight.text.trim()) ?? 0,
                   'status': _status,
                   'campaign_id': _campaignId,
                 });
@@ -473,7 +678,9 @@ class _MissionEditorSheetState extends State<_MissionEditorSheet> {
                 minimumSize: const Size.fromHeight(52),
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: theme.colorScheme.onPrimary,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                ),
               ),
               child: Text(_editingId == null ? 'Create' : 'Save'),
             ),

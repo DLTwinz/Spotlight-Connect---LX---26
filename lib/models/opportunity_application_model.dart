@@ -25,8 +25,10 @@ class OpportunityApplicationModel {
   final String pitch;
   final List<String> portfolioLinks;
   final String availability;
+
   /// Business/admin internal note or request (used for needs_more_info loop).
   final String businessNote;
+
   /// submitted | needs_more_info | shortlisted | rejected
   final String status;
   final DateTime createdAt;
@@ -88,12 +90,18 @@ class OpportunityApplicationModel {
       applicantEmail: (json['applicantEmail'] ?? '').toString(),
       applicantName: (json['applicantName'] ?? '').toString(),
       pitch: (json['pitch'] ?? '').toString(),
-      portfolioLinks: linksRaw is List ? linksRaw.map((e) => e.toString()).toList() : const <String>[],
+      portfolioLinks: linksRaw is List
+          ? linksRaw.map((e) => e.toString()).toList()
+          : const <String>[],
       availability: (json['availability'] ?? '').toString(),
       businessNote: (json['businessNote'] ?? '').toString(),
       status: (json['status'] ?? 'submitted').toString(),
-      createdAt: DateTime.tryParse((json['createdAt'] ?? '').toString()) ?? DateTime.now(),
-      updatedAt: DateTime.tryParse((json['updatedAt'] ?? '').toString()) ?? DateTime.now(),
+      createdAt:
+          DateTime.tryParse((json['createdAt'] ?? '').toString()) ??
+          DateTime.now(),
+      updatedAt:
+          DateTime.tryParse((json['updatedAt'] ?? '').toString()) ??
+          DateTime.now(),
     );
   }
 }

@@ -161,7 +161,8 @@ class FeedTab extends StatelessWidget {
                           Text(
                             '${index + 1}h ago',
                             style: TextStyle(
-                              color: context.roleTextSubtle(role)
+                              color: context
+                                  .roleTextSubtle(role)
                                   .withValues(alpha: 0.6),
                               fontSize: 10,
                             ),
@@ -445,10 +446,7 @@ class _StudioTabState extends State<StudioTab> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: _buildBody(),
-      ),
+      body: Padding(padding: const EdgeInsets.all(16.0), child: _buildBody()),
     );
   }
 
@@ -782,10 +780,7 @@ class ProfileTab extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
-            color: context.roleTextFaint(role),
-            fontSize: 12,
-          ),
+          style: TextStyle(color: context.roleTextFaint(role), fontSize: 12),
         ),
         Text(
           status,

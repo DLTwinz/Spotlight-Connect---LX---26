@@ -12,8 +12,10 @@ class PassportPage extends StatelessWidget {
       backgroundColor: Colors.black, // Spotlight Identity
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: const Text('SPOTLIGHT PASSPORT', 
-          style: TextStyle(color: Color(0xFFD4AF37), letterSpacing: 1.5)),
+        title: const Text(
+          'SPOTLIGHT PASSPORT',
+          style: TextStyle(color: Color(0xFFD4AF37), letterSpacing: 1.5),
+        ),
       ),
       body: Center(
         child: Column(
@@ -29,16 +31,29 @@ class PassportPage extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  Text(userPassport.fanName, 
-                    style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                  Text(
+                    userPassport.fanName,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const Divider(color: Colors.white24),
-                  Text('LOYALTY LEVEL: ${userPassport.loyaltyLevel}', 
-                    style: const TextStyle(color: Color(0xFF39FF14))),
+                  Text(
+                    'LOYALTY LEVEL: ${userPassport.loyaltyLevel}',
+                    style: const TextStyle(color: Color(0xFF39FF14)),
+                  ),
                   const SizedBox(height: 10),
                   // This uses your Model's "isGoldTier" logic!
                   if (userPassport.isGoldTier)
-                    const Text('✨ GOLD TIER ACCESS ✨', 
-                      style: TextStyle(color: Color(0xFFD4AF37), fontWeight: FontWeight.bold)),
+                    const Text(
+                      '✨ GOLD TIER ACCESS ✨',
+                      style: TextStyle(
+                        color: Color(0xFFD4AF37),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                 ],
               ),
             ),

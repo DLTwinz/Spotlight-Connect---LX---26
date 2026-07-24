@@ -18,13 +18,15 @@ class _PostFeedViewState extends State<PostFeedView> {
     if (_isLoading) return;
     setState(() => _isLoading = true);
     // Assumes your service has a loadMore() or fetchNextPage() method
-    await context.read<PostService>().loadMore(); 
+    await context.read<PostService>().loadMore();
     if (mounted) setState(() => _isLoading = false);
   }
 
   @override
   Widget build(BuildContext context) {
-    final posts = context.select<PostService, List<dynamic>>((svc) => svc.items);
+    final posts = context.select<PostService, List<dynamic>>(
+      (svc) => svc.items,
+    );
 
     if (posts.isEmpty) {
       return const Center(child: Text('No posts yet.'));

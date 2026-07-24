@@ -48,9 +48,21 @@ class DashboardScreen extends StatelessWidget {
               // ================= SYSTEM METRICS CARDS =================
               Row(
                 children: [
-                  Expanded(child: _buildMetricTile('VERIFIED FANS', '1,429', const Color(0xFF39FF14))),
+                  Expanded(
+                    child: _buildMetricTile(
+                      'VERIFIED FANS',
+                      '1,429',
+                      const Color(0xFF39FF14),
+                    ),
+                  ),
                   const SizedBox(width: 16),
-                  Expanded(child: _buildMetricTile('ACTIVE NODES', '98.4%', const Color(0xFFD4AF37))),
+                  Expanded(
+                    child: _buildMetricTile(
+                      'ACTIVE NODES',
+                      '98.4%',
+                      const Color(0xFFD4AF37),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 32),
@@ -99,7 +111,10 @@ class DashboardScreen extends StatelessWidget {
                       subtitle: 'RLS & Token Claims',
                       icon: Icons.gpp_good_outlined,
                       accentColor: Colors.tealAccent,
-                      onTap: () => _showDevelopmentToast(context, 'TOKEN CLAIMS & AUDIT LOGS SECURE'),
+                      onTap: () => _showDevelopmentToast(
+                        context,
+                        'TOKEN CLAIMS & AUDIT LOGS SECURE',
+                      ),
                     ),
                   ],
                 ),
@@ -109,7 +124,11 @@ class DashboardScreen extends StatelessWidget {
               Center(
                 child: Text(
                   'SPOTLIGHT CONNECT OS v1.0.0 // SECURE RUNTIME ENABLED',
-                  style: TextStyle(color: Colors.white.withValues(alpha: 0.2), fontSize: 9, letterSpacing: 1),
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    fontSize: 9,
+                    letterSpacing: 1,
+                  ),
                 ),
               ),
             ],
@@ -119,7 +138,11 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildConsoleHeader(BuildContext context, UserModel user, SupabaseAuthProvider auth) {
+  Widget _buildConsoleHeader(
+    BuildContext context,
+    UserModel user,
+    SupabaseAuthProvider auth,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -128,7 +151,12 @@ class DashboardScreen extends StatelessWidget {
           children: [
             Text(
               user.displayName.toUpperCase(),
-              style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 1),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
+              ),
             ),
             const SizedBox(height: 4),
             Row(
@@ -136,19 +164,31 @@ class DashboardScreen extends StatelessWidget {
                 Container(
                   width: 6,
                   height: 6,
-                  decoration: const BoxDecoration(color: Color(0xFF39FF14), shape: BoxShape.circle),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF39FF14),
+                    shape: BoxShape.circle,
+                  ),
                 ),
                 const SizedBox(width: 6),
                 Text(
                   'ACCESS PRIVILEGE LEVEL: ${user.activeRole.toUpperCase()}',
-                  style: const TextStyle(color: Color(0xFF39FF14), fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
+                  style: const TextStyle(
+                    color: Color(0xFF39FF14),
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                  ),
                 ),
               ],
             ),
           ],
         ),
         IconButton(
-          icon: const Icon(Icons.power_settings_new, color: Colors.redAccent, size: 22),
+          icon: const Icon(
+            Icons.power_settings_new,
+            color: Colors.redAccent,
+            size: 22,
+          ),
           onPressed: () async {
             await auth.logout();
             if (context.mounted) context.go('/');
@@ -171,12 +211,22 @@ class DashboardScreen extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.4),
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             data,
-            style: TextStyle(color: accentColor, fontSize: 28, fontWeight: FontWeight.bold, letterSpacing: -0.5),
+            style: TextStyle(
+              color: accentColor,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              letterSpacing: -0.5,
+            ),
           ),
         ],
       ),
@@ -210,12 +260,20 @@ class DashboardScreen extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: TextStyle(color: Colors.white.withValues(alpha: 0.3), fontSize: 10),
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.3),
+                    fontSize: 10,
+                  ),
                 ),
               ],
             ),
@@ -228,7 +286,14 @@ class DashboardScreen extends StatelessWidget {
   void _showDevelopmentToast(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12)),
+        content: Text(
+          message,
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+          ),
+        ),
         backgroundColor: const Color(0xFFD4AF37),
         duration: const Duration(seconds: 2),
       ),

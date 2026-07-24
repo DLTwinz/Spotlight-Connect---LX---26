@@ -1,0 +1,828 @@
+lib/models/progression_feature_policy_model.dart:93:    // Expected shape from Supabase RPC:
+lib/models/group_model.dart:55:  /// Supabase row mapping (snake_case DB columns).
+lib/models/group_model.dart:56:  Map<String, dynamic> toSupabaseJson() => {
+lib/models/group_model.dart:66:  static GroupModel? fromSupabaseRow(Object? raw) {
+lib/models/group_model.dart:175:  Map<String, dynamic> toSupabaseJson() => {
+lib/models/group_model.dart:182:  static GroupMembershipModel? fromSupabaseRow(Object? raw) {
+lib/models/early_access_request_model.dart:55:  factory EarlyAccessRequestModel.fromSupabase(Map<String, dynamic> json) {
+lib/models/early_access_request_model.dart:69:  Map<String, dynamic> toSupabaseInsert() {
+lib/models/studio_session_model.dart:90:  /// Supabase row mapping (snake_case) for `public.live_sessions`.
+lib/models/studio_session_model.dart:91:  Map<String, dynamic> toSupabaseJson() {
+lib/models/studio_session_model.dart:127:  factory StudioSessionModel.fromSupabaseRow(Map<String, dynamic> row) {
+lib/models/story_model.dart:40:  /// Supabase row mapping (snake_case DB columns).
+lib/models/story_model.dart:41:  Map<String, dynamic> toSupabaseJson() => {
+lib/models/story_model.dart:52:  static StoryModel? fromSupabaseRow(Object? raw) {
+lib/providers/progression_feature_policy_provider.dart:19:      final uid = _auth.currentUser?.userId;
+lib/providers/progression_feature_policy_provider.dart:20:      final roleKey = _roleKeyFromUser(_auth.currentUser);
+lib/providers/progression_feature_policy_provider.dart:27:    _auth.addListener(_authListener!);
+lib/providers/progression_feature_policy_provider.dart:47:  String get roleKey => _roleKeyFromUser(_auth.currentUser);
+lib/providers/progression_feature_policy_provider.dart:51:    if (_authListener != null) _auth.removeListener(_authListener!);
+lib/providers/progression_feature_policy_provider.dart:75:    if (!_auth.isLoggedIn) {
+lib/providers/progression_feature_policy_provider.dart:88:      final payload = await SupabaseConfig.fetchProgressionFeaturePolicy(roleKey: roleKey);
+lib/providers/supabase_auth_provider.dart:7:class SupabaseAuthProvider extends AppAuthProvider {
+lib/providers/supabase_auth_provider.dart:17:  bool get isLoggedIn => Supabase.instance.client.auth.currentSession != null;
+lib/providers/supabase_auth_provider.dart:34:  SupabaseAuthProvider() {
+lib/providers/supabase_auth_provider.dart:40:    _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((data) async {
+lib/providers/supabase_auth_provider.dart:63:      final response = await Supabase.instance.client
+lib/providers/supabase_auth_provider.dart:64:          .from('profiles')
+lib/providers/supabase_auth_provider.dart:93:    final session = Supabase.instance.client.auth.currentSession;
+lib/providers/supabase_auth_provider.dart:105:      await Supabase.instance.client.auth.signInWithPassword(email: email, password: password);
+lib/providers/supabase_auth_provider.dart:116:    await Supabase.instance.client.auth.signUp(email: email, password: password);
+lib/providers/supabase_auth_provider.dart:122:    await Supabase.instance.client.auth.signOut();
+lib/providers/supabase_auth_provider.dart:127:    final user = Supabase.instance.client.auth.currentUser;
+lib/providers/supabase_auth_provider.dart:133:    await Supabase.instance.client.auth.resetPasswordForEmail(email);
+lib/providers/supabase_auth_provider.dart:147:    final uid = Supabase.instance.client.auth.currentUser?.id;
+lib/providers/supabase_auth_provider.dart:158:      await Supabase.instance.client
+lib/providers/supabase_auth_provider.dart:159:          .from('profiles')
+lib/providers/supabase_auth_provider.dart:164:      await refreshProfile(uid, Supabase.instance.client.auth.currentUser?.email);
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:7:class SupabaseAuthProvider extends AppAuthProvider {
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:17:  bool get isLoggedIn => Supabase.instance.client.auth.currentSession != null;
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:33:  SupabaseAuthProvider() {
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:39:    _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((data) async {
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:62:      final response = await Supabase.instance.client
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:63:          .from('profiles')
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:92:    final session = Supabase.instance.client.auth.currentSession;
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:104:      await Supabase.instance.client.auth.signInWithPassword(email: email, password: password);
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:115:    await Supabase.instance.client.auth.signUp(email: email, password: password);
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:121:    await Supabase.instance.client.auth.signOut();
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:126:    final user = Supabase.instance.client.auth.currentUser;
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:132:    await Supabase.instance.client.auth.resetPasswordForEmail(email);
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:146:    final uid = Supabase.instance.client.auth.currentUser?.id;
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:157:      await Supabase.instance.client
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:158:          .from('profiles')
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:163:      await refreshProfile(uid, Supabase.instance.client.auth.currentUser?.email);
+lib/nav.dart.bak-20260718-144125:98:        // IMPORTANT: Some Supabase email-link flows can land on an opaque URL
+lib/nav.dart.bak-20260718-144125:107:            final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-144125:108:            final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+lib/nav.dart.bak-20260718-144125:109:            final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-144125:110:            final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-144125:111:            final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+lib/nav.dart.bak-20260718-144125:112:            if (hasSupabaseAuthParams) {
+lib/nav.dart.bak-20260718-144125:178:        // Supabase recovery / magic-link params can arrive on *any* route depending
+lib/nav.dart.bak-20260718-144125:182:        // IMPORTANT (web): some email clients / hosts keep Supabase tokens in the
+lib/nav.dart.bak-20260718-144125:188:        final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-144125:189:        // Supabase uses `#error=...&error_code=...&error_description=...` for certain link failures.
+lib/nav.dart.bak-20260718-144125:191:        final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+lib/nav.dart.bak-20260718-144125:192:        final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-144125:193:        final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-144125:194:        final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+lib/nav.dart.bak-20260718-144125:198:            'Router at /login: stateUri=${state.uri} basePath=${baseUri.path} baseQueryKeys=${baseUri.queryParameters.keys.toList()} fragmentLen=${baseUri.fragment.length} hasSupabaseAuthParams=$hasSupabaseAuthParams',
+lib/nav.dart.bak-20260718-144125:201:        if (hasSupabaseAuthParams && !isAuthCallbackRoute && !isResetPasswordRoute) {
+lib/nav.dart.bak-20260718-144125:208:        // NOTE: we handle Supabase email-link params above before returning.
+lib/nav.dart.bak-20260718-144125:211:        // Supabase email links enter via /auth/callback and must never be
+lib/nav.dart.bak-20260718-144125:394:        // Supabase recovery links establish a session, and users must stay on
+lib/nav.dart.bak-20260718-144125:735:            // IMPORTANT: Some Supabase email links arrive as an opaque top-level
+lib/nav.dart.bak-20260718-144125:744:              final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-144125:745:              final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+lib/nav.dart.bak-20260718-144125:746:              final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-144125:747:              final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-144125:748:              final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+lib/nav.dart.bak-20260718-144125:749:              if (hasSupabaseAuthParams) {
+lib/nav.dart.bak-20260718-144125:767:              final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-144125:768:              final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+lib/nav.dart.bak-20260718-144125:769:              final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-144125:770:              final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-144125:771:              final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+lib/nav.dart.bak-20260718-144125:772:              if (hasSupabaseAuthParams) {
+lib/nav.dart.bak-20260718-144125:789:    // Supabase also uses the fragment for tokens, so we only treat the fragment
+lib/nav.dart.bak-20260718-144125:798:      // Supabase can open the app at the root URL with auth params in the fragment,
+lib/nav.dart.bak-20260718-144125:804:      final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-144125:805:      final hasSupabaseFragmentError = fragRaw.contains('error=');
+lib/nav.dart.bak-20260718-144125:806:      final hasSupabaseQueryCode = (uri.queryParameters['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-144125:807:      final hasSupabaseQueryRecoveryType = (uri.queryParameters['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-144125:808:      if ((path.isEmpty || path == '/') && (hasSupabaseFragmentTokens || hasSupabaseFragmentError || hasSupabaseQueryCode || hasSupabaseQueryRecoveryType)) {
+lib/nav.dart.bak-20260718-144125:809:        debugPrint('AppRouter: detected Supabase email-link params at root; booting to ${AppRoutes.authCallback}');
+lib/backend/backend_mode.dart:5:/// In Dreamflow preview we default to `local` until you connect Firebase/Supabase
+lib/main.dart.bak-20260718-185940:41:        'PRODUCTION BOOT DENIED: Live Supabase credentials are empty or misconfigured.',
+lib/main.dart.bak-20260718-185940:51:  // Enforce credentials check before opening live Supabase connections
+lib/main.dart.bak-20260718-185940:54:  // Initialize Supabase using the validated environment variables
+lib/main.dart.bak-20260718-185940:55:  await Supabase.initialize(
+lib/main.dart.bak-20260718-185940:74:  late final SupabaseClient _dbClient;
+lib/main.dart.bak-20260718-185940:80:    _dbClient = Supabase.instance.client;
+lib/main.dart.bak-20260718-185940:83:    _authProvider = SupabaseAuthProvider();
+lib/nav.dart.bak-20260718-142326:126:        // IMPORTANT: Some Supabase email-link flows can land on an opaque URL
+lib/nav.dart.bak-20260718-142326:135:            final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-142326:136:            final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+lib/nav.dart.bak-20260718-142326:137:            final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-142326:138:            final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-142326:139:            final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+lib/nav.dart.bak-20260718-142326:140:            if (hasSupabaseAuthParams) {
+lib/nav.dart.bak-20260718-142326:206:        // Supabase recovery / magic-link params can arrive on *any* route depending
+lib/nav.dart.bak-20260718-142326:210:        // IMPORTANT (web): some email clients / hosts keep Supabase tokens in the
+lib/nav.dart.bak-20260718-142326:216:        final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-142326:217:        // Supabase uses `#error=...&error_code=...&error_description=...` for certain link failures.
+lib/nav.dart.bak-20260718-142326:219:        final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+lib/nav.dart.bak-20260718-142326:220:        final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-142326:221:        final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-142326:222:        final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+lib/nav.dart.bak-20260718-142326:226:            'Router at /login: stateUri=${state.uri} basePath=${baseUri.path} baseQueryKeys=${baseUri.queryParameters.keys.toList()} fragmentLen=${baseUri.fragment.length} hasSupabaseAuthParams=$hasSupabaseAuthParams',
+lib/nav.dart.bak-20260718-142326:229:        if (hasSupabaseAuthParams && !isAuthCallbackRoute && !isResetPasswordRoute) {
+lib/nav.dart.bak-20260718-142326:236:        // NOTE: we handle Supabase email-link params above before returning.
+lib/nav.dart.bak-20260718-142326:239:        // Supabase email links enter via /auth/callback and must never be
+lib/nav.dart.bak-20260718-142326:422:        // Supabase recovery links establish a session, and users must stay on
+lib/nav.dart.bak-20260718-142326:763:            // IMPORTANT: Some Supabase email links arrive as an opaque top-level
+lib/nav.dart.bak-20260718-142326:772:              final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-142326:773:              final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+lib/nav.dart.bak-20260718-142326:774:              final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-142326:775:              final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-142326:776:              final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+lib/nav.dart.bak-20260718-142326:777:              if (hasSupabaseAuthParams) {
+lib/nav.dart.bak-20260718-142326:795:              final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-142326:796:              final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+lib/nav.dart.bak-20260718-142326:797:              final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-142326:798:              final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-142326:799:              final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+lib/nav.dart.bak-20260718-142326:800:              if (hasSupabaseAuthParams) {
+lib/nav.dart.bak-20260718-142326:817:    // Supabase also uses the fragment for tokens, so we only treat the fragment
+lib/nav.dart.bak-20260718-142326:826:      // Supabase can open the app at the root URL with auth params in the fragment,
+lib/nav.dart.bak-20260718-142326:832:      final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-142326:833:      final hasSupabaseFragmentError = fragRaw.contains('error=');
+lib/nav.dart.bak-20260718-142326:834:      final hasSupabaseQueryCode = (uri.queryParameters['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-142326:835:      final hasSupabaseQueryRecoveryType = (uri.queryParameters['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-142326:836:      if ((path.isEmpty || path == '/') && (hasSupabaseFragmentTokens || hasSupabaseFragmentError || hasSupabaseQueryCode || hasSupabaseQueryRecoveryType)) {
+lib/nav.dart.bak-20260718-142326:837:        debugPrint('AppRouter: detected Supabase email-link params at root; booting to ${AppRoutes.authCallback}');
+lib/auth/auth_manager.dart:4:// Implement this with concrete classes for Firebase, Supabase, or local auth.
+lib/auth/auth_manager.dart:22:  /// Supabase sends confirmation/verification emails as part of auth flows.
+lib/auth/auth_manager.dart:23:  /// This is intentionally a no-op for Supabase-backed builds.
+lib/auth/auth_manager.dart:29:/// Supabase-backed auth manager used by this project.
+lib/auth/auth_manager.dart:32:/// - Supabase Auth handles email verification internally.
+lib/auth/auth_manager.dart:35:class SupabaseAuthManager extends AuthManager with EmailSignInManager, JwtSignInManager {
+lib/auth/auth_manager.dart:39:      await SupabaseConfig.auth.signOut();
+lib/auth/auth_manager.dart:41:      debugPrint('SupabaseAuthManager.signOut failed: $e\n$st');
+lib/auth/auth_manager.dart:50:    throw UnsupportedError('Deleting a Supabase auth user must be done server-side.');
+lib/auth/auth_manager.dart:56:      await SupabaseConfig.auth.updateUser(UserAttributes(email: email));
+lib/auth/auth_manager.dart:58:      debugPrint('SupabaseAuthManager.updateEmail failed: $e\n$st');
+lib/auth/auth_manager.dart:66:      await SupabaseConfig.auth.resetPasswordForEmail(
+lib/auth/auth_manager.dart:68:        redirectTo: '${SupabaseConfig.authRedirectOrigin}/#/reset-password',
+lib/auth/auth_manager.dart:71:      debugPrint('SupabaseAuthManager.resetPassword failed: $e\n$st');
+lib/auth/auth_manager.dart:79:      final res = await SupabaseConfig.auth.signInWithPassword(email: email, password: password);
+lib/auth/auth_manager.dart:82:      debugPrint('SupabaseAuthManager.signInWithEmail failed: $e\n$st');
+lib/auth/auth_manager.dart:90:      final res = await SupabaseConfig.auth.signUp(
+lib/auth/auth_manager.dart:93:        emailRedirectTo: '${SupabaseConfig.authRedirectOrigin}/#/auth/callback',
+lib/auth/auth_manager.dart:97:      debugPrint('SupabaseAuthManager.createAccountWithEmail failed: $e\n$st');
+lib/auth/auth_manager.dart:105:      final res = await SupabaseConfig.auth.recoverSession(jwtToken);
+lib/auth/auth_manager.dart:108:      debugPrint('SupabaseAuthManager.signInWithJwtToken failed: $e\n$st');
+lib/main.dart:42:  await Supabase.initialize(
+lib/main.dart:62:  late final SupabaseClient _dbClient;
+lib/main.dart:68:    _dbClient = Supabase.instance.client;
+lib/main.dart:70:    _authProvider = SupabaseAuthProvider();
+lib/main.dart:84:        Provider<SupabaseClient>.value(value: _dbClient),
+lib/main.dart:94:        ChangeNotifierProxyProvider<SupabaseClient, NotificationService>(
+lib/main.dart:96:              NotificationService(client: context.read<SupabaseClient>()),
+lib/main.dart:100:        ChangeNotifierProxyProvider<SupabaseClient, MessageService>(
+lib/main.dart:102:              MessageService(client: context.read<SupabaseClient>()),
+lib/main.dart:106:        ChangeNotifierProxyProvider<SupabaseClient, PostService>(
+lib/main.dart:108:              PostService(client: context.read<SupabaseClient>()),
+lib/main.dart:112:        ChangeNotifierProxyProvider<SupabaseClient, GroupService>(
+lib/main.dart:114:            client: context.read<SupabaseClient>(),
+lib/main.dart:121:        ChangeNotifierProxyProvider<SupabaseClient, PortfolioService>(
+lib/main.dart:123:            client: context.read<SupabaseClient>(),
+lib/main.dart:133:        ChangeNotifierProxyProvider<SupabaseClient, StoryService>(
+lib/main.dart:135:            client: context.read<SupabaseClient>(),
+lib/main.dart:142:        ChangeNotifierProxyProvider<SupabaseClient, OpportunityService>(
+lib/main.dart:144:            client: context.read<SupabaseClient>(),
+lib/main.dart:154:        ChangeNotifierProxyProvider<SupabaseClient, MonetizationService>(
+lib/main.dart:156:              MonetizationService(client: context.read<SupabaseClient>()),
+lib/main.dart:160:        ChangeNotifierProxyProvider<SupabaseClient, ProgressionService>(
+lib/main.dart:162:              ProgressionService(client: context.read<SupabaseClient>()),
+lib/main.dart:167:        ProxyProvider<SupabaseClient, StudioService>(
+lib/main.dart:171:        ProxyProvider<SupabaseClient, MissionComposerService>(
+lib/nav.dart.bak-nullfix-20260719-014530:108:        // IMPORTANT: Some Supabase email-link flows can land on an opaque URL
+lib/nav.dart.bak-nullfix-20260719-014530:120:            final hasSupabaseFragmentTokens =
+lib/nav.dart.bak-nullfix-20260719-014530:124:            final hasSupabaseError =
+lib/nav.dart.bak-nullfix-20260719-014530:129:            final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-nullfix-20260719-014530:130:            final hasSupabaseRecoveryType =
+lib/nav.dart.bak-nullfix-20260719-014530:132:            final hasSupabaseAuthParams =
+lib/nav.dart.bak-nullfix-20260719-014530:133:                hasSupabaseFragmentTokens ||
+lib/nav.dart.bak-nullfix-20260719-014530:134:                hasSupabasePkceCode ||
+lib/nav.dart.bak-nullfix-20260719-014530:135:                hasSupabaseRecoveryType ||
+lib/nav.dart.bak-nullfix-20260719-014530:136:                hasSupabaseError;
+lib/nav.dart.bak-nullfix-20260719-014530:137:            if (hasSupabaseAuthParams) {
+lib/nav.dart.bak-nullfix-20260719-014530:210:        // Supabase recovery / magic-link params can arrive on *any* route depending
+lib/nav.dart.bak-nullfix-20260719-014530:214:        // IMPORTANT (web): some email clients / hosts keep Supabase tokens in the
+lib/nav.dart.bak-nullfix-20260719-014530:225:        final hasSupabaseFragmentTokens =
+lib/nav.dart.bak-nullfix-20260719-014530:229:        // Supabase uses `#error=...&error_code=...&error_description=...` for certain link failures.
+lib/nav.dart.bak-nullfix-20260719-014530:231:        final hasSupabaseError =
+lib/nav.dart.bak-nullfix-20260719-014530:236:        final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-nullfix-20260719-014530:237:        final hasSupabaseRecoveryType =
+lib/nav.dart.bak-nullfix-20260719-014530:239:        final hasSupabaseAuthParams =
+lib/nav.dart.bak-nullfix-20260719-014530:240:            hasSupabaseFragmentTokens ||
+lib/nav.dart.bak-nullfix-20260719-014530:241:            hasSupabasePkceCode ||
+lib/nav.dart.bak-nullfix-20260719-014530:242:            hasSupabaseRecoveryType ||
+lib/nav.dart.bak-nullfix-20260719-014530:243:            hasSupabaseError;
+lib/nav.dart.bak-nullfix-20260719-014530:247:            'Router at /login: stateUri=${state.uri} basePath=${baseUri.path} baseQueryKeys=${baseUri.queryParameters.keys.toList()} fragmentLen=${baseUri.fragment.length} hasSupabaseAuthParams=$hasSupabaseAuthParams',
+lib/nav.dart.bak-nullfix-20260719-014530:250:        if (hasSupabaseAuthParams &&
+lib/nav.dart.bak-nullfix-20260719-014530:263:        // NOTE: we handle Supabase email-link params above before returning.
+lib/nav.dart.bak-nullfix-20260719-014530:266:        // Supabase email links enter via /auth/callback and must never be
+lib/nav.dart.bak-nullfix-20260719-014530:477:        // Supabase recovery links establish a session, and users must stay on
+lib/nav.dart.bak-nullfix-20260719-014530:895:            // IMPORTANT: Some Supabase email links arrive as an opaque top-level
+lib/nav.dart.bak-nullfix-20260719-014530:909:              final hasSupabaseFragmentTokens =
+lib/nav.dart.bak-nullfix-20260719-014530:913:              final hasSupabaseError =
+lib/nav.dart.bak-nullfix-20260719-014530:918:              final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-nullfix-20260719-014530:919:              final hasSupabaseRecoveryType =
+lib/nav.dart.bak-nullfix-20260719-014530:921:              final hasSupabaseAuthParams =
+lib/nav.dart.bak-nullfix-20260719-014530:922:                  hasSupabaseFragmentTokens ||
+lib/nav.dart.bak-nullfix-20260719-014530:923:                  hasSupabasePkceCode ||
+lib/nav.dart.bak-nullfix-20260719-014530:924:                  hasSupabaseRecoveryType ||
+lib/nav.dart.bak-nullfix-20260719-014530:925:                  hasSupabaseError;
+lib/nav.dart.bak-nullfix-20260719-014530:926:              if (hasSupabaseAuthParams) {
+lib/nav.dart.bak-nullfix-20260719-014530:955:              final hasSupabaseFragmentTokens =
+lib/nav.dart.bak-nullfix-20260719-014530:959:              final hasSupabaseError =
+lib/nav.dart.bak-nullfix-20260719-014530:964:              final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-nullfix-20260719-014530:965:              final hasSupabaseRecoveryType =
+lib/nav.dart.bak-nullfix-20260719-014530:967:              final hasSupabaseAuthParams =
+lib/nav.dart.bak-nullfix-20260719-014530:968:                  hasSupabaseFragmentTokens ||
+lib/nav.dart.bak-nullfix-20260719-014530:969:                  hasSupabasePkceCode ||
+lib/nav.dart.bak-nullfix-20260719-014530:970:                  hasSupabaseRecoveryType ||
+lib/nav.dart.bak-nullfix-20260719-014530:971:                  hasSupabaseError;
+lib/nav.dart.bak-nullfix-20260719-014530:972:              if (hasSupabaseAuthParams) {
+lib/nav.dart.bak-nullfix-20260719-014530:994:    // Supabase also uses the fragment for tokens, so we only treat the fragment
+lib/nav.dart.bak-nullfix-20260719-014530:1003:      // Supabase can open the app at the root URL with auth params in the fragment,
+lib/nav.dart.bak-nullfix-20260719-014530:1009:      final hasSupabaseFragmentTokens =
+lib/nav.dart.bak-nullfix-20260719-014530:1013:      final hasSupabaseFragmentError = fragRaw.contains('error=');
+lib/nav.dart.bak-nullfix-20260719-014530:1014:      final hasSupabaseQueryCode =
+lib/nav.dart.bak-nullfix-20260719-014530:1016:      final hasSupabaseQueryRecoveryType =
+lib/nav.dart.bak-nullfix-20260719-014530:1019:          (hasSupabaseFragmentTokens ||
+lib/nav.dart.bak-nullfix-20260719-014530:1020:              hasSupabaseFragmentError ||
+lib/nav.dart.bak-nullfix-20260719-014530:1021:              hasSupabaseQueryCode ||
+lib/nav.dart.bak-nullfix-20260719-014530:1022:              hasSupabaseQueryRecoveryType)) {
+lib/nav.dart.bak-nullfix-20260719-014530:1024:          'AppRouter: detected Supabase email-link params at root; booting to ${AppRoutes.authCallback}',
+lib/MASTER_SPEC.md:64:- Backend platform: Supabase Auth, Postgres, Realtime, Storage, Edge Functions, Cron, and typed APIs.[15][12]
+lib/MASTER_SPEC.md:213:- Direct client access through Supabase Data API and RLS-protected views for safe reads and low-risk writes.[12][13]
+lib/nav.dart.bak-20260718-022423:126:        // IMPORTANT: Some Supabase email-link flows can land on an opaque URL
+lib/nav.dart.bak-20260718-022423:135:            final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-022423:136:            final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+lib/nav.dart.bak-20260718-022423:137:            final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-022423:138:            final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-022423:139:            final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+lib/nav.dart.bak-20260718-022423:140:            if (hasSupabaseAuthParams) {
+lib/nav.dart.bak-20260718-022423:206:        // Supabase recovery / magic-link params can arrive on *any* route depending
+lib/nav.dart.bak-20260718-022423:210:        // IMPORTANT (web): some email clients / hosts keep Supabase tokens in the
+lib/nav.dart.bak-20260718-022423:216:        final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-022423:217:        // Supabase uses `#error=...&error_code=...&error_description=...` for certain link failures.
+lib/nav.dart.bak-20260718-022423:219:        final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+lib/nav.dart.bak-20260718-022423:220:        final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-022423:221:        final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-022423:222:        final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+lib/nav.dart.bak-20260718-022423:226:            'Router at /login: stateUri=${state.uri} basePath=${baseUri.path} baseQueryKeys=${baseUri.queryParameters.keys.toList()} fragmentLen=${baseUri.fragment.length} hasSupabaseAuthParams=$hasSupabaseAuthParams',
+lib/nav.dart.bak-20260718-022423:229:        if (hasSupabaseAuthParams && !isAuthCallbackRoute && !isResetPasswordRoute) {
+lib/nav.dart.bak-20260718-022423:236:        // NOTE: we handle Supabase email-link params above before returning.
+lib/nav.dart.bak-20260718-022423:239:        // Supabase email links enter via /auth/callback and must never be
+lib/nav.dart.bak-20260718-022423:422:        // Supabase recovery links establish a session, and users must stay on
+lib/nav.dart.bak-20260718-022423:763:            // IMPORTANT: Some Supabase email links arrive as an opaque top-level
+lib/nav.dart.bak-20260718-022423:772:              final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-022423:773:              final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+lib/nav.dart.bak-20260718-022423:774:              final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-022423:775:              final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-022423:776:              final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+lib/nav.dart.bak-20260718-022423:777:              if (hasSupabaseAuthParams) {
+lib/nav.dart.bak-20260718-022423:795:              final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-022423:796:              final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+lib/nav.dart.bak-20260718-022423:797:              final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-022423:798:              final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-022423:799:              final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+lib/nav.dart.bak-20260718-022423:800:              if (hasSupabaseAuthParams) {
+lib/nav.dart.bak-20260718-022423:817:    // Supabase also uses the fragment for tokens, so we only treat the fragment
+lib/nav.dart.bak-20260718-022423:826:      // Supabase can open the app at the root URL with auth params in the fragment,
+lib/nav.dart.bak-20260718-022423:832:      final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-022423:833:      final hasSupabaseFragmentError = fragRaw.contains('error=');
+lib/nav.dart.bak-20260718-022423:834:      final hasSupabaseQueryCode = (uri.queryParameters['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-022423:835:      final hasSupabaseQueryRecoveryType = (uri.queryParameters['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-022423:836:      if ((path.isEmpty || path == '/') && (hasSupabaseFragmentTokens || hasSupabaseFragmentError || hasSupabaseQueryCode || hasSupabaseQueryRecoveryType)) {
+lib/nav.dart.bak-20260718-022423:837:        debugPrint('AppRouter: detected Supabase email-link params at root; booting to ${AppRoutes.authCallback}');
+lib/main.dart.bak-20260719-001845:41:        'PRODUCTION BOOT DENIED: Live Supabase credentials are empty or misconfigured.',
+lib/main.dart.bak-20260719-001845:51:  // Enforce credentials check before opening live Supabase connections
+lib/main.dart.bak-20260719-001845:54:  // Initialize Supabase using the validated environment variables
+lib/main.dart.bak-20260719-001845:55:  await Supabase.initialize(
+lib/main.dart.bak-20260719-001845:74:  late final SupabaseClient _dbClient;
+lib/main.dart.bak-20260719-001845:80:    _dbClient = Supabase.instance.client;
+lib/main.dart.bak-20260719-001845:83:    _authProvider = SupabaseAuthProvider();
+lib/pages/dashboards/admin_dashboard.dart:10:    final authProvider = Provider.of<SupabaseAuthProvider>(context);
+lib/pages/dashboards/admin_dashboard.dart:109:    required SupabaseAuthProvider authProvider,
+lib/pages/dashboards/tabs/dashboard_tabs.dart.bak-20260718-151047:729:                        'Database Protocol', 'Supabase Realtime RLS'),
+lib/pages/dashboards/tabs/dashboard_tabs.dart.bak-20260718-161436:729:                        'Database Protocol', 'Supabase Realtime RLS'),
+lib/pages/dashboards/tabs/dashboard_tabs.dart.bak-20260718-173212:729:                        'Database Protocol', 'Supabase Realtime RLS'),
+lib/pages/dashboards/tabs/dashboard_tabs.dart.bak-20260718-144153:729:                        'Database Protocol', 'Supabase Realtime RLS'),
+lib/pages/dashboards/tabs/dashboard_tabs.dart:743:                      'Supabase Realtime RLS',
+lib/pages/dashboards/tabs/dashboard_tabs.dart.bak-20260718-170150:729:                        'Database Protocol', 'Supabase Realtime RLS'),
+lib/pages/dashboards/tabs/dashboard_tabs.dart.bak-20260718-142400:729:                        'Database Protocol', 'Supabase Realtime RLS'),
+lib/pages/dashboards/widgets/post_card.dart.bak-userfix-20260718-222954:483:    final user = context.select<AppAuthProvider, Object?>((auth) => auth.currentUser);
+lib/pages/dashboards/widgets/post_card.dart:484:    final user = context.select<AppAuthProvider, UserModel?>((auth) => auth.currentUser);
+lib/pages/dashboards/widgets/post_card.dart.bak-fix-20260718-205221:483:    final user = context.select<AppAuthProvider, UserModel?>((auth) => auth.currentUser);
+lib/pages/dashboards/widgets/live_watch_sheet.dart:22:    final currentUserId = auth.currentUser?.userId;
+lib/pages/auth/permission_denied_page.dart:29:    final me = auth.currentUser;
+lib/pages/auth/permission_denied_page.dart:70:        await auth.logout();
+lib/pages/auth/permission_denied_page.dart:79:      await auth.refreshCurrentUser();
+lib/pages/auth/onboarding_page.dart:35:      await auth.completeOnboarding(username, _selectedRole);
+lib/pages/auth/onboarding_page.dart:50:    final user = auth.currentUser;
+lib/pages/auth/onboarding_page.dart:56:        leading: AppBackButton(enabled: !auth.isLoading, fallbackLocation: AppRoutes.root),
+lib/pages/auth/landing_auth_page.dart:48:      final supabase = Supabase.instance.client;
+lib/pages/auth/landing_auth_page.dart:51:        await supabase.auth.signUp(
+lib/pages/auth/landing_auth_page.dart:65:        await supabase.auth.signInWithPassword(
+lib/pages/auth/auth_callback_page.dart:8:/// Universal handler for Supabase email links (confirm signup, magic link, recovery).
+lib/pages/auth/auth_callback_page.dart:10:/// Supabase places tokens in the URL fragment. Some hosts additionally use hash
+lib/pages/auth/auth_callback_page.dart:14:/// `auth.getSessionFromUrl`, then routes the user to the appropriate page.
+lib/pages/auth/auth_callback_page.dart:41:      final normalized = _normalizeSupabaseEmailLink(Uri.base);
+lib/pages/auth/auth_callback_page.dart:43:      final supabaseError = _extractSupabaseError(normalized);
+lib/pages/auth/auth_callback_page.dart:53:      // Supabase currently supports multiple email-link styles:
+lib/pages/auth/auth_callback_page.dart:60:        await SupabaseConfig.client.auth.exchangeCodeForSession(code);
+lib/pages/auth/auth_callback_page.dart:62:        await SupabaseConfig.client.auth.getSessionFromUrl(normalized);
+lib/pages/auth/auth_callback_page.dart:81:      // - Some Supabase configs send a link (type=recovery) that establishes a session.
+lib/pages/auth/auth_callback_page.dart:86:        final hasSession = SupabaseConfig.client.auth.currentSession != null;
+lib/pages/auth/auth_callback_page.dart:114:  static _SupabaseEmailLinkError? _extractSupabaseError(Uri uri) {
+lib/pages/auth/auth_callback_page.dart:115:    // Supabase can return errors in fragment or query, e.g.
+lib/pages/auth/auth_callback_page.dart:147:        'We couldn\'t confirm your email because Supabase rejected the link. Please request a new confirmation email, and if it keeps happening, verify the app redirect URL is allowed in Supabase.',
+lib/pages/auth/auth_callback_page.dart:161:    return _SupabaseEmailLinkError(userFacingMessage: userFacing, debugDetails: debugDetails);
+lib/pages/auth/auth_callback_page.dart:164:  static Uri _normalizeSupabaseEmailLink(Uri uri) {
+lib/pages/auth/auth_callback_page.dart:165:    // Most Supabase links look like:
+lib/pages/auth/auth_callback_page.dart:239:class _SupabaseEmailLinkError {
+lib/pages/auth/auth_callback_page.dart:240:  const _SupabaseEmailLinkError({required this.userFacingMessage, required this.debugDetails});
+lib/pages/auth/waiting_approval_page.dart:13:    final user = auth.currentUser;
+lib/pages/auth/waiting_approval_page.dart:63:                        onPressed: auth.isLoading
+lib/pages/auth/waiting_approval_page.dart:66:                                await auth.refreshCurrentUser();
+lib/pages/auth/waiting_approval_page.dart:77:                        onPressed: auth.isLoading
+lib/pages/auth/waiting_approval_page.dart:80:                                await auth.logout();
+lib/pages/auth/reset_password_page.dart:61:    // Supabase recovery/magic links can land on `/reset-password` directly (or be
+lib/pages/auth/reset_password_page.dart:80:        if (hasAuthParams && SupabaseConfig.client.auth.currentSession == null) {
+lib/pages/auth/reset_password_page.dart:81:          if (kDebugMode) debugPrint('ResetPasswordPage: detected Supabase email-link params; forwarding to ${AppRoutes.authCallback}');
+lib/pages/auth/reset_password_page.dart:92:    if (_step == _ResetStep.set && SupabaseConfig.client.auth.currentSession == null) {
+lib/pages/auth/reset_password_page.dart:203:      await SupabaseConfig.client.auth.resetPasswordForEmail(email);
+lib/pages/auth/reset_password_page.dart:241:      final res = await SupabaseConfig.client.auth.verifyOTP(
+lib/pages/auth/reset_password_page.dart:246:      final hasSession = res.session != null || SupabaseConfig.client.auth.currentSession != null;
+lib/pages/auth/reset_password_page.dart:309:      await SupabaseConfig.client.auth.updateUser(UserAttributes(password: password));
+lib/pages/auth/reset_password_page.dart:314:      await SupabaseConfig.client.auth.signOut();
+lib/pages/auth/auth_page.dart:21:    final authProvider = Provider.of<SupabaseAuthProvider>(context, listen: false);
+lib/pages/debug/qa_harness_page.dart.bak:37:  SupabaseClient get _sb => Supabase.instance.client;
+lib/pages/debug/qa_harness_page.dart.bak:92:    _log('Backend: Supabase connected (url=${_sb.rest.url})');
+lib/pages/debug/qa_harness_page.dart.bak:93:    _log('Supabase currentUser: ${_sb.auth.currentUser?.id ?? 'null'}');
+lib/pages/debug/qa_harness_page.dart.bak:102:    final appUser = _auth.currentUser;
+lib/pages/debug/qa_harness_page.dart.bak:167:    final role = (_auth.currentUser?.activeRole ?? 'audience').toString();
+lib/pages/debug/qa_harness_page.dart.bak:226:    final session = _sb.auth.currentSession;
+lib/pages/debug/qa_harness_page.dart.bak:227:    final user = _sb.auth.currentUser;
+lib/pages/debug/qa_harness_page.dart.bak:228:    _log('Supabase session: ${session == null ? 'null' : 'present'}');
+lib/pages/debug/qa_harness_page.dart.bak:229:    _log('Supabase auth user: ${user?.id ?? 'null'}');
+lib/pages/debug/qa_harness_page.dart.bak:230:    _log('AppAuthProvider.isLoggedIn=${_auth.isLoggedIn} isLoading=${_auth.isLoading}');
+lib/pages/debug/qa_harness_page.dart.bak:231:    _log('AppAuthProvider.currentUser=${_auth.currentUser?.userId ?? 'null'} onboarding=${_auth.currentUser?.onboardingComplete} role=${_auth.currentUser?.activeRole}');
+lib/pages/debug/qa_harness_page.dart.bak:236:      throw StateError('Not signed in (Supabase auth user is null).');
+lib/pages/debug/qa_harness_page.dart.bak:247:    final me = _sb.auth.currentUser;
+lib/pages/debug/qa_harness_page.dart.bak:256:    if (_sb.auth.currentUser == null) {
+lib/pages/debug/qa_harness_page.dart.bak:257:      throw StateError('Not signed in. Feed read health check requires auth.');
+lib/pages/debug/qa_harness_page.dart.bak:266:    final me = _sb.auth.currentUser;
+lib/pages/debug/qa_harness_page.dart.bak:289:    if (_sb.auth.currentUser == null) {
+lib/pages/debug/qa_harness_page.dart.bak:290:      throw StateError('Not signed in. Threads read health check requires auth.');
+lib/pages/debug/qa_harness_page.dart.bak:297:    final me = _sb.auth.currentUser;
+lib/pages/debug/qa_harness_page.dart.bak:370:    final me = _sb.auth.currentUser;
+lib/pages/debug/qa_harness_page.dart.bak:378:    final isAdmin = (_auth.currentUser?.approvedRoles ?? const <String>[])
+lib/pages/debug/qa_harness_page.dart.bak:391:    await _auth.refreshCurrentUser();
+lib/pages/debug/qa_harness_page.dart.bak:393:    _log('Refreshed user: role=${_auth.currentUser?.activeRole} approved=${_auth.currentUser?.approvedRoles.join(',')}');
+lib/pages/debug/qa_harness_page.dart.bak:401:    final me = _sb.auth.currentUser;
+lib/pages/debug/qa_harness_page.dart.bak:412:    await _auth.refreshCurrentUser();
+lib/pages/debug/qa_harness_page.dart.bak:415:      'Refreshed user after bootstrap: role=${_auth.currentUser?.activeRole} approved=${_auth.currentUser?.approvedRoles.join(',')}',
+lib/pages/debug/qa_harness_page.dart.bak:425:    final appUser = _auth.currentUser;
+lib/pages/debug/qa_harness_page.dart.bak:452:    await _auth.refreshCurrentUser();
+lib/pages/debug/qa_harness_page.dart.bak:455:      'Manual refresh: role=${_auth.currentUser?.activeRole} approved=${_auth.currentUser?.approvedRoles.join(',')}',
+lib/pages/debug/qa_harness_page.dart.bak:494:    final isLoggedIn = _auth.isLoggedIn;
+lib/pages/debug/qa_harness_page.dart.bak:495:    final appUser = _auth.currentUser;
+lib/pages/debug/qa_harness_page.dart.bak:734:                await _auth.logout();
+lib/pages/debug/qa_harness_page.dart.bak:833:                    title: 'Phase 6: Launch smoke suite (Supabase + MRCP)',
+lib/pages/debug/qa_harness_page.dart.bak:851:                      _ChecklistItem(text: 'Supabase RLS enabled on all tables (no public reads/writes unless intended).'),
+lib/pages/debug/qa_harness_page.dart.bak:862:                    subtitle: 'What the app thinks vs what Supabase users row contains',
+lib/pages/debug/qa_harness_page.dart.bak:1225:          Text('Supabase users row', style: theme.textTheme.titleSmall),
+lib/pages/debug/qa_harness_page.dart.bak:1232:            Text('Tap “Load users row now” to fetch the latest fields from Supabase.', style: theme.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
+lib/pages/debug/qa_harness_page.dart.bak:1475:        _QaAuditPhase.phase1AppSanity => 'Phase 1: App sanity (debug + Supabase connected)',
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:37:  SupabaseClient get _sb => Supabase.instance.client;
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:92:    _log('Backend: Supabase connected (url=${_sb.rest.url})');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:93:    _log('Supabase currentUser: ${_sb.auth.currentUser?.id ?? 'null'}');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:102:    final appUser = _auth.currentUser;
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:167:    final role = (_auth.currentUser?.activeRole ?? 'audience').toString();
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:226:    final session = _sb.auth.currentSession;
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:227:    final user = _sb.auth.currentUser;
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:228:    _log('Supabase session: ${session == null ? 'null' : 'present'}');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:229:    _log('Supabase auth user: ${user?.id ?? 'null'}');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:230:    _log('AppAuthProvider.isLoggedIn=${_auth.isLoggedIn} isLoading=${_auth.isLoading}');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:231:    _log('AppAuthProvider.currentUser=${_auth.currentUser?.userId ?? 'null'} onboarding=${_auth.currentUser?.onboardingComplete} role=${_auth.currentUser?.activeRole}');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:236:      throw StateError('Not signed in (Supabase auth user is null).');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:247:    final me = _sb.auth.currentUser;
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:256:    if (_sb.auth.currentUser == null) {
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:257:      throw StateError('Not signed in. Feed read health check requires auth.');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:266:    final me = _sb.auth.currentUser;
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:289:    if (_sb.auth.currentUser == null) {
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:290:      throw StateError('Not signed in. Threads read health check requires auth.');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:297:    final me = _sb.auth.currentUser;
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:370:    final me = _sb.auth.currentUser;
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:378:    final isAdmin = (_auth.currentUser?.approvedRoles ?? const <String>[])
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:391:    await _auth.refreshCurrentUser();
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:393:    _log('Refreshed user: role=${_auth.currentUser?.activeRole} approved=${_auth.currentUser?.approvedRoles.join(',')}');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:401:    final me = _sb.auth.currentUser;
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:412:    await _auth.refreshCurrentUser();
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:415:      'Refreshed user after bootstrap: role=${_auth.currentUser?.activeRole} approved=${_auth.currentUser?.approvedRoles.join(',')}',
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:425:    final appUser = _auth.currentUser;
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:452:    await _auth.refreshCurrentUser();
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:455:      'Manual refresh: role=${_auth.currentUser?.activeRole} approved=${_auth.currentUser?.approvedRoles.join(',')}',
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:494:    final isLoggedIn = _auth.isLoggedIn;
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:495:    final appUser = _auth.currentUser;
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:734:                await _auth.logout();
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:833:                    title: 'Phase 6: Launch smoke suite (Supabase + MRCP)',
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:851:                      _ChecklistItem(text: 'Supabase RLS enabled on all tables (no public reads/writes unless intended).'),
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:862:                    subtitle: 'What the app thinks vs what Supabase users row contains',
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:1225:          Text('Supabase users row', style: theme.textTheme.titleSmall),
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:1232:            Text('Tap “Load users row now” to fetch the latest fields from Supabase.', style: theme.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:1475:        _QaAuditPhase.phase1AppSanity => 'Phase 1: App sanity (debug + Supabase connected)',
+lib/pages/admin/brand_mission_creator.dart:51:      final client = Supabase.instance.client;
+lib/pages/admin/admin_feature_controls_tab.dart:58:    final user = auth.currentUser;
+lib/pages/admin/admin_feature_controls_tab.dart:104:    final client = SupabaseConfig.client;
+lib/pages/admin/admin_feature_controls_tab.dart:124:    final client = SupabaseConfig.client;
+lib/pages/admin/admin_feature_controls_tab.dart:220:          Text('Server-authoritative toggles (Supabase).', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+lib/pages/shared/feature_disabled_page.dart:25:      if (!auth.isLoggedIn) return '/login';
+lib/pages/shared/feature_disabled_page.dart:26:      final user = auth.currentUser;
+lib/pages/dashboard_screen.dart:14:    final authProvider = Provider.of<SupabaseAuthProvider>(context);
+lib/pages/dashboard_screen.dart:122:  Widget _buildConsoleHeader(BuildContext context, UserModel user, SupabaseAuthProvider auth) {
+lib/pages/dashboard_screen.dart:153:            await auth.logout();
+lib/pages/progression/admin/admin_missions_page.dart:20:  SupabaseClient get _client => Supabase.instance.client;
+lib/pages/progression/admin/admin_missions_page.dart:289:  SupabaseClient get _client => Supabase.instance.client;
+lib/pages/progression/admin/admin_campaigns_page.dart:20:  SupabaseClient get _client => Supabase.instance.client;
+lib/pages/studio/livekit_room_page.dart:65:      final u = auth.currentUser;
+lib/pages/studio/livekit_room_page.dart:73:      if (widget.hostMode && !isBroadcaster && !auth.isAdmin) {
+lib/pages/studio/livekit_room_page.dart:157:    final currentUserId = auth.currentUser?.userId;
+lib/pages/profile/profile_sheet.dart.bak-20260717-231514:56:  SupabaseClient get _db => Supabase.instance.client;
+lib/pages/profile/profile_sheet.dart.bak-20260717-231514:57:  String? get _uid => _db.auth.currentUser?.id;
+lib/pages/profile/profile_sheet.dart.bak-20260717-231514:69:      // Prefer Supabase when authenticated.
+lib/pages/profile/profile_sheet.dart.bak-20260717-231514:115:      // Prefer Supabase when authenticated.
+lib/pages/profile/profile_sheet.dart.bak-20260717-231514:331:                        await auth.setActiveRole('admin');
+lib/pages/profile/profile_sheet.dart.bak-cleanup-20260719-005143:58:  SupabaseClient get _db => Supabase.instance.client;
+lib/pages/profile/profile_sheet.dart.bak-cleanup-20260719-005143:59:  String? get _uid => _db.auth.currentUser?.id;
+lib/pages/profile/profile_sheet.dart.bak-cleanup-20260719-005143:71:      // Prefer Supabase when authenticated.
+lib/pages/profile/profile_sheet.dart.bak-cleanup-20260719-005143:117:      // Prefer Supabase when authenticated.
+lib/pages/profile/profile_sheet.dart.bak-cleanup-20260719-005143:235:    final viewerUser = context.select<AppAuthProvider, UserModel?>((auth) => auth.currentUser);
+lib/pages/profile/profile_sheet.dart.bak-cleanup-20260719-005143:337:                        await auth.setActiveRole('admin');
+lib/pages/profile/profile_sheet.dart.bak-20260718-015052:57:  SupabaseClient get _db => Supabase.instance.client;
+lib/pages/profile/profile_sheet.dart.bak-20260718-015052:58:  String? get _uid => _db.auth.currentUser?.id;
+lib/pages/profile/profile_sheet.dart.bak-20260718-015052:70:      // Prefer Supabase when authenticated.
+lib/pages/profile/profile_sheet.dart.bak-20260718-015052:116:      // Prefer Supabase when authenticated.
+lib/pages/profile/profile_sheet.dart.bak-20260718-015052:332:                        await auth.setActiveRole('admin');
+lib/pages/profile/profile_sheet.dart.bak-20260718-204010:57:  SupabaseClient get _db => Supabase.instance.client;
+lib/pages/profile/profile_sheet.dart.bak-20260718-204010:58:  String? get _uid => _db.auth.currentUser?.id;
+lib/pages/profile/profile_sheet.dart.bak-20260718-204010:70:      // Prefer Supabase when authenticated.
+lib/pages/profile/profile_sheet.dart.bak-20260718-204010:116:      // Prefer Supabase when authenticated.
+lib/pages/profile/profile_sheet.dart.bak-20260718-204010:332:                        await auth.setActiveRole('admin');
+lib/pages/profile/profile_sheet.dart:58:  SupabaseClient get _db => Supabase.instance.client;
+lib/pages/profile/profile_sheet.dart:59:  String? get _uid => _db.auth.currentUser?.id;
+lib/pages/profile/profile_sheet.dart:71:      // Prefer Supabase when authenticated.
+lib/pages/profile/profile_sheet.dart:117:      // Prefer Supabase when authenticated.
+lib/pages/profile/profile_sheet.dart:235:    final viewerUser = context.select<AppAuthProvider, UserModel?>((auth) => auth.currentUser);
+lib/pages/profile/profile_sheet.dart:337:                        await auth.setActiveRole('admin');
+lib/pages/profile/profile_sheet.dart.bak-userfix-20260718-222954:57:  SupabaseClient get _db => Supabase.instance.client;
+lib/pages/profile/profile_sheet.dart.bak-userfix-20260718-222954:58:  String? get _uid => _db.auth.currentUser?.id;
+lib/pages/profile/profile_sheet.dart.bak-userfix-20260718-222954:70:      // Prefer Supabase when authenticated.
+lib/pages/profile/profile_sheet.dart.bak-userfix-20260718-222954:116:      // Prefer Supabase when authenticated.
+lib/pages/profile/profile_sheet.dart.bak-userfix-20260718-222954:234:    final viewerUser = context.select<AppAuthProvider, Object?>((auth) => auth.currentUser);
+lib/pages/profile/profile_sheet.dart.bak-userfix-20260718-222954:336:                        await auth.setActiveRole('admin');
+lib/pages/profile/profile_sheet.dart.bak-fix-20260718-205221:57:  SupabaseClient get _db => Supabase.instance.client;
+lib/pages/profile/profile_sheet.dart.bak-fix-20260718-205221:58:  String? get _uid => _db.auth.currentUser?.id;
+lib/pages/profile/profile_sheet.dart.bak-fix-20260718-205221:70:      // Prefer Supabase when authenticated.
+lib/pages/profile/profile_sheet.dart.bak-fix-20260718-205221:116:      // Prefer Supabase when authenticated.
+lib/pages/profile/profile_sheet.dart.bak-fix-20260718-205221:232:    final viewerUser = context.select<AppAuthProvider, UserModel?>((auth) => auth.currentUser);
+lib/pages/profile/profile_sheet.dart.bak-fix-20260718-205221:334:                        await auth.setActiveRole('admin');
+lib/features/verified_fandom_client.dart:4:  // Access the singleton client directly from the Supabase package
+lib/features/verified_fandom_client.dart:5:  final SupabaseClient _supabase = Supabase.instance.client;
+lib/features/verified_fandom/providers/verified_fandom_providers.dart:8:  // Initialize the client with SupabaseConfig.client
+lib/features/verified_fandom/providers/verified_fandom_providers.dart:9:  late final VerifiedFandomClient client = VerifiedFandomClient(SupabaseConfig.client);
+lib/features/verified_fandom/providers/verified_fandom_providers.dart:43:      final userId = client.supabase.auth.currentUser?.id ?? 'anon';
+lib/features/verified_fandom/data/verified_fandom_client.dart:10:  final SupabaseClient supabase;
+lib/nav.dart:108:        // IMPORTANT: Some Supabase email-link flows can land on an opaque URL
+lib/nav.dart:120:            final hasSupabaseFragmentTokens =
+lib/nav.dart:124:            final hasSupabaseError =
+lib/nav.dart:129:            final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart:130:            final hasSupabaseRecoveryType =
+lib/nav.dart:132:            final hasSupabaseAuthParams =
+lib/nav.dart:133:                hasSupabaseFragmentTokens ||
+lib/nav.dart:134:                hasSupabasePkceCode ||
+lib/nav.dart:135:                hasSupabaseRecoveryType ||
+lib/nav.dart:136:                hasSupabaseError;
+lib/nav.dart:137:            if (hasSupabaseAuthParams) {
+lib/nav.dart:210:        // Supabase recovery / magic-link params can arrive on *any* route depending
+lib/nav.dart:214:        // IMPORTANT (web): some email clients / hosts keep Supabase tokens in the
+lib/nav.dart:225:        final hasSupabaseFragmentTokens =
+lib/nav.dart:229:        // Supabase uses `#error=...&error_code=...&error_description=...` for certain link failures.
+lib/nav.dart:231:        final hasSupabaseError =
+lib/nav.dart:236:        final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart:237:        final hasSupabaseRecoveryType =
+lib/nav.dart:239:        final hasSupabaseAuthParams =
+lib/nav.dart:240:            hasSupabaseFragmentTokens ||
+lib/nav.dart:241:            hasSupabasePkceCode ||
+lib/nav.dart:242:            hasSupabaseRecoveryType ||
+lib/nav.dart:243:            hasSupabaseError;
+lib/nav.dart:247:            'Router at /login: stateUri=${state.uri} basePath=${baseUri.path} baseQueryKeys=${baseUri.queryParameters.keys.toList()} fragmentLen=${baseUri.fragment.length} hasSupabaseAuthParams=$hasSupabaseAuthParams',
+lib/nav.dart:250:        if (hasSupabaseAuthParams &&
+lib/nav.dart:263:        // NOTE: we handle Supabase email-link params above before returning.
+lib/nav.dart:266:        // Supabase email links enter via /auth/callback and must never be
+lib/nav.dart:479:        // Supabase recovery links establish a session, and users must stay on
+lib/nav.dart:896:            // IMPORTANT: Some Supabase email links arrive as an opaque top-level
+lib/nav.dart:910:              final hasSupabaseFragmentTokens =
+lib/nav.dart:914:              final hasSupabaseError =
+lib/nav.dart:919:              final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart:920:              final hasSupabaseRecoveryType =
+lib/nav.dart:922:              final hasSupabaseAuthParams =
+lib/nav.dart:923:                  hasSupabaseFragmentTokens ||
+lib/nav.dart:924:                  hasSupabasePkceCode ||
+lib/nav.dart:925:                  hasSupabaseRecoveryType ||
+lib/nav.dart:926:                  hasSupabaseError;
+lib/nav.dart:927:              if (hasSupabaseAuthParams) {
+lib/nav.dart:956:              final hasSupabaseFragmentTokens =
+lib/nav.dart:960:              final hasSupabaseError =
+lib/nav.dart:965:              final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart:966:              final hasSupabaseRecoveryType =
+lib/nav.dart:968:              final hasSupabaseAuthParams =
+lib/nav.dart:969:                  hasSupabaseFragmentTokens ||
+lib/nav.dart:970:                  hasSupabasePkceCode ||
+lib/nav.dart:971:                  hasSupabaseRecoveryType ||
+lib/nav.dart:972:                  hasSupabaseError;
+lib/nav.dart:973:              if (hasSupabaseAuthParams) {
+lib/nav.dart:995:    // Supabase also uses the fragment for tokens, so we only treat the fragment
+lib/nav.dart:1004:      // Supabase can open the app at the root URL with auth params in the fragment,
+lib/nav.dart:1010:      final hasSupabaseFragmentTokens =
+lib/nav.dart:1014:      final hasSupabaseFragmentError = fragRaw.contains('error=');
+lib/nav.dart:1015:      final hasSupabaseQueryCode =
+lib/nav.dart:1017:      final hasSupabaseQueryRecoveryType =
+lib/nav.dart:1020:          (hasSupabaseFragmentTokens ||
+lib/nav.dart:1021:              hasSupabaseFragmentError ||
+lib/nav.dart:1022:              hasSupabaseQueryCode ||
+lib/nav.dart:1023:              hasSupabaseQueryRecoveryType)) {
+lib/nav.dart:1025:          'AppRouter: detected Supabase email-link params at root; booting to ${AppRoutes.authCallback}',
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:108:        // IMPORTANT: Some Supabase email-link flows can land on an opaque URL
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:120:            final hasSupabaseFragmentTokens =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:124:            final hasSupabaseError =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:129:            final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:130:            final hasSupabaseRecoveryType =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:132:            final hasSupabaseAuthParams =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:133:                hasSupabaseFragmentTokens ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:134:                hasSupabasePkceCode ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:135:                hasSupabaseRecoveryType ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:136:                hasSupabaseError;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:137:            if (hasSupabaseAuthParams) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:210:        // Supabase recovery / magic-link params can arrive on *any* route depending
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:214:        // IMPORTANT (web): some email clients / hosts keep Supabase tokens in the
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:225:        final hasSupabaseFragmentTokens =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:229:        // Supabase uses `#error=...&error_code=...&error_description=...` for certain link failures.
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:231:        final hasSupabaseError =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:236:        final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:237:        final hasSupabaseRecoveryType =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:239:        final hasSupabaseAuthParams =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:240:            hasSupabaseFragmentTokens ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:241:            hasSupabasePkceCode ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:242:            hasSupabaseRecoveryType ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:243:            hasSupabaseError;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:247:            'Router at /login: stateUri=${state.uri} basePath=${baseUri.path} baseQueryKeys=${baseUri.queryParameters.keys.toList()} fragmentLen=${baseUri.fragment.length} hasSupabaseAuthParams=$hasSupabaseAuthParams',
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:250:        if (hasSupabaseAuthParams &&
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:263:        // NOTE: we handle Supabase email-link params above before returning.
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:266:        // Supabase email links enter via /auth/callback and must never be
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:477:        // Supabase recovery links establish a session, and users must stay on
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:895:            // IMPORTANT: Some Supabase email links arrive as an opaque top-level
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:909:              final hasSupabaseFragmentTokens =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:913:              final hasSupabaseError =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:918:              final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:919:              final hasSupabaseRecoveryType =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:921:              final hasSupabaseAuthParams =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:922:                  hasSupabaseFragmentTokens ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:923:                  hasSupabasePkceCode ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:924:                  hasSupabaseRecoveryType ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:925:                  hasSupabaseError;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:926:              if (hasSupabaseAuthParams) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:955:              final hasSupabaseFragmentTokens =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:959:              final hasSupabaseError =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:964:              final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:965:              final hasSupabaseRecoveryType =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:967:              final hasSupabaseAuthParams =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:968:                  hasSupabaseFragmentTokens ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:969:                  hasSupabasePkceCode ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:970:                  hasSupabaseRecoveryType ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:971:                  hasSupabaseError;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:972:              if (hasSupabaseAuthParams) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:994:    // Supabase also uses the fragment for tokens, so we only treat the fragment
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:1003:      // Supabase can open the app at the root URL with auth params in the fragment,
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:1009:      final hasSupabaseFragmentTokens =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:1013:      final hasSupabaseFragmentError = fragRaw.contains('error=');
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:1014:      final hasSupabaseQueryCode =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:1016:      final hasSupabaseQueryRecoveryType =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:1019:          (hasSupabaseFragmentTokens ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:1020:              hasSupabaseFragmentError ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:1021:              hasSupabaseQueryCode ||
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:1022:              hasSupabaseQueryRecoveryType)) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:1024:          'AppRouter: detected Supabase email-link params at root; booting to ${AppRoutes.authCallback}',
+lib/nav.dart.bak-20260718-151023:98:        // IMPORTANT: Some Supabase email-link flows can land on an opaque URL
+lib/nav.dart.bak-20260718-151023:107:            final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-151023:108:            final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+lib/nav.dart.bak-20260718-151023:109:            final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-151023:110:            final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-151023:111:            final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+lib/nav.dart.bak-20260718-151023:112:            if (hasSupabaseAuthParams) {
+lib/nav.dart.bak-20260718-151023:178:        // Supabase recovery / magic-link params can arrive on *any* route depending
+lib/nav.dart.bak-20260718-151023:182:        // IMPORTANT (web): some email clients / hosts keep Supabase tokens in the
+lib/nav.dart.bak-20260718-151023:188:        final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-151023:189:        // Supabase uses `#error=...&error_code=...&error_description=...` for certain link failures.
+lib/nav.dart.bak-20260718-151023:191:        final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+lib/nav.dart.bak-20260718-151023:192:        final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-151023:193:        final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-151023:194:        final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+lib/nav.dart.bak-20260718-151023:198:            'Router at /login: stateUri=${state.uri} basePath=${baseUri.path} baseQueryKeys=${baseUri.queryParameters.keys.toList()} fragmentLen=${baseUri.fragment.length} hasSupabaseAuthParams=$hasSupabaseAuthParams',
+lib/nav.dart.bak-20260718-151023:201:        if (hasSupabaseAuthParams && !isAuthCallbackRoute && !isResetPasswordRoute) {
+lib/nav.dart.bak-20260718-151023:208:        // NOTE: we handle Supabase email-link params above before returning.
+lib/nav.dart.bak-20260718-151023:211:        // Supabase email links enter via /auth/callback and must never be
+lib/nav.dart.bak-20260718-151023:394:        // Supabase recovery links establish a session, and users must stay on
+lib/nav.dart.bak-20260718-151023:735:            // IMPORTANT: Some Supabase email links arrive as an opaque top-level
+lib/nav.dart.bak-20260718-151023:744:              final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-151023:745:              final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+lib/nav.dart.bak-20260718-151023:746:              final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-151023:747:              final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-151023:748:              final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+lib/nav.dart.bak-20260718-151023:749:              if (hasSupabaseAuthParams) {
+lib/nav.dart.bak-20260718-151023:767:              final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-151023:768:              final hasSupabaseError = fragRaw.contains('error=') || qp.containsKey('error') || qp.containsKey('error_code') || qp.containsKey('error_description');
+lib/nav.dart.bak-20260718-151023:769:              final hasSupabasePkceCode = (qp['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-151023:770:              final hasSupabaseRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-151023:771:              final hasSupabaseAuthParams = hasSupabaseFragmentTokens || hasSupabasePkceCode || hasSupabaseRecoveryType || hasSupabaseError;
+lib/nav.dart.bak-20260718-151023:772:              if (hasSupabaseAuthParams) {
+lib/nav.dart.bak-20260718-151023:789:    // Supabase also uses the fragment for tokens, so we only treat the fragment
+lib/nav.dart.bak-20260718-151023:798:      // Supabase can open the app at the root URL with auth params in the fragment,
+lib/nav.dart.bak-20260718-151023:804:      final hasSupabaseFragmentTokens = fragRaw.contains('access_token=') || fragRaw.contains('refresh_token=') || fragRaw.contains('type=recovery');
+lib/nav.dart.bak-20260718-151023:805:      final hasSupabaseFragmentError = fragRaw.contains('error=');
+lib/nav.dart.bak-20260718-151023:806:      final hasSupabaseQueryCode = (uri.queryParameters['code'] ?? '').isNotEmpty;
+lib/nav.dart.bak-20260718-151023:807:      final hasSupabaseQueryRecoveryType = (uri.queryParameters['type'] ?? '').toLowerCase() == 'recovery';
+lib/nav.dart.bak-20260718-151023:808:      if ((path.isEmpty || path == '/') && (hasSupabaseFragmentTokens || hasSupabaseFragmentError || hasSupabaseQueryCode || hasSupabaseQueryRecoveryType)) {
+lib/nav.dart.bak-20260718-151023:809:        debugPrint('AppRouter: detected Supabase email-link params at root; booting to ${AppRoutes.authCallback}');
+lib/services/group_service.dart:5:  final SupabaseClient _client; // ignore: unused_field
+lib/services/group_service.dart:9:  GroupService({required SupabaseClient client, required dynamic localCache}) 
+lib/services/message_service.dart.bak-20260718-144210:16:  MessageService({required SupabaseClient client}) : _client = client;
+lib/services/message_service.dart.bak-20260718-144210:18:  final SupabaseClient _client;
+lib/services/message_service.dart.bak-20260718-144210:26:  SupabaseClient get client => _client;
+lib/services/message_service.dart.bak-20260718-144210:33:      final me = _client.auth.currentUser;
+lib/services/studio_service.dart.bak-unimplemented-20260719-005331:6:  final SupabaseClient _client; // ignore: unused_field
+lib/services/studio_service.dart.bak-unimplemented-20260719-005331:7:  StudioService({required SupabaseClient client}) : _client = client;
+lib/services/studio_service.dart.bak-unimplemented-20260719-005331:49:  /// This method attempts to call a Supabase RPC function named "livekit_token"
+lib/services/studio_service.dart.bak-unimplemented-20260719-005331:59:      // If you have a Supabase Edge function or RPC that generates a LiveKit token,
+lib/services/studio_service.dart.bak-unimplemented-20260719-005331:61:      final resp = await Supabase.instance.client.rpc('livekit_token', params: {
+lib/services/studio_service.dart.bak-unimplemented-20260719-005331:77:      // - Some Supabase RPCs return a List with a single map
+lib/services/studio_service.dart.bak-unimplemented-20260719-005331:94:      final response = await Supabase.instance.client.from('live_sessions').select().limit(limit);
+lib/services/studio_service.dart.bak-unimplemented-20260719-005331:96:          .map((e) => StudioSessionModel.fromSupabaseRow(e as Map<String, dynamic>))
+lib/services/database_service.dart:7:  final SupabaseClient supabase = Supabase.instance.client;
+lib/services/studio_service.dart:6:  final SupabaseClient _client;
+lib/services/studio_service.dart:7:  StudioService({required SupabaseClient client}) : _client = client;
+lib/services/studio_service.dart:87:          .map((e) => StudioSessionModel.fromSupabaseRow(e as Map<String, dynamic>))
+lib/services/src/components/hud/GravityMap.tsx:3:// Define the Node interface based on our Supabase schema
+lib/services/studio_service.dart.bak-nodev-20260719-005304:6:  final SupabaseClient _client; // ignore: unused_field
+lib/services/studio_service.dart.bak-nodev-20260719-005304:7:  StudioService({required SupabaseClient client}) : _client = client;
+lib/services/studio_service.dart.bak-nodev-20260719-005304:49:  /// This method attempts to call a Supabase RPC function named "livekit_token"
+lib/services/studio_service.dart.bak-nodev-20260719-005304:59:      // If you have a Supabase Edge function or RPC that generates a LiveKit token,
+lib/services/studio_service.dart.bak-nodev-20260719-005304:61:      final resp = await Supabase.instance.client.rpc('livekit_token', params: {
+lib/services/studio_service.dart.bak-nodev-20260719-005304:77:      // - Some Supabase RPCs return a List with a single map
+lib/services/studio_service.dart.bak-nodev-20260719-005304:96:      final response = await Supabase.instance.client.from('live_sessions').select().limit(limit);
+lib/services/studio_service.dart.bak-nodev-20260719-005304:98:          .map((e) => StudioSessionModel.fromSupabaseRow(e as Map<String, dynamic>))
+lib/services/message_service.dart.bak-20260718-161619:16:  MessageService({required SupabaseClient client}) : _client = client;
+lib/services/message_service.dart.bak-20260718-161619:18:  final SupabaseClient _client;
+lib/services/message_service.dart.bak-20260718-161619:26:  SupabaseClient get client => _client;
+lib/services/message_service.dart.bak-20260718-161619:33:      final me = _client.auth.currentUser;
+lib/services/portfolio_service.dart:5:  final SupabaseClient _client; // ignore: unused_field
+lib/services/portfolio_service.dart:9:  PortfolioService({required SupabaseClient client, required dynamic localCache}) 
+lib/services/progression_service.dart.bak-20260718-011204:13:  ProgressionService({required SupabaseClient client}) : _client = client;
+lib/services/progression_service.dart.bak-20260718-011204:15:  final SupabaseClient _client;
+lib/services/progression_service.dart.bak-20260718-011204:41:  User? get _user => _client.auth.currentUser;
+lib/services/opportunity_service.dart.bak:5:  final SupabaseClient _client; // ignore: unused_field
+lib/services/opportunity_service.dart.bak:10:  OpportunityService({required SupabaseClient client, required dynamic localCache}) 
+lib/services/opportunity_service.dart.bak:54:    if (_isSupabaseMode) {
+lib/services/opportunity_service.dart.bak:60:          await SupabaseConfig.client.from('opportunity_saves').delete().eq('user_id', uid).eq('opportunity_id', id);
+lib/services/opportunity_service.dart.bak:63:          await SupabaseConfig.client.from('opportunity_saves').insert({'user_id': uid, 'opportunity_id': id});
+lib/services/opportunity_service.dart.bak:69:        debugPrint('OpportunityService: toggleSaved Supabase failed: $e');
+lib/services/opportunity_service.dart.bak:78:          await SupabaseConfig.client.from('opportunity_saves').delete().eq('user_id', uid).eq('opportunity_id', id);
+lib/services/opportunity_service.dart.bak:81:          await SupabaseConfig.client.from('opportunity_saves').insert({'user_id': uid, 'opportunity_id': id});
+lib/services/opportunity_service.dart.bak:87:        debugPrint('OpportunityService: toggleSaved Supabase failed: $e');
+lib/services/opportunity_service.dart.bak:115:      final inserted = await SupabaseConfig.client
+lib/services/opportunity_service.dart.bak:142:      final updated = await SupabaseConfig.client
+lib/services/opportunity_service.dart.bak:182:      final inserted = await SupabaseConfig.client
+lib/services/opportunity_service.dart.bak:205:    if (_isSupabaseMode) return;
+lib/services/monetization_service.dart:8:  MonetizationService({SupabaseClient? client});
+lib/services/post_service.dart.pre_python_fix:5:  PostService({required SupabaseClient client}) : _client = client;
+lib/services/post_service.dart.pre_python_fix:7:  final SupabaseClient _client;
+lib/services/post_service.dart.pre_python_fix:11:  SupabaseClient get client => _client;
+lib/services/security_gate_screen.dart:12:  final _supabase = Supabase.instance.client;
+lib/services/security_gate_screen.dart:19:      final user = _supabase.auth.currentUser;
+lib/services/security_gate_screen.dart:22:        'sub_node': 'auth.user.uid(${user?.id.substring(0, 8)})',
+lib/services/security_gate_screen.dart:36:    final currentUser = _supabase.auth.currentUser;
+lib/services/message_service.dart.bak-20260718-142432:16:  MessageService({required SupabaseClient client}) : _client = client;
+lib/services/message_service.dart.bak-20260718-142432:18:  final SupabaseClient _client;
+lib/services/message_service.dart.bak-20260718-142432:26:  SupabaseClient get client => _client;
+lib/services/message_service.dart.bak-20260718-142432:33:      final me = _client.auth.currentUser;
+lib/services/mission_composer_services.dart:4:  final SupabaseClient _client;
+lib/services/mission_composer_services.dart:5:  MissionComposerService({required SupabaseClient client}) : _client = client;
+lib/services/studio_service.dart.bak-rewrite-20260719-012243:6:  final SupabaseClient _client; // ignore: unused_field
+lib/services/studio_service.dart.bak-rewrite-20260719-012243:7:  StudioService({required SupabaseClient client}) : _client = client;
+lib/services/studio_service.dart.bak-rewrite-20260719-012243:52:  /// This method attempts to call a Supabase RPC function named "livekit_token"
+lib/services/studio_service.dart.bak-rewrite-20260719-012243:62:      // If you have a Supabase Edge function or RPC that generates a LiveKit token,
+lib/services/studio_service.dart.bak-rewrite-20260719-012243:64:      final resp = await Supabase.instance.client.rpc('livekit_token', params: {
+lib/services/studio_service.dart.bak-rewrite-20260719-012243:80:      // - Some Supabase RPCs return a List with a single map
+lib/services/studio_service.dart.bak-rewrite-20260719-012243:97:      final response = await Supabase.instance.client.from('live_sessions').select().limit(limit);
+lib/services/studio_service.dart.bak-rewrite-20260719-012243:99:          .map((e) => StudioSessionModel.fromSupabaseRow(e as Map<String, dynamic>))
+lib/services/message_service.dart.bak-20260718-151117:16:  MessageService({required SupabaseClient client}) : _client = client;
+lib/services/message_service.dart.bak-20260718-151117:18:  final SupabaseClient _client;
+lib/services/message_service.dart.bak-20260718-151117:26:  SupabaseClient get client => _client;
+lib/services/message_service.dart.bak-20260718-151117:33:      final me = _client.auth.currentUser;
+lib/services/message_service.dart:16:  MessageService({required SupabaseClient client}) : _client = client;
+lib/services/message_service.dart:18:  final SupabaseClient _client;
+lib/services/message_service.dart:26:  SupabaseClient get client => _client;
+lib/services/message_service.dart:33:      final me = _client.auth.currentUser;
+lib/services/progression_service.dart:13:  ProgressionService({required SupabaseClient client}) : _client = client;
+lib/services/progression_service.dart:15:  final SupabaseClient _client;
+lib/services/progression_service.dart:41:  User? get _user => _client.auth.currentUser;
+lib/services/message_service.dart.bak-20260718-170213:16:  MessageService({required SupabaseClient client}) : _client = client;
+lib/services/message_service.dart.bak-20260718-170213:18:  final SupabaseClient _client;
+lib/services/message_service.dart.bak-20260718-170213:26:  SupabaseClient get client => _client;
+lib/services/message_service.dart.bak-20260718-170213:33:      final me = _client.auth.currentUser;
+lib/services/notification_service.dart:5:  final SupabaseClient _client;
+lib/services/notification_service.dart:8:  NotificationService({required SupabaseClient client}) : _client = client;
+lib/services/early_access_service.dart:33:      final rows = await SupabaseConfig.client.from(table).insert(payload).select();
+lib/services/early_access_service.dart:35:      return EarlyAccessRequestModel.fromSupabase(rows.first);
+lib/services/studio_service.dart.bak-20260717-231515:6:  final SupabaseClient _client; // ignore: unused_field
+lib/services/studio_service.dart.bak-20260717-231515:7:  StudioService({required SupabaseClient client}) : _client = client;
+lib/services/studio_service.dart.bak-20260717-231515:49:  /// This method attempts to call a Supabase RPC function named "livekit_token"
+lib/services/studio_service.dart.bak-20260717-231515:59:      // If you have a Supabase Edge function or RPC that generates a LiveKit token,
+lib/services/studio_service.dart.bak-20260717-231515:61:      final resp = await Supabase.instance.rpc('livekit_token', params: {
+lib/services/studio_service.dart.bak-20260717-231515:77:      // - Some Supabase RPCs return a List with a single map
+lib/services/studio_service.dart.bak-20260717-231515:96:      final response = await Supabase.instance.client.from('live_sessions').select().limit(limit);
+lib/services/studio_service.dart.bak-20260717-231515:98:          .map((e) => StudioSessionModel.fromSupabaseRow(e as Map<String, dynamic>))
+lib/services/story_service.dart:5:  final SupabaseClient _client; // ignore: unused_field
+lib/services/story_service.dart:9:  StoryService({required SupabaseClient client, required dynamic localCache}) 
+lib/services/fandom_hub_screen.dart:12:  final _supabase = Supabase.instance.client;
+lib/services/fandom_hub_screen.dart:33:      final user = _supabase.auth.currentUser;
+lib/services/fandom_hub_screen.dart:59:    final user = _supabase.auth.currentUser;
+lib/services/progression_service.dart.bak:93:  ProgressionService({required SupabaseClient client}) : _client = client;
+lib/services/progression_service.dart.bak:95:  final SupabaseClient _client;
+lib/services/progression_service.dart.bak:100:  SupabaseClient get client => _client;
+lib/services/messaging_pipeline_screen.dart:12:  final _supabase = Supabase.instance.client;
+lib/services/messaging_pipeline_screen.dart:31:      final user = _supabase.auth.currentUser;
+lib/services/opportunity_service.dart:5:  final SupabaseClient _client; // ignore: unused_field
+lib/services/opportunity_service.dart:10:  OpportunityService({required SupabaseClient client, required dynamic localCache}) 
+lib/services/progression_service.dart.pre-rewrite-20260717-211923:93:  ProgressionService({required SupabaseClient client}) : _client = client;
+lib/services/progression_service.dart.pre-rewrite-20260717-211923:95:  final SupabaseClient _client;
+lib/services/progression_service.dart.pre-rewrite-20260717-211923:100:  SupabaseClient get client => _client;
+lib/services/post_service.dart:8:  PostService({required SupabaseClient client}) : _client = client;
+lib/services/post_service.dart:10:  final SupabaseClient _client;
+lib/services/post_service.dart:19:  SupabaseClient get client => _client;
+lib/services/opportunity_service.dart.merged-broken:5:  final SupabaseClient _client; // ignore: unused_field
+lib/services/opportunity_service.dart.merged-broken:10:  OpportunityService({required SupabaseClient client, required dynamic localCache}) 
+lib/widgets/feature_flags_sheet.dart:53:    final isAdmin = auth.isAdmin;
+lib/supabase/supabase_config.dart:3:class SupabaseConfig {
+lib/supabase/supabase_config.dart:14:    await Supabase.initialize(url: 'https://mdwvokenmehdfybgujpa.supabase.co', publishableKey: 'YOUR_ANON_KEY_HERE');
+lib/supabase/supabase_config.dart:18:  static SupabaseClient get client => Supabase.instance.client;
+lib/supabase/supabase_config.dart:21:  static GoTrueClient get auth => Supabase.instance.client.auth;
+lib/supabase/database.types.ts:12:  __InternalSupabase: {
+lib/supabase/database.types.ts:3185:type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+lib/supabase/supabase_tables.sql:1:-- Supabase database schema (generated by Dreamflow agent)
+lib/supabase/supabase_tables.sql:2:-- Apply via Dreamflow Supabase module migrations.
+lib/supabase/supabase_tables.sql:8:  id uuid primary key references auth.users (id) on delete cascade,
+lib/supabase/functions/set_active_role/index.ts:28:    const { data: auth, error: authErr } = await userClient.auth.getUser();
+lib/supabase/functions/set_active_role/index.ts:42:    const { data: userRow, error: userErr } = await adminClient.from("users").select("id, approved_roles").eq("id", auth.user.id).maybeSingle();
+lib/supabase/functions/set_active_role/index.ts:53:    const { data: updated, error: upErr } = await adminClient.from("users").update({ active_role: role }).eq("id", auth.user.id).select("id, active_role, approved_roles").single();
+lib/supabase/functions/admin_campaign_upsert/index.ts:33:  const { data: userData } = await userClient.auth.getUser();
+lib/supabase/functions/admin_review_role_application/index.ts:48:  // Supabase JS generics vary across versions; keep this helper unblocked.
+lib/supabase/functions/admin_review_role_application/index.ts:74:    // - Many Supabase setups do NOT expose SUPABASE_SERVICE_ROLE_KEY by default.
+lib/supabase/functions/admin_review_role_application/index.ts:76:    //   Set it in Supabase Dashboard → Project Settings → Edge Functions → Secrets.
+lib/supabase/functions/admin_review_role_application/index.ts:95:    const { data: auth, error: authErr } = await userClient.auth.getUser();
+lib/supabase/functions/admin_review_role_application/index.ts:117:    const { data: caller, error: callerErr } = await adminClient.from("users").select("id, approved_roles").eq("id", auth.user.id).maybeSingle();
+lib/supabase/functions/admin_review_role_application/index.ts:154:            reviewed_by: auth.user.id,
+lib/supabase/functions/create_livekit_token/index.ts:1:// Supabase Edge Function: create_livekit_token
+lib/supabase/functions/create_livekit_token/index.ts:4:// Secrets required (set in Supabase module):
+lib/supabase/functions/create_livekit_token/index.ts:38:      return json({ error: "Missing Supabase environment (SUPABASE_URL/ANON_KEY/SERVICE_ROLE_KEY)" }, 500);
+lib/supabase/functions/create_livekit_token/index.ts:54:    const { data: auth, error: authErr } = await userClient.auth.getUser();
+lib/supabase/functions/create_livekit_token/index.ts:69:    if (identity !== auth.user.id) {
+lib/supabase/functions/create_livekit_token/index.ts:79:        .eq("id", auth.user.id)
+lib/supabase/functions/campaign_join/index.ts:104:  const { data: userData, error: userErr } = await userClient.auth.getUser();
+lib/supabase/functions/admin_grant_reward/index.ts:49:  const { data: userData } = await userClient.auth.getUser();
+lib/supabase/functions/create_monetization_transaction/index.ts:1:// Supabase Edge Function: create_monetization_transaction
+lib/supabase/functions/create_monetization_transaction/index.ts:49:    const { data: authData, error: authError } = await userClient.auth.getUser();
+lib/supabase/functions/missions_list/index.ts:1:// Supabase Edge Function: missions_list
+lib/supabase/functions/missions_list/index.ts:89:  // User client for auth.getUser()
+lib/supabase/functions/missions_list/index.ts:91:  const { data: userData, error: userErr } = await userClient.auth.getUser();
+lib/supabase/functions/check_early_access_status/index.ts:1:// Supabase Edge Function: check_early_access_status
+lib/supabase/functions/mission_claim/index.ts:139:  const { data: userData, error: userErr } = await userClient.auth.getUser();
+lib/supabase/functions/campaign_leave/index.ts:98:  const { data: userData, error: userErr } = await userClient.auth.getUser();
+lib/supabase/functions/admin_mission_delete/index.ts:33:  const { data: userData } = await userClient.auth.getUser();
+lib/supabase/functions/campaigns_list/index.ts:25:  const { data: userData, error: userErr } = await userClient.auth.getUser();
+lib/supabase/functions/bootstrap_admin/index.ts:1:// Supabase Edge Function: bootstrap_admin
+lib/supabase/functions/bootstrap_admin/index.ts:44:    const { data: userData, error: userErr } = await userClient.auth.getUser();
+lib/supabase/functions/admin_set_role_application_status/index.ts:47:  // Supabase JS generics vary across versions; keep this helper unblocked.
+lib/supabase/functions/admin_set_role_application_status/index.ts:98:    const { data: auth, error: authErr } = await userClient.auth.getUser();
+lib/supabase/functions/admin_set_role_application_status/index.ts:140:      .eq("id", auth.user.id)
+lib/supabase/functions/admin_set_role_application_status/index.ts:165:        reviewed_by: auth.user.id,
+lib/supabase/functions/admin_mission_upsert/index.ts:33:  const { data: userData } = await userClient.auth.getUser();
+lib/supabase/functions/progress_snapshot/index.ts:25:  const { data: userData, error: userErr } = await userClient.auth.getUser();
+lib/supabase/functions/feed_list_posts/index.ts:1:// Supabase Edge Function: feed_list_posts
+lib/supabase/functions/mission_start/index.ts:118:  const { data: userData, error: userErr } = await userClient.auth.getUser();
+lib/supabase/functions/admin_list_role_applications/index.ts:1:// Supabase Edge Function: admin_list_role_applications
+lib/supabase/functions/admin_list_role_applications/index.ts:27:  const m = auth.match(/^Bearer\s+(.+)$/i);
+lib/supabase/functions/admin_list_role_applications/index.ts:53:    const { data: authData, error: authErr } = await adminClient.auth.getUser(jwt);
+lib/supabase/functions/qa_set_role/index.ts:1:// Supabase Edge Function: qa_set_role
+lib/supabase/functions/qa_set_role/index.ts:49:    const { data: authData, error: authErr } = await supabaseUser.auth.getUser();
+lib/supabase/functions/admin_campaign_delete/index.ts:33:  const { data: userData } = await userClient.auth.getUser();
+lib/supabase/attribution_trigger.sql:22:        FROM auth.users 
+lib/supabase/supabase_policies.sql:1:-- Supabase Row Level Security policies (generated by Dreamflow agent)
+lib/supabase/supabase_policies.sql:34:  using (id = auth.uid());
+lib/supabase/supabase_policies.sql:48:  using (id = auth.uid())

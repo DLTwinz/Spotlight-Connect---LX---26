@@ -1,0 +1,205 @@
+lib/models/user_model.dart:88:          : json['approved_roles'] != null 
+lib/models/user_model.dart:89:              ? List<String>.from(json['approved_roles'])
+lib/models/user_model.dart:91:      activeRole: (json['activeRole'] ?? json['active_role'] ?? 'audience').toString(),
+lib/models/user_model.dart:92:      onboardingComplete: json['onboardingComplete'] ?? json['onboarding_complete'] ?? false,
+lib/models/user_model.dart:113:  bool get isAdmin =>
+lib/providers/app_auth_provider.dart.bak-20260718-232405:7:  bool get isAdmin => false;
+lib/providers/app_auth_provider.dart:8:  bool get isAdmin;
+lib/providers/supabase_auth_provider.dart:24:  bool get isAdmin => _currentUser?.isAdmin ?? false;
+lib/providers/supabase_auth_provider.dart:73:          'onboarding_complete': false,
+lib/providers/supabase_auth_provider.dart:74:          'approved_roles': ['audience'],
+lib/providers/supabase_auth_provider.dart:75:          'active_role': 'audience',
+lib/providers/supabase_auth_provider.dart:142:    if (!isAdmin) {
+lib/providers/supabase_auth_provider.dart:160:          .update({'active_role': role})
+lib/providers/app_auth_provider.dart.bak-abstract-20260719-005207:8:  bool get isAdmin => false;
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:23:  bool get isAdmin => _currentUser?.isAdmin ?? false;
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:72:          'onboarding_complete': false,
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:73:          'approved_roles': ['audience'],
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:74:          'active_role': 'audience',
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:141:    if (!isAdmin) {
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:159:          .update({'active_role': role})
+lib/nav.dart.bak-20260718-144125:146:          if (authProvider.isAdmin) return true;
+lib/nav.dart.bak-20260718-144125:497:        final isAdminTooling = location == AppRoutes.adminMissions || location == AppRoutes.adminCampaigns;
+lib/nav.dart.bak-20260718-144125:498:        if (isAdminTooling && !user.approvedRoles.contains('admin')) {
+lib/nav.dart.bak-20260718-142326:174:          if (authProvider.isAdmin) return true;
+lib/nav.dart.bak-20260718-142326:525:        final isAdminTooling = location == AppRoutes.adminMissions || location == AppRoutes.adminCampaigns;
+lib/nav.dart.bak-20260718-142326:526:        if (isAdminTooling && !user.approvedRoles.contains('admin')) {
+lib/nav.dart.bak-nullfix-20260719-014530:179:          if (authProvider.isAdmin) return true;
+lib/nav.dart.bak-nullfix-20260719-014530:593:        final isAdminTooling =
+lib/nav.dart.bak-nullfix-20260719-014530:596:        if (isAdminTooling && !user.approvedRoles.contains('admin')) {
+lib/nav.dart.bak-20260718-022423:174:          if (authProvider.isAdmin) return true;
+lib/nav.dart.bak-20260718-022423:525:        final isAdminTooling = location == AppRoutes.adminMissions || location == AppRoutes.adminCampaigns;
+lib/nav.dart.bak-20260718-022423:526:        if (isAdminTooling && !user.approvedRoles.contains('admin')) {
+lib/pages/debug/qa_harness_page.dart.bak:106:    final isAdmin = (appUser.approvedRoles).map((r) => r.toLowerCase()).contains('admin');
+lib/pages/debug/qa_harness_page.dart.bak:107:    if (!isAdmin) {
+lib/pages/debug/qa_harness_page.dart.bak:112:    final dbActive = _latestUsersRow?['active_role']?.toString();
+lib/pages/debug/qa_harness_page.dart.bak:115:      throw StateError('Role mismatch: app activeRole=$appActive, db users.active_role=$dbActive');
+lib/pages/debug/qa_harness_page.dart.bak:378:    final isAdmin = (_auth.currentUser?.approvedRoles ?? const <String>[])
+lib/pages/debug/qa_harness_page.dart.bak:381:    if (!isAdmin) {
+lib/pages/debug/qa_harness_page.dart.bak:437:    final dbActive = _latestUsersRow?['active_role']?.toString();
+lib/pages/debug/qa_harness_page.dart.bak:438:    final dbApprovedRaw = _latestUsersRow?['approved_roles'];
+lib/pages/debug/qa_harness_page.dart.bak:442:      throw StateError('Expected DB users.active_role=talent, got $dbActive');
+lib/pages/debug/qa_harness_page.dart.bak:445:      throw StateError('Expected DB users.approved_roles to contain talent, got $dbApproved');
+lib/pages/debug/qa_harness_page.dart.bak:496:    final isAdmin = (appUser?.approvedRoles ?? const <String>[]).map((r) => r.toLowerCase()).contains('admin');
+lib/pages/debug/qa_harness_page.dart.bak:865:                      if (!isAdmin)
+lib/pages/debug/qa_harness_page.dart.bak:873:                      if (!isAdmin) ...[
+lib/pages/debug/qa_harness_page.dart.bak:896:                        onPressed: (!isAdmin || kReleaseMode)
+lib/pages/debug/qa_harness_page.dart.bak:928:                        onPressed: (!isAdmin || kReleaseMode)
+lib/pages/debug/qa_harness_page.dart.bak:936:                        onPressed: (!isAdmin || kReleaseMode)
+lib/pages/debug/qa_harness_page.dart.bak:944:                        onPressed: (!isAdmin || kReleaseMode)
+lib/pages/debug/qa_harness_page.dart.bak:950:                        'Expected: after approve, the app reroutes to the matching dashboard (e.g. /talent) and “approved_roles” includes the role.',
+lib/pages/debug/qa_harness_page.dart.bak:1193:    final dbActiveRole = usersRow?['active_role']?.toString() ?? '—';
+lib/pages/debug/qa_harness_page.dart.bak:1194:    final dbApprovedRoles = usersRow?['approved_roles'] is List ? (usersRow?['approved_roles'] as List).join(', ') : (usersRow == null ? '—' : (usersRow?['approved_roles']?.toString() ?? '—'));
+lib/pages/debug/qa_harness_page.dart.bak:1227:          row('active_role', dbActiveRole),
+lib/pages/debug/qa_harness_page.dart.bak:1228:          row('approved_roles', dbApprovedRoles),
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:106:    final isAdmin = (appUser.approvedRoles).map((r) => r.toLowerCase()).contains('admin');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:107:    if (!isAdmin) {
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:112:    final dbActive = _latestUsersRow?['active_role']?.toString();
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:115:      throw StateError('Role mismatch: app activeRole=$appActive, db users.active_role=$dbActive');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:378:    final isAdmin = (_auth.currentUser?.approvedRoles ?? const <String>[])
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:381:    if (!isAdmin) {
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:437:    final dbActive = _latestUsersRow?['active_role']?.toString();
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:438:    final dbApprovedRaw = _latestUsersRow?['approved_roles'];
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:442:      throw StateError('Expected DB users.active_role=talent, got $dbActive');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:445:      throw StateError('Expected DB users.approved_roles to contain talent, got $dbApproved');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:496:    final isAdmin = (appUser?.approvedRoles ?? const <String>[]).map((r) => r.toLowerCase()).contains('admin');
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:865:                      if (!isAdmin)
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:873:                      if (!isAdmin) ...[
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:896:                        onPressed: (!isAdmin || kReleaseMode)
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:928:                        onPressed: (!isAdmin || kReleaseMode)
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:936:                        onPressed: (!isAdmin || kReleaseMode)
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:944:                        onPressed: (!isAdmin || kReleaseMode)
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:950:                        'Expected: after approve, the app reroutes to the matching dashboard (e.g. /talent) and “approved_roles” includes the role.',
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:1193:    final dbActiveRole = usersRow?['active_role']?.toString() ?? '—';
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:1194:    final dbApprovedRoles = usersRow?['approved_roles'] is List ? (usersRow?['approved_roles'] as List).join(', ') : (usersRow == null ? '—' : (usersRow?['approved_roles']?.toString() ?? '—'));
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:1227:          row('active_role', dbActiveRole),
+lib/pages/debug/qa_harness_page.dart.pre_python_fix:1228:          row('approved_roles', dbApprovedRoles),
+lib/pages/admin/admin_feature_controls_tab.dart:60:    if (!user.isAdmin) return false;
+lib/pages/studio/livekit_room_page.dart:73:      if (widget.hostMode && !isBroadcaster && !auth.isAdmin) {
+lib/nav.dart:179:          if (authProvider.isAdmin) return true;
+lib/nav.dart:594:        final isAdminTooling =
+lib/nav.dart:597:        if (isAdminTooling && !user.approvedRoles.contains('admin')) {
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:179:          if (authProvider.isAdmin) return true;
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:593:        final isAdminTooling =
+lib/nav.dart.bak-usermodel-nullfix-20260719-020441:596:        if (isAdminTooling && !user.approvedRoles.contains('admin')) {
+lib/nav.dart.bak-20260718-151023:146:          if (authProvider.isAdmin) return true;
+lib/nav.dart.bak-20260718-151023:497:        final isAdminTooling = location == AppRoutes.adminMissions || location == AppRoutes.adminCampaigns;
+lib/nav.dart.bak-20260718-151023:498:        if (isAdminTooling && !user.approvedRoles.contains('admin')) {
+lib/widgets/feature_flags_sheet.dart:53:    final isAdmin = auth.isAdmin;
+lib/widgets/feature_flags_sheet.dart:89:                        _FeatureRow(descriptor: d, enabled: provider.isEnabled(d.feature), canEdit: canEdit, isAdmin: isAdmin),
+lib/widgets/feature_flags_sheet.dart:217:  const _FeatureRow({required this.descriptor, required this.enabled, required this.canEdit, required this.isAdmin});
+lib/widgets/feature_flags_sheet.dart:222:  final bool isAdmin;
+lib/widgets/feature_flags_sheet.dart:232:    final adminLocked = descriptor.adminOnlyEdit && !isAdmin;
+lib/supabase/database.types.ts:62:          new_active_role: string | null
+lib/supabase/database.types.ts:63:          new_approved_roles: string[] | null
+lib/supabase/database.types.ts:65:          old_active_role: string | null
+lib/supabase/database.types.ts:66:          old_approved_roles: string[] | null
+lib/supabase/database.types.ts:76:          new_active_role?: string | null
+lib/supabase/database.types.ts:77:          new_approved_roles?: string[] | null
+lib/supabase/database.types.ts:79:          old_active_role?: string | null
+lib/supabase/database.types.ts:80:          old_approved_roles?: string[] | null
+lib/supabase/database.types.ts:90:          new_active_role?: string | null
+lib/supabase/database.types.ts:91:          new_approved_roles?: string[] | null
+lib/supabase/database.types.ts:93:          old_active_role?: string | null
+lib/supabase/database.types.ts:94:          old_approved_roles?: string[] | null
+lib/supabase/database.types.ts:1757:          active_role: string
+lib/supabase/database.types.ts:1760:          approved_roles: Json
+lib/supabase/database.types.ts:1770:          onboarding_complete: boolean
+lib/supabase/database.types.ts:1779:          active_role?: string
+lib/supabase/database.types.ts:1782:          approved_roles?: Json
+lib/supabase/database.types.ts:1792:          onboarding_complete?: boolean
+lib/supabase/database.types.ts:1801:          active_role?: string
+lib/supabase/database.types.ts:1804:          approved_roles?: Json
+lib/supabase/database.types.ts:1814:          onboarding_complete?: boolean
+lib/supabase/database.types.ts:2977:          active_role: string
+lib/supabase/database.types.ts:2979:          approved_roles: string[]
+lib/supabase/database.types.ts:2986:          onboarding_complete: boolean
+lib/supabase/database.types.ts:2993:          active_role?: string
+lib/supabase/database.types.ts:2995:          approved_roles?: string[]
+lib/supabase/database.types.ts:3002:          onboarding_complete?: boolean
+lib/supabase/database.types.ts:3009:          active_role?: string
+lib/supabase/database.types.ts:3011:          approved_roles?: string[]
+lib/supabase/database.types.ts:3018:          onboarding_complete?: boolean
+lib/supabase/database.types.ts:3030:          active_role: string | null
+lib/supabase/database.types.ts:3036:          approved_roles: Json | null
+lib/supabase/database.types.ts:3039:          onboarding_complete: boolean | null
+lib/supabase/supabase_tables.sql:12:  active_role text,
+lib/supabase/functions/set_active_role/index.ts:1:// supabase edge function: set_active_role
+lib/supabase/functions/set_active_role/index.ts:2:// Sets the caller's active_role to a role they already have approved.
+lib/supabase/functions/set_active_role/index.ts:42:    const { data: userRow, error: userErr } = await adminClient.from("users").select("id, approved_roles").eq("id", auth.user.id).maybeSingle();
+lib/supabase/functions/set_active_role/index.ts:48:    const approved: string[] = Array.isArray(userRow.approved_roles) ? userRow.approved_roles : [];
+lib/supabase/functions/set_active_role/index.ts:50:      return new Response(JSON.stringify({ error: "role_not_approved", approved_roles: approved }), { status: 403, headers: { ...CORS_HEADERS, "content-type": "application/json" } });
+lib/supabase/functions/set_active_role/index.ts:53:    const { data: updated, error: upErr } = await adminClient.from("users").update({ active_role: role }).eq("id", auth.user.id).select("id, active_role, approved_roles").single();
+lib/supabase/functions/admin_campaign_upsert/index.ts:15:async function isAdmin(svc: any, userId: string) {
+lib/supabase/functions/admin_campaign_upsert/index.ts:16:  const { data } = await svc.from("users").select("active_role, approved_roles").eq("id", userId).maybeSingle();
+lib/supabase/functions/admin_campaign_upsert/index.ts:18:  if (data.active_role === "admin") return true;
+lib/supabase/functions/admin_campaign_upsert/index.ts:19:  const roles = (data.approved_roles ?? []) as string[];
+lib/supabase/functions/admin_campaign_upsert/index.ts:38:  if (!(await isAdmin(svc, adminId))) return json({ error: "Forbidden" }, 403);
+lib/supabase/functions/admin_review_role_application/index.ts:2:// Admin-only: approves/rejects a user's role application and updates approved_roles.
+lib/supabase/functions/admin_review_role_application/index.ts:59:    for (const k of ["approved_roles", "active_role"]) {
+lib/supabase/functions/admin_review_role_application/index.ts:117:    const { data: caller, error: callerErr } = await adminClient.from("users").select("id, approved_roles").eq("id", auth.user.id).maybeSingle();
+lib/supabase/functions/admin_review_role_application/index.ts:119:    const callerApproved: string[] = caller && Array.isArray((caller as any).approved_roles) ? (caller as any).approved_roles : [];
+lib/supabase/functions/admin_review_role_application/index.ts:125:    const { data: target, error: targetErr } = await adminClient.from("users").select("id, approved_roles, active_role").eq("id", targetUserId).maybeSingle();
+lib/supabase/functions/admin_review_role_application/index.ts:129:    const approved: string[] = Array.isArray((target as any).approved_roles) ? (target as any).approved_roles : [];
+lib/supabase/functions/admin_review_role_application/index.ts:134:    let nextActive = (target as any).active_role as string | null;
+lib/supabase/functions/admin_review_role_application/index.ts:174:      .update({ approved_roles: nextApproved, active_role: nextActive })
+lib/supabase/functions/admin_review_role_application/index.ts:176:      .select("id, approved_roles, active_role")
+lib/supabase/functions/admin_review_role_application/index.ts:182:        approved_roles: nextApproved,
+lib/supabase/functions/admin_review_role_application/index.ts:183:        active_role: nextActive,
+lib/supabase/functions/create_livekit_token/index.ts:78:        .select("id, approved_roles")
+lib/supabase/functions/create_livekit_token/index.ts:82:      const approved: string[] = Array.isArray(userRow?.approved_roles)
+lib/supabase/functions/create_livekit_token/index.ts:83:        ? userRow!.approved_roles
+lib/supabase/functions/create_livekit_token/index.ts:87:        return json({ error: "publish_not_allowed", approved_roles: approved }, 403);
+lib/supabase/functions/campaign_join/index.ts:76:    const { data: userRow } = await svc.from("users").select("active_role").eq("id", userId).maybeSingle();
+lib/supabase/functions/campaign_join/index.ts:77:    const roleKey = roleKeyFromActiveRole(userRow?.active_role);
+lib/supabase/functions/admin_grant_reward/index.ts:15:async function isAdmin(svc: any, userId: string) {
+lib/supabase/functions/admin_grant_reward/index.ts:16:  const { data } = await svc.from("users").select("active_role, approved_roles").eq("id", userId).maybeSingle();
+lib/supabase/functions/admin_grant_reward/index.ts:18:  if (data.active_role === "admin") return true;
+lib/supabase/functions/admin_grant_reward/index.ts:19:  const roles = (data.approved_roles ?? []) as string[];
+lib/supabase/functions/admin_grant_reward/index.ts:54:  if (!(await isAdmin(svc, adminId))) return json({ error: "Forbidden" }, 403);
+lib/supabase/functions/mission_claim/index.ts:76:    const { data: userRow } = await svc.from("users").select("active_role").eq("id", userId).maybeSingle();
+lib/supabase/functions/mission_claim/index.ts:77:    const roleKey = roleKeyFromActiveRole(userRow?.active_role);
+lib/supabase/functions/campaign_leave/index.ts:77:    const { data: userRow } = await svc.from("users").select("active_role").eq("id", userId).maybeSingle();
+lib/supabase/functions/campaign_leave/index.ts:78:    const roleKey = roleKeyFromActiveRole(userRow?.active_role);
+lib/supabase/functions/admin_mission_delete/index.ts:15:async function isAdmin(svc: any, userId: string) {
+lib/supabase/functions/admin_mission_delete/index.ts:16:  const { data } = await svc.from("users").select("active_role, approved_roles").eq("id", userId).maybeSingle();
+lib/supabase/functions/admin_mission_delete/index.ts:18:  if (data.active_role === "admin") return true;
+lib/supabase/functions/admin_mission_delete/index.ts:19:  const roles = (data.approved_roles ?? []) as string[];
+lib/supabase/functions/admin_mission_delete/index.ts:38:  if (!(await isAdmin(svc, adminId))) return json({ error: "Forbidden" }, 403);
+lib/supabase/functions/bootstrap_admin/index.ts:70:    // Uses SECURITY DEFINER function (already in your DB) to set base_role/active_role/approved_roles.
+lib/supabase/functions/admin_set_role_application_status/index.ts:139:      .select("id, approved_roles")
+lib/supabase/functions/admin_set_role_application_status/index.ts:144:    const callerApproved: string[] = caller && Array.isArray((caller as any).approved_roles)
+lib/supabase/functions/admin_set_role_application_status/index.ts:145:      ? (caller as any).approved_roles
+lib/supabase/functions/admin_mission_upsert/index.ts:15:async function isAdmin(svc: any, userId: string) {
+lib/supabase/functions/admin_mission_upsert/index.ts:16:  const { data } = await svc.from("users").select("active_role, approved_roles").eq("id", userId).maybeSingle();
+lib/supabase/functions/admin_mission_upsert/index.ts:18:  if (data.active_role === "admin") return true;
+lib/supabase/functions/admin_mission_upsert/index.ts:19:  const roles = (data.approved_roles ?? []) as string[];
+lib/supabase/functions/admin_mission_upsert/index.ts:38:  if (!(await isAdmin(svc, adminId))) return json({ error: "Forbidden" }, 403);
+lib/supabase/functions/feed_list_posts/index.ts:36:        "id, author_id, group_id, text, tags, repost_of_post_id, like_count, comment_count, repost_count, created_at, updated_at, author:users!posts_author_id_fkey(id, display_name, username, active_role, base_role)",
+lib/supabase/functions/mission_start/index.ts:92:    const { data: userRow } = await svc.from("users").select("active_role").eq("id", userId).maybeSingle();
+lib/supabase/functions/mission_start/index.ts:93:    const roleKey = roleKeyFromActiveRole(userRow?.active_role);
+lib/supabase/functions/admin_list_role_applications/index.ts:57:    // Admin check: users.active_role == 'admin' OR approved_roles contains 'admin'
+lib/supabase/functions/admin_list_role_applications/index.ts:60:      .select("id, active_role, approved_roles")
+lib/supabase/functions/admin_list_role_applications/index.ts:65:    const activeRole = (actorRow.active_role ?? "").toString().toLowerCase();
+lib/supabase/functions/admin_list_role_applications/index.ts:67:    const approvedRoles = Array.isArray(actorRow.approved_roles) ? actorRow.approved_roles : [];
+lib/supabase/functions/admin_list_role_applications/index.ts:68:    const isAdmin = activeRole === "admin" || approvedRoles.map((r: unknown) => `${r}`.toLowerCase()).includes("admin");
+lib/supabase/functions/admin_list_role_applications/index.ts:69:    if (!isAdmin) return jsonResponse(403, { error: "forbidden" });
+lib/supabase/functions/admin_list_role_applications/index.ts:98:        .select("id, email, display_name, username, active_role, base_role, approved_roles, updated_at")
+lib/supabase/functions/qa_set_role/index.ts:42:    // that the caller has `admin` in users.approved_roles.
+lib/supabase/functions/qa_set_role/index.ts:60:      .select("id, approved_roles")
+lib/supabase/functions/qa_set_role/index.ts:71:    const callerApproved: string[] = Array.isArray((callerRow as any)?.approved_roles)
+lib/supabase/functions/qa_set_role/index.ts:72:      ? ((callerRow as any).approved_roles as string[])
+lib/supabase/functions/qa_set_role/index.ts:92:      .select("id, approved_roles, active_role, application_status_summary")
+lib/supabase/functions/qa_set_role/index.ts:103:    const approvedRoles: string[] = Array.isArray(existing?.approved_roles)
+lib/supabase/functions/qa_set_role/index.ts:104:      ? existing!.approved_roles
+lib/supabase/functions/qa_set_role/index.ts:112:      approved_roles: Array.from(desiredApproved),
+lib/supabase/functions/qa_set_role/index.ts:115:    if (setActive) updatePayload.active_role = role;
+lib/supabase/functions/admin_campaign_delete/index.ts:15:async function isAdmin(svc: any, userId: string) {
+lib/supabase/functions/admin_campaign_delete/index.ts:16:  const { data } = await svc.from("users").select("active_role, approved_roles").eq("id", userId).maybeSingle();
+lib/supabase/functions/admin_campaign_delete/index.ts:18:  if (data.active_role === "admin") return true;
+lib/supabase/functions/admin_campaign_delete/index.ts:19:  const roles = (data.approved_roles ?? []) as string[];
+lib/supabase/functions/admin_campaign_delete/index.ts:38:  if (!(await isAdmin(svc, adminId))) return json({ error: "Forbidden" }, 403);
+lib/supabase/config.toml:13:[functions.set_active_role]
+lib/supabase/config.toml:16:import_map = "./functions/set_active_role/deno.json"
+lib/supabase/config.toml:19:entrypoint = "./functions/set_active_role/index.ts"
+lib/supabase/config.toml:22:# static_files = [ "./functions/set_active_role/*.html" ]

@@ -18,7 +18,9 @@ class AppBackButton extends StatelessWidget {
   /// - launch: [AppRoutes.login]
   final String? fallbackLocation;
 
-  String _defaultFallback() => BackendConfig.prelaunchGateEnabled ? AppRoutes.earlyAccess : AppRoutes.login;
+  String _defaultFallback() => BackendConfig.prelaunchGateEnabled
+      ? AppRoutes.earlyAccess
+      : AppRoutes.login;
 
   @override
   Widget build(BuildContext context) {

@@ -20,14 +20,17 @@ class OpportunityModel {
 
   final String opportunityId;
   final String postedByUserId;
+
   /// Email of the business/admin that posted the opportunity (used for local notifications).
   /// May be empty for seeded opportunities.
   final String postedByEmail;
+
   /// business | admin | seed
   final String postedByRole;
   final String title;
   final String company;
   final String location;
+
   /// Examples: Casting, Brand deal, Gig, Sponsorship, Collab
   final String type;
   final String compensation;
@@ -99,9 +102,15 @@ class OpportunityModel {
       type: (json['type'] ?? '').toString(),
       compensation: (json['compensation'] ?? '').toString(),
       description: (json['description'] ?? '').toString(),
-      tags: tagsRaw is List ? tagsRaw.map((e) => e.toString()).toList() : const <String>[],
-      createdAt: DateTime.tryParse((json['createdAt'] ?? '').toString()) ?? DateTime.now(),
-      updatedAt: DateTime.tryParse((json['updatedAt'] ?? '').toString()) ?? DateTime.now(),
+      tags: tagsRaw is List
+          ? tagsRaw.map((e) => e.toString()).toList()
+          : const <String>[],
+      createdAt:
+          DateTime.tryParse((json['createdAt'] ?? '').toString()) ??
+          DateTime.now(),
+      updatedAt:
+          DateTime.tryParse((json['updatedAt'] ?? '').toString()) ??
+          DateTime.now(),
     );
   }
 }

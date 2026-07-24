@@ -6,11 +6,7 @@ class RoleDashboardShell extends StatefulWidget {
   final String role;
   final List<DashboardTabSpec> tabs;
 
-  const RoleDashboardShell({
-    super.key, 
-    required this.role, 
-    required this.tabs
-  });
+  const RoleDashboardShell({super.key, required this.role, required this.tabs});
 
   @override
   State<RoleDashboardShell> createState() => _RoleDashboardShellState();
@@ -31,10 +27,7 @@ class _RoleDashboardShellState extends State<RoleDashboardShell> {
       body: DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              shellBackground,
-              navBackground.withValues(alpha: 0.92),
-            ],
+            colors: [shellBackground, navBackground.withValues(alpha: 0.92)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -47,9 +40,7 @@ class _RoleDashboardShellState extends State<RoleDashboardShell> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: navBackground,
-          border: Border(
-            top: BorderSide(color: navBorder, width: 1.0),
-          ),
+          border: Border(top: BorderSide(color: navBorder, width: 1.0)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.24),
@@ -70,12 +61,20 @@ class _RoleDashboardShellState extends State<RoleDashboardShell> {
             type: BottomNavigationBarType.fixed,
             backgroundColor: navBackground,
             selectedItemColor: accentColor,
-            unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.72),
+            unselectedItemColor: Theme.of(
+              context,
+            ).colorScheme.onSurfaceVariant.withValues(alpha: 0.72),
             selectedFontSize: 10,
             unselectedFontSize: 10,
             iconSize: 22,
-            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, letterSpacing: 0.5),
-            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, letterSpacing: 0.4),
+            selectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.5,
+            ),
+            unselectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.4,
+            ),
             items: widget.tabs.map((tab) {
               return BottomNavigationBarItem(
                 icon: Padding(

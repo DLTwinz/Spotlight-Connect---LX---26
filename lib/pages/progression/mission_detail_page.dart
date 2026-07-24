@@ -6,10 +6,7 @@ import 'package:spotlight_connect/services/progression_service.dart';
 import 'package:spotlight_connect/theme.dart';
 
 class MissionDetailPage extends StatefulWidget {
-  const MissionDetailPage({
-    super.key,
-    required this.missionId,
-  });
+  const MissionDetailPage({super.key, required this.missionId});
 
   final String missionId;
 
@@ -23,7 +20,9 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
   @override
   void initState() {
     super.initState();
-    _missionFuture = context.read<ProgressionService>().loadMissionById(widget.missionId);
+    _missionFuture = context.read<ProgressionService>().loadMissionById(
+      widget.missionId,
+    );
   }
 
   @override
@@ -78,10 +77,7 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
             return ListView(
               padding: AppSpacing.paddingLg,
               children: [
-                Text(
-                  mission.title,
-                  style: theme.textTheme.headlineSmall?.bold,
-                ),
+                Text(mission.title, style: theme.textTheme.headlineSmall?.bold),
                 if (mission.description.trim().isNotEmpty) ...[
                   const SizedBox(height: AppSpacing.sm),
                   Text(
@@ -114,10 +110,7 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
                   value: '${mission.prestigeReward} pts',
                 ),
                 const SizedBox(height: AppSpacing.md),
-                _MissionInfoCard(
-                  title: 'Status',
-                  value: mission.status,
-                ),
+                _MissionInfoCard(title: 'Status', value: mission.status),
                 if ((mission.timeWindow ?? '').trim().isNotEmpty) ...[
                   const SizedBox(height: AppSpacing.md),
                   _MissionInfoCard(
@@ -142,10 +135,7 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
 }
 
 class _MissionInfoCard extends StatelessWidget {
-  const _MissionInfoCard({
-    required this.title,
-    required this.value,
-  });
+  const _MissionInfoCard({required this.title, required this.value});
 
   final String title;
   final String value;
@@ -173,10 +163,7 @@ class _MissionInfoCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.xs),
-          Text(
-            value,
-            style: theme.textTheme.titleMedium?.bold,
-          ),
+          Text(value, style: theme.textTheme.titleMedium?.bold),
         ],
       ),
     );

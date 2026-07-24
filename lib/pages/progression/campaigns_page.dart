@@ -17,12 +17,15 @@ class CampaignsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final policy = context.select<ProgressionFeaturePolicyProvider, dynamic>((p) => p.policy);
+    final policy = context.select<ProgressionFeaturePolicyProvider, dynamic>(
+      (p) => p.policy,
+    );
 
     if (!policy.progressionEnabled || !policy.campaignsEnabled) {
       return const FeatureDisabledPage(
         title: 'Campaigns are disabled',
-        message: 'This feature is currently unavailable. Please check back later.',
+        message:
+            'This feature is currently unavailable. Please check back later.',
         icon: Icons.campaign_outlined,
       );
     }
@@ -33,7 +36,13 @@ class CampaignsPage extends StatelessWidget {
         child: Consumer<ProgressionService>(
           builder: (context, svc, _) {
             if (!svc.isInitialized) {
-              unawaited(svc.ensureInitialized().catchError((e, st) => debugPrint('CampaignsPage ensureInitialized failed: $e\n$st')));
+              unawaited(
+                svc.ensureInitialized().catchError(
+                  (e, st) => debugPrint(
+                    'CampaignsPage ensureInitialized failed: $e\n$st',
+                  ),
+                ),
+              );
             }
             final items = svc.campaigns;
             if (svc.isLoading && items.isEmpty) {
@@ -58,25 +67,33 @@ class CampaignsPage extends StatelessWidget {
                   const SizedBox(height: AppSpacing.xs),
                   Text(
                     'Structured initiatives with bundled missions and clear outcomes. Join to start tracking your role and deliverables.',
-                    style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+                    style: theme.textTheme.bodyMedium?.withColor(
+                      theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   if (svc.lastError != null) ...[
                     const SizedBox(height: AppSpacing.md),
-                    ProgressionInlineErrorBanner(message: svc.lastError!, onRetry: () => unawaited(svc.refreshHome())),
+                    ProgressionInlineErrorBanner(
+                      message: svc.lastError!,
+                      onRetry: () => unawaited(svc.refreshHome()),
+                    ),
                     const SizedBox(height: AppSpacing.md),
                   ],
                   if (items.isEmpty)
                     const ProgressionEmptyStateCard(
                       title: 'No campaigns live yet',
-                      message: 'When a campaign starts, you’ll see it here with mission bundles and rewards.',
+                      message:
+                          'When a campaign starts, you’ll see it here with mission bundles and rewards.',
                       icon: Icons.campaign_outlined,
                     )
                   else
-                    ...items.map((e) => Padding(
-                          padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                          child: CampaignCard(item: e),
-                        )),
+                    ...items.map(
+                      (e) => Padding(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                        child: CampaignCard(item: e),
+                      ),
+                    ),
                 ],
               ),
             );
@@ -102,7 +119,8 @@ class CampaignCard extends StatelessWidget {
         await DisabledFeatureSheet.show(
           context,
           title: 'Campaign joins are paused',
-          message: 'Joining/leaving campaigns is currently disabled by server policy.',
+          message:
+              'Joining/leaving campaigns is currently disabled by server policy.',
           icon: Icons.lock_outline,
         );
         return;
@@ -129,39 +147,51 @@ class CampaignCard extends StatelessWidget {
       iconColor: theme.colorScheme.primary,
       iconBackgroundColor: theme.colorScheme.primary.withValues(alpha: 0.12),
       title: item.campaign.title,
-      subtitle: '${item.campaign.status.toUpperCase()}${windowLabel().isEmpty ? '' : ' • ${windowLabel()}'}',
+      subtitle:
+          '${item.campaign.status.toUpperCase()}${windowLabel().isEmpty ? '' : ' • ${windowLabel()}'}',
       badgeText: item.isJoined ? 'JOINED' : null,
       badgeColor: item.isJoined ? theme.colorScheme.secondary : null,
       footer: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if ((item.campaign.summary ?? '').trim().isNotEmpty || (item.campaign.description ?? '').trim().isNotEmpty) ...[
-              Text(
-                (item.campaign.summary ?? item.campaign.description ?? '').trim(),
-                style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if ((item.campaign.summary ?? '').trim().isNotEmpty ||
+              (item.campaign.description ?? '').trim().isNotEmpty) ...[
+            Text(
+              (item.campaign.summary ?? item.campaign.description ?? '').trim(),
+              style: theme.textTheme.bodyMedium?.withColor(
+                theme.colorScheme.onSurfaceVariant,
               ),
-              const SizedBox(height: AppSpacing.md),
-            ],
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: toggle,
-                    icon: Icon(item.isJoined ? Icons.check_circle_outline : Icons.add, color: theme.colorScheme.onSurface),
-                    label: Text(item.isJoined ? 'Joined' : 'Join campaign', style: theme.textTheme.labelLarge?.bold.withColor(theme.colorScheme.onSurface)),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: AppSpacing.md),
+          ],
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: toggle,
+                  icon: Icon(
+                    item.isJoined ? Icons.check_circle_outline : Icons.add,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                  label: Text(
+                    item.isJoined ? 'Joined' : 'Join campaign',
+                    style: theme.textTheme.labelLarge?.bold.withColor(
+                      theme.colorScheme.onSurface,
+                    ),
                   ),
                 ),
-                const SizedBox(width: AppSpacing.sm),
-                FilledButton.tonal(
-                  onPressed: () => context.push('/campaigns/${item.campaign.id}'),
-                  child: const Text('View'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-    }
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              FilledButton.tonal(
+                onPressed: () => context.push('/campaigns/${item.campaign.id}'),
+                child: const Text('View'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
+}

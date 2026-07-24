@@ -9,16 +9,30 @@ class PortfolioCredit {
   final String? subtitle;
   final int year;
 
-  const PortfolioCredit({required this.id, required this.title, this.subtitle, required this.year});
+  const PortfolioCredit({
+    required this.id,
+    required this.title,
+    this.subtitle,
+    required this.year,
+  });
 
-  factory PortfolioCredit.fromJson(Map<String, dynamic> json) => PortfolioCredit(
-    id: (json['id'] ?? '').toString(),
-    title: (json['title'] ?? '').toString(),
-    subtitle: json['subtitle']?.toString(),
-    year: (json['year'] is num) ? (json['year'] as num).toInt() : int.tryParse((json['year'] ?? '').toString()) ?? DateTime.now().year,
-  );
+  factory PortfolioCredit.fromJson(Map<String, dynamic> json) =>
+      PortfolioCredit(
+        id: (json['id'] ?? '').toString(),
+        title: (json['title'] ?? '').toString(),
+        subtitle: json['subtitle']?.toString(),
+        year: (json['year'] is num)
+            ? (json['year'] as num).toInt()
+            : int.tryParse((json['year'] ?? '').toString()) ??
+                  DateTime.now().year,
+      );
 
-  Map<String, dynamic> toJson() => {'id': id, 'title': title, 'subtitle': subtitle, 'year': year};
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'subtitle': subtitle,
+    'year': year,
+  };
 }
 
 @immutable
@@ -81,22 +95,44 @@ class PortfolioModel {
     final roleStr = (json['role'] ?? 'talent').toString();
     return PortfolioModel(
       userId: (json['userId'] ?? '').toString(),
-      role: roleStr == 'business' ? PortfolioRole.business : PortfolioRole.talent,
+      role: roleStr == 'business'
+          ? PortfolioRole.business
+          : PortfolioRole.talent,
       headline: (json['headline'] ?? '').toString(),
       location: (json['location'] ?? '').toString(),
-      genres: (json['genres'] is List) ? (json['genres'] as List).map((e) => e.toString()).toList() : const <String>[],
-      skills: (json['skills'] is List) ? (json['skills'] as List).map((e) => e.toString()).toList() : const <String>[],
-      dayRateUsd: (json['dayRateUsd'] is num) ? (json['dayRateUsd'] as num).toInt() : int.tryParse((json['dayRateUsd'] ?? '').toString()),
-      links: (json['links'] is Map) ? (json['links'] as Map).map((k, v) => MapEntry(k.toString(), v.toString())) : const <String, String>{},
-      media: (json['media'] is List) ? (json['media'] as List).map((e) => e.toString()).toList() : const <String>[],
+      genres: (json['genres'] is List)
+          ? (json['genres'] as List).map((e) => e.toString()).toList()
+          : const <String>[],
+      skills: (json['skills'] is List)
+          ? (json['skills'] as List).map((e) => e.toString()).toList()
+          : const <String>[],
+      dayRateUsd: (json['dayRateUsd'] is num)
+          ? (json['dayRateUsd'] as num).toInt()
+          : int.tryParse((json['dayRateUsd'] ?? '').toString()),
+      links: (json['links'] is Map)
+          ? (json['links'] as Map).map(
+              (k, v) => MapEntry(k.toString(), v.toString()),
+            )
+          : const <String, String>{},
+      media: (json['media'] is List)
+          ? (json['media'] as List).map((e) => e.toString()).toList()
+          : const <String>[],
       credits: (json['credits'] is List)
           ? (json['credits'] as List)
-              .whereType<Map>()
-              .map((e) => PortfolioCredit.fromJson(e.map((k, v) => MapEntry(k.toString(), v))))
-              .toList()
+                .whereType<Map>()
+                .map(
+                  (e) => PortfolioCredit.fromJson(
+                    e.map((k, v) => MapEntry(k.toString(), v)),
+                  ),
+                )
+                .toList()
           : const <PortfolioCredit>[],
-      createdAt: DateTime.tryParse((json['createdAt'] ?? '').toString()) ?? DateTime.now(),
-      updatedAt: DateTime.tryParse((json['updatedAt'] ?? '').toString()) ?? DateTime.now(),
+      createdAt:
+          DateTime.tryParse((json['createdAt'] ?? '').toString()) ??
+          DateTime.now(),
+      updatedAt:
+          DateTime.tryParse((json['updatedAt'] ?? '').toString()) ??
+          DateTime.now(),
     );
   }
 

@@ -42,8 +42,14 @@ class UserProgressionModel {
       missionsCompleted: _asInt(json['missions_completed']),
       milestonesCompleted: _asInt(json['milestones_completed']),
       campaignsParticipated: _asInt(json['campaigns_participated']),
-      nextTierPrestigeRequired: json['next_tier_prestige_required'] == null ? null : _asInt(json['next_tier_prestige_required']),
-      nextTierMissionRequirements: json['next_tier_mission_requirements'] is Map ? Map<String, dynamic>.from(json['next_tier_mission_requirements'] as Map) : null,
+      nextTierPrestigeRequired: json['next_tier_prestige_required'] == null
+          ? null
+          : _asInt(json['next_tier_prestige_required']),
+      nextTierMissionRequirements: json['next_tier_mission_requirements'] is Map
+          ? Map<String, dynamic>.from(
+              json['next_tier_mission_requirements'] as Map,
+            )
+          : null,
       createdAt: DateTime.tryParse((json['created_at'] ?? '').toString()),
       updatedAt: DateTime.tryParse((json['updated_at'] ?? '').toString()),
     );
@@ -88,9 +94,12 @@ class UserProgressionModel {
       momentumScore: momentumScore ?? this.momentumScore,
       missionsCompleted: missionsCompleted ?? this.missionsCompleted,
       milestonesCompleted: milestonesCompleted ?? this.milestonesCompleted,
-      campaignsParticipated: campaignsParticipated ?? this.campaignsParticipated,
-      nextTierPrestigeRequired: nextTierPrestigeRequired ?? this.nextTierPrestigeRequired,
-      nextTierMissionRequirements: nextTierMissionRequirements ?? this.nextTierMissionRequirements,
+      campaignsParticipated:
+          campaignsParticipated ?? this.campaignsParticipated,
+      nextTierPrestigeRequired:
+          nextTierPrestigeRequired ?? this.nextTierPrestigeRequired,
+      nextTierMissionRequirements:
+          nextTierMissionRequirements ?? this.nextTierMissionRequirements,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

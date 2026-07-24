@@ -27,27 +27,27 @@ class StoryModel {
   bool get isExpired => DateTime.now().isAfter(expiresAt);
 
   Map<String, dynamic> toJson() => {
-        'storyId': storyId,
-        'authorId': authorId,
-        'authorDisplayName': authorDisplayName,
-        'authorPrimaryRole': authorPrimaryRole,
-        'caption': caption,
-        'createdAt': createdAt.toIso8601String(),
-        'expiresAt': expiresAt.toIso8601String(),
-        'backgroundSeed': backgroundSeed,
-      };
+    'storyId': storyId,
+    'authorId': authorId,
+    'authorDisplayName': authorDisplayName,
+    'authorPrimaryRole': authorPrimaryRole,
+    'caption': caption,
+    'createdAt': createdAt.toIso8601String(),
+    'expiresAt': expiresAt.toIso8601String(),
+    'backgroundSeed': backgroundSeed,
+  };
 
   /// Supabase row mapping (snake_case DB columns).
   Map<String, dynamic> toSupabaseJson() => {
-        'id': storyId,
-        'author_id': authorId,
-        'author_display_name': authorDisplayName,
-        'author_primary_role': authorPrimaryRole,
-        'caption': caption,
-        'created_at': createdAt.toIso8601String(),
-        'expires_at': expiresAt.toIso8601String(),
-        'background_seed': backgroundSeed,
-      };
+    'id': storyId,
+    'author_id': authorId,
+    'author_display_name': authorDisplayName,
+    'author_primary_role': authorPrimaryRole,
+    'caption': caption,
+    'created_at': createdAt.toIso8601String(),
+    'expires_at': expiresAt.toIso8601String(),
+    'background_seed': backgroundSeed,
+  };
 
   static StoryModel? fromSupabaseRow(Object? raw) {
     if (raw is! Map) return null;
@@ -60,7 +60,13 @@ class StoryModel {
       final createdAtRaw = raw['created_at']?.toString();
       final expiresAtRaw = raw['expires_at']?.toString();
 
-      if (id == null || authorId == null || authorDisplayName == null || authorPrimaryRole == null || caption == null || createdAtRaw == null || expiresAtRaw == null) {
+      if (id == null ||
+          authorId == null ||
+          authorDisplayName == null ||
+          authorPrimaryRole == null ||
+          caption == null ||
+          createdAtRaw == null ||
+          expiresAtRaw == null) {
         return null;
       }
       final createdAt = DateTime.tryParse(createdAtRaw);
@@ -76,7 +82,9 @@ class StoryModel {
         caption: caption,
         createdAt: createdAt,
         expiresAt: expiresAt,
-        backgroundSeed: seed is int ? seed : (seed is num ? seed.toInt() : null),
+        backgroundSeed: seed is int
+            ? seed
+            : (seed is num ? seed.toInt() : null),
       );
     } catch (_) {
       return null;
@@ -94,7 +102,13 @@ class StoryModel {
       final createdAtRaw = json['createdAt'];
       final expiresAtRaw = json['expiresAt'];
 
-      if (storyId is! String || authorId is! String || authorDisplayName is! String || authorPrimaryRole is! String || caption is! String) return null;
+      if (storyId is! String ||
+          authorId is! String ||
+          authorDisplayName is! String ||
+          authorPrimaryRole is! String ||
+          caption is! String) {
+        return null;
+      }
       if (createdAtRaw is! String || expiresAtRaw is! String) return null;
 
       final createdAt = DateTime.tryParse(createdAtRaw);

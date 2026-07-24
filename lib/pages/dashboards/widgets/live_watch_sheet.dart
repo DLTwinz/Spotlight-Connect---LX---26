@@ -20,11 +20,17 @@ class LiveWatchSheet extends StatelessWidget {
     final theme = Theme.of(context);
     final auth = context.read<AppAuthProvider>();
     final currentUserId = auth.currentUser?.userId;
-    final isBroadcaster = currentUserId != null && currentUserId == session.broadcasterUserId;
+    final isBroadcaster =
+        currentUserId != null && currentUserId == session.broadcasterUserId;
     final broadcaster = (session.broadcasterDisplayName ?? '').trim();
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xl),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.lg,
+          AppSpacing.lg,
+          AppSpacing.xl,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,11 +39,19 @@ class LiveWatchSheet extends StatelessWidget {
               children: [
                 Icon(Icons.live_tv, color: theme.colorScheme.onSurface),
                 const SizedBox(width: AppSpacing.sm),
-                Expanded(child: Text('Live session', style: theme.textTheme.titleLarge?.bold)),
+                Expanded(
+                  child: Text(
+                    'Live session',
+                    style: theme.textTheme.titleLarge?.bold,
+                  ),
+                ),
                 IconButton(
                   tooltip: 'Close',
                   onPressed: () => context.pop(),
-                  icon: Icon(Icons.close, color: theme.colorScheme.onSurfaceVariant),
+                  icon: Icon(
+                    Icons.close,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -49,14 +63,18 @@ class LiveWatchSheet extends StatelessWidget {
                 if (broadcaster.isNotEmpty) 'by $broadcaster',
                 _subtitle(session),
               ].join(' • '),
-              style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodyMedium?.withColor(
+                theme.colorScheme.onSurfaceVariant,
+              ),
             ),
             if (isBroadcaster && session.status == 'live') ...[
               const SizedBox(height: AppSpacing.md),
               SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(
-                  style: FilledButton.styleFrom(backgroundColor: theme.colorScheme.error),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: theme.colorScheme.error,
+                  ),
                   onPressed: () async {
                     final ok = await showModalBottomSheet<bool>(
                       context: context,
@@ -66,22 +84,37 @@ class LiveWatchSheet extends StatelessWidget {
                         final theme = Theme.of(context);
                         return SafeArea(
                           child: Padding(
-                            padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.xl),
+                            padding: const EdgeInsets.fromLTRB(
+                              AppSpacing.lg,
+                              AppSpacing.md,
+                              AppSpacing.lg,
+                              AppSpacing.xl,
+                            ),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Icons.stop_circle_outlined, color: theme.colorScheme.error),
+                                    Icon(
+                                      Icons.stop_circle_outlined,
+                                      color: theme.colorScheme.error,
+                                    ),
                                     const SizedBox(width: AppSpacing.sm),
-                                    Expanded(child: Text('End live now?', style: theme.textTheme.titleLarge?.bold)),
+                                    Expanded(
+                                      child: Text(
+                                        'End live now?',
+                                        style: theme.textTheme.titleLarge?.bold,
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: AppSpacing.sm),
                                 Text(
                                   'This will end the live session and remove it from Spotlight for viewers.',
-                                  style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+                                  style: theme.textTheme.bodyMedium?.withColor(
+                                    theme.colorScheme.onSurfaceVariant,
+                                  ),
                                 ),
                                 const SizedBox(height: AppSpacing.lg),
                                 Row(
@@ -89,16 +122,37 @@ class LiveWatchSheet extends StatelessWidget {
                                     Expanded(
                                       child: OutlinedButton(
                                         onPressed: () => context.pop(false),
-                                        child: Text('Cancel', style: theme.textTheme.labelLarge?.withColor(theme.colorScheme.onSurface)),
+                                        child: Text(
+                                          'Cancel',
+                                          style: theme.textTheme.labelLarge
+                                              ?.withColor(
+                                                theme.colorScheme.onSurface,
+                                              ),
+                                        ),
                                       ),
                                     ),
                                     const SizedBox(width: AppSpacing.md),
                                     Expanded(
                                       child: FilledButton.icon(
-                                        style: FilledButton.styleFrom(backgroundColor: theme.colorScheme.error),
+                                        style: FilledButton.styleFrom(
+                                          backgroundColor:
+                                              theme.colorScheme.error,
+                                        ),
                                         onPressed: () => context.pop(true),
-                                        icon: Icon(Icons.call_end, color: theme.colorScheme.onError),
-                                        label: Text('End', style: theme.textTheme.labelLarge?.bold.withColor(theme.colorScheme.onError)),
+                                        icon: Icon(
+                                          Icons.call_end,
+                                          color: theme.colorScheme.onError,
+                                        ),
+                                        label: Text(
+                                          'End',
+                                          style: theme
+                                              .textTheme
+                                              .labelLarge
+                                              ?.bold
+                                              .withColor(
+                                                theme.colorScheme.onError,
+                                              ),
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -121,8 +175,16 @@ class LiveWatchSheet extends StatelessWidget {
                       debugPrint('LiveWatchSheet: endSession failed: $e');
                     }
                   },
-                  icon: Icon(Icons.stop_circle_outlined, color: theme.colorScheme.onError),
-                  label: Text('End live', style: theme.textTheme.labelLarge?.bold.withColor(theme.colorScheme.onError)),
+                  icon: Icon(
+                    Icons.stop_circle_outlined,
+                    color: theme.colorScheme.onError,
+                  ),
+                  label: Text(
+                    'End live',
+                    style: theme.textTheme.labelLarge?.bold.withColor(
+                      theme.colorScheme.onError,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -183,7 +245,9 @@ class _LiveKitWatch extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -192,13 +256,22 @@ class _LiveKitWatch extends StatelessWidget {
             children: [
               Icon(Icons.sensors, color: theme.colorScheme.onSurfaceVariant),
               const SizedBox(width: AppSpacing.sm),
-              Expanded(child: Text('Join in-app', style: theme.textTheme.titleMedium?.bold)),
+              Expanded(
+                child: Text(
+                  'Join in-app',
+                  style: theme.textTheme.titleMedium?.bold,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
-            enabled ? 'Room: $room' : 'This session is missing a LiveKit room id.',
-            style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant),
+            enabled
+                ? 'Room: $room'
+                : 'This session is missing a LiveKit room id.',
+            style: theme.textTheme.bodySmall?.withColor(
+              theme.colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: AppSpacing.lg),
           SizedBox(
@@ -208,10 +281,18 @@ class _LiveKitWatch extends StatelessWidget {
                   ? null
                   : () {
                       context.pop();
-                      context.push(AppRoutes.livekit, extra: {'session': session, 'hostMode': false});
+                      context.push(
+                        AppRoutes.livekit,
+                        extra: {'session': session, 'hostMode': false},
+                      );
                     },
               icon: Icon(Icons.play_arrow, color: theme.colorScheme.onPrimary),
-              label: Text('Watch now', style: theme.textTheme.labelLarge?.bold.withColor(theme.colorScheme.onPrimary)),
+              label: Text(
+                'Watch now',
+                style: theme.textTheme.labelLarge?.bold.withColor(
+                  theme.colorScheme.onPrimary,
+                ),
+              ),
             ),
           ),
         ],
@@ -237,7 +318,9 @@ class _ConsoleWatch extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,13 +329,20 @@ class _ConsoleWatch extends StatelessWidget {
             children: [
               Icon(Icons.link, color: theme.colorScheme.onSurfaceVariant),
               const SizedBox(width: AppSpacing.sm),
-              Expanded(child: Text('Watch link', style: theme.textTheme.titleMedium?.bold)),
+              Expanded(
+                child: Text(
+                  'Watch link',
+                  style: theme.textTheme.titleMedium?.bold,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
           SelectableText(
             url.isEmpty ? 'No link provided yet.' : url,
-            style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+            style: theme.textTheme.bodyMedium?.withColor(
+              theme.colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: AppSpacing.lg),
           Row(
@@ -265,12 +355,22 @@ class _ConsoleWatch extends StatelessWidget {
                           await Clipboard.setData(ClipboardData(text: url));
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Link copied', style: theme.textTheme.bodyMedium)),
+                              SnackBar(
+                                content: Text(
+                                  'Link copied',
+                                  style: theme.textTheme.bodyMedium,
+                                ),
+                              ),
                             );
                           }
                         },
                   icon: Icon(Icons.copy, color: theme.colorScheme.onSurface),
-                  label: Text('Copy', style: theme.textTheme.labelLarge?.withColor(theme.colorScheme.onSurface)),
+                  label: Text(
+                    'Copy',
+                    style: theme.textTheme.labelLarge?.withColor(
+                      theme.colorScheme.onSurface,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
@@ -282,10 +382,21 @@ class _ConsoleWatch extends StatelessWidget {
                           final resolved = uri;
                           final ok = await canLaunchUrl(resolved);
                           if (!ok) return;
-                          await launchUrl(resolved, mode: LaunchMode.externalApplication);
+                          await launchUrl(
+                            resolved,
+                            mode: LaunchMode.externalApplication,
+                          );
                         },
-                  icon: Icon(Icons.open_in_new, color: theme.colorScheme.onPrimary),
-                  label: Text('Open', style: theme.textTheme.labelLarge?.withColor(theme.colorScheme.onPrimary)),
+                  icon: Icon(
+                    Icons.open_in_new,
+                    color: theme.colorScheme.onPrimary,
+                  ),
+                  label: Text(
+                    'Open',
+                    style: theme.textTheme.labelLarge?.withColor(
+                      theme.colorScheme.onPrimary,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -293,8 +404,10 @@ class _ConsoleWatch extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           Text(
             'Tip: On PS5/PS4/Xbox, start streaming to Twitch/YouTube, then paste your live URL in SPOTLIGHT Studio.',
-            style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant),
-          )
+            style: theme.textTheme.bodySmall?.withColor(
+              theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
         ],
       ),
     );
@@ -317,16 +430,26 @@ class _RtmpDetails extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.settings_input_component, color: theme.colorScheme.onSurfaceVariant),
+              Icon(
+                Icons.settings_input_component,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
               const SizedBox(width: AppSpacing.sm),
-              Expanded(child: Text('OBS / RTMP details', style: theme.textTheme.titleMedium?.bold)),
+              Expanded(
+                child: Text(
+                  'OBS / RTMP details',
+                  style: theme.textTheme.titleMedium?.bold,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -336,7 +459,9 @@ class _RtmpDetails extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           Text(
             'Console workflow: use a capture card → OBS → paste these values into OBS “Stream”.',
-            style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant),
+            style: theme.textTheme.bodySmall?.withColor(
+              theme.colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -345,7 +470,11 @@ class _RtmpDetails extends StatelessWidget {
 }
 
 class _KeyRow extends StatelessWidget {
-  const _KeyRow({required this.label, required this.value, required this.obscure});
+  const _KeyRow({
+    required this.label,
+    required this.value,
+    required this.obscure,
+  });
 
   final String label;
   final String value;
@@ -354,14 +483,20 @@ class _KeyRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final shown = obscure && value.isNotEmpty ? '${value.substring(0, value.length.clamp(0, 6))}••••••••' : value;
+    final shown = obscure && value.isNotEmpty
+        ? '${value.substring(0, value.length.clamp(0, 6))}••••••••'
+        : value;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(
+          alpha: 0.35,
+        ),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25),
+        ),
       ),
       child: Row(
         children: [
@@ -369,7 +504,12 @@ class _KeyRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: theme.textTheme.labelMedium?.withColor(theme.colorScheme.onSurfaceVariant)),
+                Text(
+                  label,
+                  style: theme.textTheme.labelMedium?.withColor(
+                    theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
                 const SizedBox(height: AppSpacing.xs),
                 SelectableText(
                   value.isEmpty ? '—' : shown,
@@ -387,12 +527,17 @@ class _KeyRow extends StatelessWidget {
                     await Clipboard.setData(ClipboardData(text: value));
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Copied $label', style: theme.textTheme.bodyMedium)),
+                        SnackBar(
+                          content: Text(
+                            'Copied $label',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ),
                       );
                     }
                   },
             icon: Icon(Icons.copy, color: theme.colorScheme.onSurface),
-          )
+          ),
         ],
       ),
     );
@@ -412,16 +557,23 @@ class _NativeStub extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Streaming unavailable', style: theme.textTheme.titleMedium?.bold),
+          Text(
+            'Streaming unavailable',
+            style: theme.textTheme.titleMedium?.bold,
+          ),
           const SizedBox(height: AppSpacing.sm),
           Text(
             'In-app streaming isn\'t enabled in this build. You can still explore the session UI, but playback is disabled.',
-            style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+            style: theme.textTheme.bodyMedium?.withColor(
+              theme.colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),

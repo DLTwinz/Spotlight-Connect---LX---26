@@ -27,7 +27,8 @@ class MilestoneModel {
   final DateTime? createdAt;
 
   static int _asInt(Object? v) => v is int ? v : int.tryParse('$v') ?? 0;
-  static bool _asBool(Object? v) => v is bool ? v : (v?.toString().toLowerCase() == 'true');
+  static bool _asBool(Object? v) =>
+      v is bool ? v : (v?.toString().toLowerCase() == 'true');
 
   factory MilestoneModel.fromJson(Map<String, dynamic> json) {
     return MilestoneModel(
@@ -35,10 +36,17 @@ class MilestoneModel {
       code: (json['code'] ?? '').toString(),
       title: (json['title'] ?? '').toString(),
       description: (json['description'] ?? '').toString(),
-      category: (json['category'] ?? '').toString().trim().isEmpty ? null : (json['category'] ?? '').toString(),
+      category: (json['category'] ?? '').toString().trim().isEmpty
+          ? null
+          : (json['category'] ?? '').toString(),
       prestigeReward: _asInt(json['prestige_reward']),
-      badgeRewardCode: (json['badge_reward_code'] ?? '').toString().trim().isEmpty ? null : (json['badge_reward_code'] ?? '').toString(),
-      tierUnlock: (json['tier_unlock'] ?? '').toString().trim().isEmpty ? null : (json['tier_unlock'] ?? '').toString(),
+      badgeRewardCode:
+          (json['badge_reward_code'] ?? '').toString().trim().isEmpty
+          ? null
+          : (json['badge_reward_code'] ?? '').toString(),
+      tierUnlock: (json['tier_unlock'] ?? '').toString().trim().isEmpty
+          ? null
+          : (json['tier_unlock'] ?? '').toString(),
       active: _asBool(json['active']),
       createdAt: DateTime.tryParse((json['created_at'] ?? '').toString()),
     );
@@ -66,7 +74,8 @@ class UserMilestoneModel {
   final bool visibleOnProfile;
 
   static int _asInt(Object? v) => v is int ? v : int.tryParse('$v') ?? 0;
-  static bool _asBool(Object? v) => v is bool ? v : (v?.toString().toLowerCase() == 'true');
+  static bool _asBool(Object? v) =>
+      v is bool ? v : (v?.toString().toLowerCase() == 'true');
 
   factory UserMilestoneModel.fromJson(Map<String, dynamic> json) {
     return UserMilestoneModel(
@@ -75,7 +84,9 @@ class UserMilestoneModel {
       userId: (json['user_id'] ?? '').toString(),
       achievedAt: DateTime.tryParse((json['achieved_at'] ?? '').toString()),
       prestigeEarned: _asInt(json['prestige_earned']),
-      sourceEventId: (json['source_event_id'] ?? '').toString().trim().isEmpty ? null : (json['source_event_id'] ?? '').toString(),
+      sourceEventId: (json['source_event_id'] ?? '').toString().trim().isEmpty
+          ? null
+          : (json['source_event_id'] ?? '').toString(),
       visibleOnProfile: _asBool(json['visible_on_profile']),
     );
   }

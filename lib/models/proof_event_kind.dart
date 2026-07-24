@@ -12,20 +12,20 @@ enum ProofEventKind {
   custom;
 
   String get displayLabel => switch (this) {
-        ProofEventKind.purchase => 'Purchase',
-        ProofEventKind.stream => 'Stream',
-        ProofEventKind.share => 'Share',
-        ProofEventKind.referral => 'Referral',
-        ProofEventKind.milestone => 'Milestone',
-        ProofEventKind.custom => 'Custom',
-      };
+    ProofEventKind.purchase => 'Purchase',
+    ProofEventKind.stream => 'Stream',
+    ProofEventKind.share => 'Share',
+    ProofEventKind.referral => 'Referral',
+    ProofEventKind.milestone => 'Milestone',
+    ProofEventKind.custom => 'Custom',
+  };
 
   String get iconName => switch (this) {
-        ProofEventKind.purchase => 'shopping_bag',
-        ProofEventKind.stream => 'play_circle',
-        ProofEventKind.share => 'share',
-        ProofEventKind.referral => 'people',
-        ProofEventKind.milestone => 'military_tech',
-        ProofEventKind.custom => 'star',
-      };
+    ProofEventKind.purchase => 'shopping_bag',
+    ProofEventKind.stream => 'play_circle',
+    ProofEventKind.share => 'share',
+    ProofEventKind.referral => 'people',
+    ProofEventKind.milestone => 'military_tech',
+    ProofEventKind.custom => 'star',
+  };
 }

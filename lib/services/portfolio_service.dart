@@ -6,9 +6,11 @@ class PortfolioService extends ChangeNotifier {
   final dynamic _localCache; // ignore: unused_field
   Map<String, dynamic>? _activePortfolio;
 
-  PortfolioService({required SupabaseClient client, required dynamic localCache}) 
-      : _client = client, 
-        _localCache = localCache;
+  PortfolioService({
+    required SupabaseClient client,
+    required dynamic localCache,
+  }) : _client = client,
+       _localCache = localCache;
 
   Map<String, dynamic>? get activePortfolio => _activePortfolio;
 

@@ -15,11 +15,14 @@ class NotificationService extends ChangeNotifier {
         .stream(primaryKey: ['id'])
         .eq('receiver_id', userId)
         .order('created_at', ascending: false)
-        .listen((data) {
-          _notifications = data;
-          notifyListeners();
-        }, onError: (err) {
-          debugPrint('‼️ NOTIFICATION PIPELINE ERROR: $err');
-        });
+        .listen(
+          (data) {
+            _notifications = data;
+            notifyListeners();
+          },
+          onError: (err) {
+            debugPrint('‼️ NOTIFICATION PIPELINE ERROR: $err');
+          },
+        );
   }
 }

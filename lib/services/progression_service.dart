@@ -101,8 +101,8 @@ class ProgressionService extends ChangeNotifier {
       missionsCompleted: (stats['missions_completed'] as num?)?.toInt() ?? 0,
       milestonesCompleted: _userMilestones.length,
       campaignsParticipated: (stats['active_campaigns'] as num?)?.toInt() ?? 0,
-      nextTierPrestigeRequired:
-          (nextTier?['min_status_points'] as num?)?.toInt(),
+      nextTierPrestigeRequired: (nextTier?['min_status_points'] as num?)
+          ?.toInt(),
     );
   }
 
@@ -114,20 +114,22 @@ class ProgressionService extends ChangeNotifier {
     final root = Map<String, dynamic>.from(res.data as Map);
     final raw = (root['items'] as List? ?? const []);
 
-    _campaigns = raw.map((e) {
-      final row = Map<String, dynamic>.from(e as Map);
-      final campaignMap = row['campaign'] is Map
-          ? Map<String, dynamic>.from(row['campaign'] as Map)
-          : <String, dynamic>{};
-      final me = row['me'] is Map
-          ? Map<String, dynamic>.from(row['me'] as Map)
-          : null;
+    _campaigns = raw
+        .map((e) {
+          final row = Map<String, dynamic>.from(e as Map);
+          final campaignMap = row['campaign'] is Map
+              ? Map<String, dynamic>.from(row['campaign'] as Map)
+              : <String, dynamic>{};
+          final me = row['me'] is Map
+              ? Map<String, dynamic>.from(row['me'] as Map)
+              : null;
 
-      return CampaignListItemModel(
-        campaign: CampaignModel.fromJson(campaignMap),
-        isJoined: me != null && me['status']?.toString() == 'active',
-      );
-    }).toList(growable: false);
+          return CampaignListItemModel(
+            campaign: CampaignModel.fromJson(campaignMap),
+            isJoined: me != null && me['status']?.toString() == 'active',
+          );
+        })
+        .toList(growable: false);
   }
 
   Future<void> _loadMilestones() async {
@@ -149,13 +151,13 @@ class ProgressionService extends ChangeNotifier {
         .eq('user_id', user.id)
         .order('achieved_at', ascending: false);
 
-    _allMilestones = List<Map<String, dynamic>>.from(allRows)
-        .map((e) => MilestoneModel.fromJson(e))
-        .toList(growable: false);
+    _allMilestones = List<Map<String, dynamic>>.from(
+      allRows,
+    ).map((e) => MilestoneModel.fromJson(e)).toList(growable: false);
 
-    _userMilestones = List<Map<String, dynamic>>.from(userRows)
-        .map((e) => UserMilestoneModel.fromJson(e))
-        .toList(growable: false);
+    _userMilestones = List<Map<String, dynamic>>.from(
+      userRows,
+    ).map((e) => UserMilestoneModel.fromJson(e)).toList(growable: false);
   }
 
   Future<void> _loadBadges() async {
@@ -172,9 +174,9 @@ class ProgressionService extends ChangeNotifier {
           .eq('user_id', user.id)
           .order('awarded_at', ascending: false);
 
-      _badges = List<Map<String, dynamic>>.from(rows)
-          .map((e) => UserBadgeView.fromJson(e))
-          .toList(growable: false);
+      _badges = List<Map<String, dynamic>>.from(
+        rows,
+      ).map((e) => UserBadgeView.fromJson(e)).toList(growable: false);
     } catch (_) {
       _badges = const [];
     }
@@ -195,9 +197,9 @@ class ProgressionService extends ChangeNotifier {
           .order('at', ascending: false)
           .limit(50);
 
-      _proofEvents = List<Map<String, dynamic>>.from(rows)
-          .map((e) => ProofEventView.fromJson(e))
-          .toList(growable: false);
+      _proofEvents = List<Map<String, dynamic>>.from(
+        rows,
+      ).map((e) => ProofEventView.fromJson(e)).toList(growable: false);
     } catch (_) {
       _proofEvents = const [];
     }
@@ -286,7 +288,11 @@ class ProgressionService extends ChangeNotifier {
           .from('user_missions')
           .select('*')
           .eq('user_id', user.id)
-          .filter('mission_id', 'in', '(${missionIds.map((e) => '"$e"').join(',')})');
+          .filter(
+            'mission_id',
+            'in',
+            '(${missionIds.map((e) => '"$e"').join(',')})',
+          );
 
       for (final row in List<Map<String, dynamic>>.from(userRows)) {
         final model = UserMissionModel.fromJson(row);
@@ -294,13 +300,15 @@ class ProgressionService extends ChangeNotifier {
       }
     }
 
-    _missions = missionMaps.map((row) {
-      final mission = MissionModel.fromJson(row);
-      return MissionListItemModel(
-        mission: mission,
-        userMission: byMissionId[mission.id],
-      );
-    }).toList(growable: false);
+    _missions = missionMaps
+        .map((row) {
+          final mission = MissionModel.fromJson(row);
+          return MissionListItemModel(
+            mission: mission,
+            userMission: byMissionId[mission.id],
+          );
+        })
+        .toList(growable: false);
 
     notifyListeners();
     return _missions;

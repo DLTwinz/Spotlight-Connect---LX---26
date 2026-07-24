@@ -10,18 +10,22 @@ class SpotlightDatabase {
     return supabase
         .from('verifiedreports')
         .stream(primaryKey: ['communityid'])
-        .map((maps) => maps.map((map) {
-              return VerifiedReport(
-                communityId: map['communityid'] as String,
-                communityName: map['communityname'] as String,
-                totalVerifiedFans: map['totalverifiedfans'] as int,
-                verifiedActions30d: map['verifiedactions30d'] as int,
-                repeatSupporterCount: map['repeatsupportercount'] as int,
-              );
-            }).toList());
+        .map(
+          (maps) => maps.map((map) {
+            return VerifiedReport(
+              communityId: map['communityid'] as String,
+              communityName: map['communityname'] as String,
+              totalVerifiedFans: map['totalverifiedfans'] as int,
+              verifiedActions30d: map['verifiedactions30d'] as int,
+              repeatSupporterCount: map['repeatsupportercount'] as int,
+            );
+          }).toList(),
+        );
   }
 
-  Future<BrandAttributionSummary?> getBrandAttribution({String? brandId}) async {
+  Future<BrandAttributionSummary?> getBrandAttribution({
+    String? brandId,
+  }) async {
     final response = await supabase.functions.invoke(
       'get-brand-attribution',
       body: brandId != null ? {'brand_id': brandId} : {},
@@ -43,7 +47,9 @@ class SpotlightDatabase {
     return BrandAttributionSummary.fromJson(row);
   }
 
-  Future<CreatorAttributionSummary?> getCreatorAttribution({String? creatorId}) async {
+  Future<CreatorAttributionSummary?> getCreatorAttribution({
+    String? creatorId,
+  }) async {
     final response = await supabase.functions.invoke(
       'get-creator-attribution',
       body: creatorId != null ? {'creator_id': creatorId} : {},
@@ -78,7 +84,8 @@ class SpotlightDatabase {
         'brand_id': brandId,
         'creator_id': creatorId,
         'amount': amount,
-        if (campaignId != null && campaignId.isNotEmpty) 'campaign_id': campaignId,
+        if (campaignId != null && campaignId.isNotEmpty)
+          'campaign_id': campaignId,
         if (notes != null && notes.isNotEmpty) 'notes': notes,
       },
     );

@@ -30,7 +30,10 @@ class EarlyAccessService {
         'status': 'pending',
         'note': note?.trim().isEmpty == true ? null : note?.trim(),
       };
-      final rows = await SupabaseConfig.client.from(table).insert(payload).select();
+      final rows = await SupabaseConfig.client
+          .from(table)
+          .insert(payload)
+          .select();
       if (rows.isEmpty) throw 'Insert returned no rows';
       return EarlyAccessRequestModel.fromSupabase(rows.first);
     } catch (e) {

@@ -8,7 +8,7 @@ class AdminDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<SupabaseAuthProvider>(context);
-    
+
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -32,13 +32,19 @@ class AdminDashboard extends StatelessWidget {
             decoration: BoxDecoration(
               color: colorScheme.error.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: colorScheme.error.withValues(alpha: 0.30)),
+              border: Border.all(
+                color: colorScheme.error.withValues(alpha: 0.30),
+              ),
             ),
             child: Text(
               "ROOT AUTH",
-              style: TextStyle(color: colorScheme.error, fontSize: 10, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: colorScheme.error,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          )
+          ),
         ],
       ),
       body: ListView(
@@ -46,15 +52,24 @@ class AdminDashboard extends StatelessWidget {
         children: [
           Text(
             "GLOBAL PERSPECTIVE SHIFT PANEL",
-            style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.0),
+            style: TextStyle(
+              color: colorScheme.onSurfaceVariant,
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.0,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             "As an administrator, you are authorized to cross-examine other runtime environments. Mutating this configuration shifts your global session state context.",
-            style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 11, height: 1.5),
+            style: TextStyle(
+              color: colorScheme.onSurfaceVariant,
+              fontSize: 11,
+              height: 1.5,
+            ),
           ),
           const SizedBox(height: 20),
-          
+
           // Role Shifter Console Cards
           _buildRoleMutationCard(
             context,
@@ -85,18 +100,35 @@ class AdminDashboard extends StatelessWidget {
             icon: Icons.people_outline,
             authProvider: authProvider,
           ),
-          
+
           const SizedBox(height: 40),
           Divider(color: colorScheme.outlineVariant.withValues(alpha: 0.5)),
           const SizedBox(height: 20),
           Text(
             "INFRASTRUCTURE CRITICAL METRICS",
-            style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.0),
+            style: TextStyle(
+              color: colorScheme.onSurfaceVariant,
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.0,
+            ),
           ),
           const SizedBox(height: 16),
-          _buildSystemMetricRow(context, "Database RLS Layer", "ENFORCED (SUPABASE)"),
-          _buildSystemMetricRow(context, "Active Auth Session", "VALID (JWT SECURE)"),
-          _buildSystemMetricRow(context, "Standard Account Mutations", "HARD-LOCKED"),
+          _buildSystemMetricRow(
+            context,
+            "Database RLS Layer",
+            "ENFORCED (SUPABASE)",
+          ),
+          _buildSystemMetricRow(
+            context,
+            "Active Auth Session",
+            "VALID (JWT SECURE)",
+          ),
+          _buildSystemMetricRow(
+            context,
+            "Standard Account Mutations",
+            "HARD-LOCKED",
+          ),
         ],
       ),
     );
@@ -118,7 +150,9 @@ class AdminDashboard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: colorScheme.outlineVariant.withValues(alpha: 0.35)),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.35),
+        ),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -126,20 +160,33 @@ class AdminDashboard extends StatelessWidget {
           backgroundColor: accentColor.withValues(alpha: 0.1),
           child: Icon(icon, color: accentColor, size: 20),
         ),
-        title: Text(title, style: TextStyle(color: colorScheme.onSurface, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+        title: Text(
+          title,
+          style: TextStyle(
+            color: colorScheme.onSurface,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+          ),
+        ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4.0),
-          child: Text(subtitle, style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 11)),
+          child: Text(
+            subtitle,
+            style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 11),
+          ),
         ),
         trailing: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: colorScheme.surfaceContainerHighest,
             side: BorderSide(color: accentColor.withValues(alpha: 0.4)),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 12),
           ),
-          onPressed: authProvider.isLoading 
-              ? null 
+          onPressed: authProvider.isLoading
+              ? null
               : () async {
                   try {
                     await authProvider.setActiveRole(targetRole);
@@ -147,7 +194,10 @@ class AdminDashboard extends StatelessWidget {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           backgroundColor: colorScheme.surfaceContainerHighest,
-                          content: Text("Context shifted to [${targetRole.toUpperCase()}] safely.", style: TextStyle(color: accentColor)),
+                          content: Text(
+                            "Context shifted to [${targetRole.toUpperCase()}] safely.",
+                            style: TextStyle(color: accentColor),
+                          ),
                         ),
                       );
                     }
@@ -163,14 +213,32 @@ class AdminDashboard extends StatelessWidget {
                   }
                 },
           child: authProvider.isLoading
-              ? SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: colorScheme.onPrimary))
-              : Text("ENGAGE", style: TextStyle(color: accentColor, fontSize: 10, fontWeight: FontWeight.bold)),
+              ? SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: colorScheme.onPrimary,
+                  ),
+                )
+              : Text(
+                  "ENGAGE",
+                  style: TextStyle(
+                    color: accentColor,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
         ),
       ),
     );
   }
 
-  Widget _buildSystemMetricRow(BuildContext context, String label, String status) {
+  Widget _buildSystemMetricRow(
+    BuildContext context,
+    String label,
+    String status,
+  ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     return Padding(
@@ -178,8 +246,19 @@ class AdminDashboard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 12)),
-          Text(status, style: TextStyle(color: colorScheme.primary, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'monospace')),
+          Text(
+            label,
+            style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 12),
+          ),
+          Text(
+            status,
+            style: TextStyle(
+              color: colorScheme.primary,
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'monospace',
+            ),
+          ),
         ],
       ),
     );

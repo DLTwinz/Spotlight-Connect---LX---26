@@ -6,7 +6,8 @@ import 'package:spotlight_connect/storage/key_value_store.dart';
 
 class _WebKeyValueStore implements KeyValueStore {
   @override
-  Future<String?> getString(String key) async => window.localStorage.getItem(key);
+  Future<String?> getString(String key) async =>
+      window.localStorage.getItem(key);
 
   @override
   Future<void> setString(String key, String value) async {

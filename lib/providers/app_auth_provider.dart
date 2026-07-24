@@ -13,7 +13,10 @@ abstract class AppAuthProvider extends ChangeNotifier {
   Future<void> logout() async {}
   Future<void> sendPasswordResetEmail(String email) async {}
   Future<void> refreshCurrentUser() async {}
-  Future<void> completeOnboarding(String? username, String? requestedRole) async {}
+  Future<void> completeOnboarding(
+    String? username,
+    String? requestedRole,
+  ) async {}
   Future<void> setActiveRole(String role) async {}
 
   bool get launchEnabled => true;

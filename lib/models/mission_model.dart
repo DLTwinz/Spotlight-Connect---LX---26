@@ -2,7 +2,7 @@ class MissionModel {
   final String id;
   final String title;
   final String description; // Added for UI
-  final String shortLabel;  // Added for UI
+  final String shortLabel; // Added for UI
   final String actionType;
   final int targetValue;
   final int prestigeReward;

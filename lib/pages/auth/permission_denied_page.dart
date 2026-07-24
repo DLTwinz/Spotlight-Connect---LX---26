@@ -24,7 +24,9 @@ class PermissionDeniedPage extends StatelessWidget {
     final cs = theme.colorScheme;
     final auth = context.watch<AppAuthProvider>();
     final missing = (uri.queryParameters['missing'] ?? 'role').toLowerCase();
-    final requiredRole = (uri.queryParameters['role'] ?? '').toLowerCase().trim();
+    final requiredRole = (uri.queryParameters['role'] ?? '')
+        .toLowerCase()
+        .trim();
     final from = uri.queryParameters['from'] ?? '/';
     final me = auth.currentUser;
 
@@ -36,13 +38,16 @@ class PermissionDeniedPage extends StatelessWidget {
     };
 
     final subtitle = switch (missing) {
-      'approval' => requiredRole.isEmpty
-          ? 'This area requires approval before you can enter.'
-          : 'Your account is not approved for the “$requiredRole” role yet.',
-      'role' => requiredRole.isEmpty
-          ? 'You don’t have permission to access this area.'
-          : 'This area is restricted to approved “$requiredRole” accounts.',
-      'profile' => 'We couldn’t confirm your role state yet. This is usually a missing or incomplete users profile row.',
+      'approval' =>
+        requiredRole.isEmpty
+            ? 'This area requires approval before you can enter.'
+            : 'Your account is not approved for the “$requiredRole” role yet.',
+      'role' =>
+        requiredRole.isEmpty
+            ? 'You don’t have permission to access this area.'
+            : 'This area is restricted to approved “$requiredRole” accounts.',
+      'profile' =>
+        'We couldn’t confirm your role state yet. This is usually a missing or incomplete users profile row.',
       _ => 'We couldn’t confirm access for this area yet.',
     };
 
@@ -51,17 +56,20 @@ class PermissionDeniedPage extends StatelessWidget {
         const _NextStepItem(
           icon: Icons.schedule,
           title: 'Wait for approval',
-          body: 'Your application may be pending review. You can still use Audience features while you wait.',
+          body:
+              'Your application may be pending review. You can still use Audience features while you wait.',
         ),
       const _NextStepItem(
         icon: Icons.refresh,
         title: 'Refresh role state',
-        body: 'If you were just approved, refresh to re-check your permissions.',
+        body:
+            'If you were just approved, refresh to re-check your permissions.',
       ),
       const _NextStepItem(
         icon: Icons.support_agent,
         title: 'Contact support',
-        body: 'If this seems wrong, contact support with your account email and the blocked area.',
+        body:
+            'If this seems wrong, contact support with your account email and the blocked area.',
       ),
     ];
 
@@ -83,7 +91,9 @@ class PermissionDeniedPage extends StatelessWidget {
       context.go(target);
     }
 
-    final cardBorder = BorderSide(color: cs.outlineVariant.withValues(alpha: 0.55));
+    final cardBorder = BorderSide(
+      color: cs.outlineVariant.withValues(alpha: 0.55),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -121,27 +131,41 @@ class PermissionDeniedPage extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(14),
                           color: cs.errorContainer,
-                          border: Border.all(color: cs.error.withValues(alpha: 0.22)),
+                          border: Border.all(
+                            color: cs.error.withValues(alpha: 0.22),
+                          ),
                         ),
-                        child: Icon(Icons.lock_outline, color: cs.onErrorContainer),
+                        child: Icon(
+                          Icons.lock_outline,
+                          color: cs.onErrorContainer,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(subtitle, style: theme.textTheme.titleMedium?.copyWith(height: 1.25)),
+                            Text(
+                              subtitle,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                height: 1.25,
+                              ),
+                            ),
                             const SizedBox(height: 8),
                             Text(
                               'Blocked area: $from',
-                              style: theme.textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: cs.onSurfaceVariant,
+                              ),
                             ),
                             const SizedBox(height: 8),
                             if (me != null)
                               _AccountPill(
                                 email: me.email ?? '',
                                 userId: me.userId,
-                                role: me.activeRole.isEmpty ? 'audience' : me.activeRole,
+                                role: me.activeRole.isEmpty
+                                    ? 'audience'
+                                    : me.activeRole,
                                 approvedRoles: me.approvedRoles,
                               ),
                           ],
@@ -161,12 +185,17 @@ class PermissionDeniedPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('What you can do next', style: theme.textTheme.titleMedium),
+                      Text(
+                        'What you can do next',
+                        style: theme.textTheme.titleMedium,
+                      ),
                       const SizedBox(height: 10),
-                      ...nextSteps.map((s) => Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: _NextStepTile(item: s),
-                          )),
+                      ...nextSteps.map(
+                        (s) => Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: _NextStepTile(item: s),
+                        ),
+                      ),
                       const SizedBox(height: 4),
                       Wrap(
                         spacing: 10,
@@ -175,30 +204,58 @@ class PermissionDeniedPage extends StatelessWidget {
                           FilledButton.icon(
                             onPressed: refresh,
                             icon: Icon(Icons.refresh, color: cs.onPrimary),
-                            label: Text('Refresh role state', style: theme.textTheme.labelLarge?.copyWith(color: cs.onPrimary)),
+                            label: Text(
+                              'Refresh role state',
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                color: cs.onPrimary,
+                              ),
+                            ),
                           ),
                           OutlinedButton.icon(
                             onPressed: () => context.go('/'),
-                            icon: Icon(Icons.home_outlined, color: cs.onSurface),
-                            label: Text('Home', style: theme.textTheme.labelLarge?.copyWith(color: cs.onSurface)),
+                            icon: Icon(
+                              Icons.home_outlined,
+                              color: cs.onSurface,
+                            ),
+                            label: Text(
+                              'Home',
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                color: cs.onSurface,
+                              ),
+                            ),
                           ),
                           OutlinedButton.icon(
                             onPressed: signOut,
                             icon: Icon(Icons.logout, color: cs.onSurface),
-                            label: Text('Sign out', style: theme.textTheme.labelLarge?.copyWith(color: cs.onSurface)),
+                            label: Text(
+                              'Sign out',
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                color: cs.onSurface,
+                              ),
+                            ),
                           ),
                           if (kDebugMode && !kReleaseMode)
                             OutlinedButton.icon(
                               onPressed: () => context.go('/__qa'),
-                              icon: Icon(Icons.build_outlined, color: cs.onSurface),
-                              label: Text('Open QA Harness', style: theme.textTheme.labelLarge?.copyWith(color: cs.onSurface)),
+                              icon: Icon(
+                                Icons.build_outlined,
+                                color: cs.onSurface,
+                              ),
+                              label: Text(
+                                'Open QA Harness',
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  color: cs.onSurface,
+                                ),
+                              ),
                             ),
                         ],
                       ),
                       const SizedBox(height: 10),
                       Text(
                         'Support: support@spotlightconnect.app',
-                        style: theme.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ),
@@ -213,7 +270,12 @@ class PermissionDeniedPage extends StatelessWidget {
 }
 
 class _AccountPill extends StatelessWidget {
-  const _AccountPill({required this.email, required this.userId, required this.role, required this.approvedRoles});
+  const _AccountPill({
+    required this.email,
+    required this.userId,
+    required this.role,
+    required this.approvedRoles,
+  });
 
   final String email;
   final String userId;
@@ -228,10 +290,18 @@ class _AccountPill extends StatelessWidget {
 
     return InkWell(
       onTap: () async {
-        await Clipboard.setData(ClipboardData(text: 'email=$email\nuserId=$userId\nrole=$role\napproved=${approvedRoles.join(',')}'));
+        await Clipboard.setData(
+          ClipboardData(
+            text:
+                'email=$email\nuserId=$userId\nrole=$role\napproved=${approvedRoles.join(',')}',
+          ),
+        );
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Copied account details'), behavior: SnackBarBehavior.floating),
+            SnackBar(
+              content: Text('Copied account details'),
+              behavior: SnackBarBehavior.floating,
+            ),
           );
         }
       },
@@ -248,12 +318,18 @@ class _AccountPill extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.verified_user_outlined, size: 16, color: cs.onSurfaceVariant),
+            Icon(
+              Icons.verified_user_outlined,
+              size: 16,
+              color: cs.onSurfaceVariant,
+            ),
             const SizedBox(width: 8),
             Flexible(
               child: Text(
                 text,
-                style: theme.textTheme.labelMedium?.copyWith(color: cs.onSurfaceVariant),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: cs.onSurfaceVariant,
+                ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -268,7 +344,11 @@ class _AccountPill extends StatelessWidget {
 }
 
 class _NextStepItem {
-  const _NextStepItem({required this.icon, required this.title, required this.body});
+  const _NextStepItem({
+    required this.icon,
+    required this.title,
+    required this.body,
+  });
   final IconData icon;
   final String title;
   final String body;
@@ -302,7 +382,13 @@ class _NextStepTile extends StatelessWidget {
             children: [
               Text(item.title, style: theme.textTheme.titleSmall),
               const SizedBox(height: 2),
-              Text(item.body, style: theme.textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant, height: 1.35)),
+              Text(
+                item.body,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: cs.onSurfaceVariant,
+                  height: 1.35,
+                ),
+              ),
             ],
           ),
         ),

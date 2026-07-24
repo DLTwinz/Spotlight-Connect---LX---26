@@ -2,12 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:spotlight_connect/features/verified_fandom/data/verified_fandom_client.dart';
 import 'package:spotlight_connect/supabase/supabase_config.dart';
 
-enum TrustLabel { verified, repeatSupporter, ambassadorCandidate, ambassador, captain, riskFlagged }
+enum TrustLabel {
+  verified,
+  repeatSupporter,
+  ambassadorCandidate,
+  ambassador,
+  captain,
+  riskFlagged,
+}
 
 class VerifiedFandomProvider extends ChangeNotifier {
   // Initialize the client with SupabaseConfig.client
-  late final VerifiedFandomClient client = VerifiedFandomClient(SupabaseConfig.client);
-  
+  late final VerifiedFandomClient client = VerifiedFandomClient(
+    SupabaseConfig.client,
+  );
+
   bool _isWriting = false;
   bool get isWriting => _isWriting;
   String? _lastError;
