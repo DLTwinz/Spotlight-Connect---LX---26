@@ -231,8 +231,9 @@ class FeatureFlagProvider extends ChangeNotifier {
           final parsed = AppFeature.values.where((f) => f.name == key).toList();
           if (parsed.isEmpty) continue;
           if (value is bool) _flags[parsed.first] = value;
-          if (value is String)
+          if (value is String) {
             _flags[parsed.first] = value.toLowerCase() == 'true';
+          }
         }
       }
 

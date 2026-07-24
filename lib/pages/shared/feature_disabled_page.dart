@@ -40,10 +40,12 @@ class FeatureDisabledPage extends StatelessWidget {
           .toSet();
 
       if (active == 'talent' && approved.contains('talent')) return '/talent';
-      if (active == 'business' && approved.contains('business'))
+      if (active == 'business' && approved.contains('business')) {
         return '/business';
-      if (active == 'audience' && approved.contains('audience'))
+      }
+      if (active == 'audience' && approved.contains('audience')) {
         return '/audience';
+      }
 
       if (approved.contains('talent')) return '/talent';
       if (approved.contains('business')) return '/business';

@@ -195,8 +195,9 @@ class GroupMembershipModel {
       if (groupId == null ||
           userId == null ||
           role == null ||
-          joinedAtRaw == null)
+          joinedAtRaw == null) {
         return null;
+      }
       final joinedAt = DateTime.tryParse(joinedAtRaw);
       if (joinedAt == null) return null;
       return GroupMembershipModel(
@@ -220,8 +221,9 @@ class GroupMembershipModel {
       if (groupId is! String ||
           userId is! String ||
           role is! String ||
-          joinedAt is! String)
+          joinedAt is! String) {
         return null;
+      }
       final parsedJoinedAt = DateTime.tryParse(joinedAt);
       if (parsedJoinedAt == null) return null;
       return GroupMembershipModel(

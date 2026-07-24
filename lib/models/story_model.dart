@@ -106,8 +106,9 @@ class StoryModel {
           authorId is! String ||
           authorDisplayName is! String ||
           authorPrimaryRole is! String ||
-          caption is! String)
+          caption is! String) {
         return null;
+      }
       if (createdAtRaw is! String || expiresAtRaw is! String) return null;
 
       final createdAt = DateTime.tryParse(createdAtRaw);

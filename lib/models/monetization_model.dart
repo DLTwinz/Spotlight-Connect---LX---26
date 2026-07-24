@@ -53,8 +53,9 @@ class SubscriptionPlan {
   factory SubscriptionPlan.fromJson(Map<String, dynamic> json) {
     DateTime dt(dynamic v) {
       if (v is DateTime) return v;
-      if (v is String)
+      if (v is String) {
         return DateTime.tryParse(v) ?? DateTime.fromMillisecondsSinceEpoch(0);
+      }
       return DateTime.fromMillisecondsSinceEpoch(0);
     }
 
@@ -135,8 +136,9 @@ class MonetizationTransaction {
   factory MonetizationTransaction.fromJson(Map<String, dynamic> json) {
     DateTime dt(dynamic v) {
       if (v is DateTime) return v;
-      if (v is String)
+      if (v is String) {
         return DateTime.tryParse(v) ?? DateTime.fromMillisecondsSinceEpoch(0);
+      }
       return DateTime.fromMillisecondsSinceEpoch(0);
     }
 
@@ -210,8 +212,9 @@ class CreatorPayoutProfile {
   factory CreatorPayoutProfile.fromJson(Map<String, dynamic> json) {
     DateTime dt(dynamic v) {
       if (v is DateTime) return v;
-      if (v is String)
+      if (v is String) {
         return DateTime.tryParse(v) ?? DateTime.fromMillisecondsSinceEpoch(0);
+      }
       return DateTime.fromMillisecondsSinceEpoch(0);
     }
 

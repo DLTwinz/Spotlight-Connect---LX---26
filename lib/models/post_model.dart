@@ -144,11 +144,13 @@ class PostModel {
 
       if (repostOfPostId != null && repostOfPostId is! String) return null;
       if (repostOfAuthorDisplayName != null &&
-          repostOfAuthorDisplayName is! String)
+          repostOfAuthorDisplayName is! String) {
         return null;
+      }
       if (repostOfAuthorPrimaryRole != null &&
-          repostOfAuthorPrimaryRole is! String)
+          repostOfAuthorPrimaryRole is! String) {
         return null;
+      }
       if (repostOfText != null && repostOfText is! String) return null;
       if (groupId != null && groupId is! String) return null;
 

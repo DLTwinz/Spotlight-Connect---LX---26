@@ -63,8 +63,9 @@ class _LiveKitRoomPageState extends State<LiveKitRoomPage> {
 
     try {
       final sessionRoom = (widget.session.livekitRoom ?? '').trim();
-      if (sessionRoom.isEmpty)
+      if (sessionRoom.isEmpty) {
         throw StateError('Missing LiveKit room name on session.');
+      }
 
       final auth = context.read<AppAuthProvider>();
       final u = auth.currentUser;
