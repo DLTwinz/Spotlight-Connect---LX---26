@@ -211,13 +211,16 @@ class SupabaseAuthProvider extends AppAuthProvider {
   }
 
   @override
-  Future<void> completeOnboarding([String? username, String?  requestedRole]) async {
+  Future<void> completeOnboarding([
+    String? username,
+    String? requestedRole,
+  ]) async {
     final session = Supabase.instance.client.auth.currentSession;
     if (session == null) {
       throw Exception('No active session.');
     }
 
-    final selectedRole = (Role ?? '').trim().toLowerCase();
+    final selectedRole = (requestedRole ?? '').trim().toLowerCase();
     final pendingRole = _pendingRoleValue(selectedRole);
     final approvedRoles = <String>['audience'];
 
@@ -240,9 +243,7 @@ class SupabaseAuthProvider extends AppAuthProvider {
       'admin_role_edit_enabled': _currentUser?.adminRoleEditEnabled ?? false,
     }, onConflict: 'user_id');
 
-    final ledgerRole = _mapProfileRoleToLedgerRole(
-      pendingRole == null ? 'audience' : pendingRole,
-    );
+    final ledgerRole = _mapProfileRoleToLedgerRole(pendingRole ?? 'audience');
 
     if (ledgerRole != null) {
       await Supabase.instance.client.from('user_roles').upsert({

@@ -1,10 +1,4 @@
-enum UserRole {
-  audience,
-  talent,
-  business,
-  admin,
-  unknown,
-}
+enum UserRole { audience, talent, business, admin, unknown }
 
 const Object _unset = Object();
 
@@ -118,29 +112,33 @@ class UserModel {
       return ['audience'];
     }
 
-    final activeRole =
-        (json['activeRole'] ?? json['active_role'] ?? 'audience').toString();
+    final activeRole = (json['activeRole'] ?? json['active_role'] ?? 'audience')
+        .toString();
 
     final pendingRoleRaw =
         (json['requestedRolePending'] ?? json['requested_role_pending'])
             ?.toString();
 
     return UserModel(
-      userId: (json['userId'] ?? json['user_id'] ?? json['id'] ?? '').toString(),
+      userId: (json['userId'] ?? json['user_id'] ?? json['id'] ?? '')
+          .toString(),
       email: json['email']?.toString(),
       displayName: (json['displayName'] ?? json['display_name'] ?? 'User')
           .toString(),
       username: (json['username'] ?? '').toString(),
       profilePhoto: (json['profilePhoto'] ?? json['profile_photo'])?.toString(),
       coverPhoto: (json['coverPhoto'] ?? json['cover_photo'])?.toString(),
-      baseRole: (json['baseRole'] ?? json['base_role'] ?? 'audience').toString(),
+      baseRole: (json['baseRole'] ?? json['base_role'] ?? 'audience')
+          .toString(),
       approvedRoles: parseApprovedRoles(
         json['approvedRoles'] ?? json['approved_roles'],
       ),
       activeRole: activeRole,
       onboardingComplete:
-          (json['onboardingComplete'] ?? json['onboarding_complete'] ?? false) ==
-              true,
+          (json['onboardingComplete'] ??
+              json['onboarding_complete'] ??
+              false) ==
+          true,
       applicationStatusSummary:
           (json['applicationStatusSummary'] ??
                   json['application_status_summary'] ??
@@ -148,15 +146,15 @@ class UserModel {
               .toString(),
       requestedRolePending:
           pendingRoleRaw == null || pendingRoleRaw.trim().isEmpty
-              ? null
-              : pendingRoleRaw,
+          ? null
+          : pendingRoleRaw,
       approved: (json['approved'] ?? false) == true,
       isAdminFlag: (json['isAdmin'] ?? json['is_admin'] ?? false) == true,
       adminRoleEditEnabled:
           (json['adminRoleEditEnabled'] ??
-                  json['admin_role_edit_enabled'] ??
-                  false) ==
-              true,
+              json['admin_role_edit_enabled'] ??
+              false) ==
+          true,
     );
   }
 
@@ -229,21 +227,22 @@ class RoleApplication {
   });
 
   factory RoleApplication.fromJson(Map<String, dynamic> json) {
-    final reviewNoteRaw =
-        (json['reviewNote'] ?? json['review_note'])?.toString();
+    final reviewNoteRaw = (json['reviewNote'] ?? json['review_note'])
+        ?.toString();
 
     return RoleApplication(
-      applicationId:
-          (json['applicationId'] ?? json['application_id'] ?? '').toString(),
+      applicationId: (json['applicationId'] ?? json['application_id'] ?? '')
+          .toString(),
       userId: (json['userId'] ?? json['user_id'] ?? '').toString(),
-      applicantEmail:
-          (json['applicantEmail'] ?? json['applicant_email'] ?? '').toString(),
-      applicantName:
-          (json['applicantName'] ?? json['applicant_name'] ?? '').toString(),
-      requestedRole:
-          (json['requestedRole'] ?? json['requested_role'] ?? '').toString(),
+      applicantEmail: (json['applicantEmail'] ?? json['applicant_email'] ?? '')
+          .toString(),
+      applicantName: (json['applicantName'] ?? json['applicant_name'] ?? '')
+          .toString(),
+      requestedRole: (json['requestedRole'] ?? json['requested_role'] ?? '')
+          .toString(),
       status: (json['status'] ?? '').toString(),
-      submittedAt: DateTime.tryParse(
+      submittedAt:
+          DateTime.tryParse(
             (json['submittedAt'] ?? json['submitted_at'] ?? '').toString(),
           ) ??
           DateTime.now(),
@@ -252,10 +251,9 @@ class RoleApplication {
               (json['reviewedAt'] ?? json['reviewed_at']).toString(),
             )
           : null,
-      reviewNote:
-          reviewNoteRaw == null || reviewNoteRaw.trim().isEmpty
-              ? null
-              : reviewNoteRaw,
+      reviewNote: reviewNoteRaw == null || reviewNoteRaw.trim().isEmpty
+          ? null
+          : reviewNoteRaw,
     );
   }
 }
