@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gotrue/gotrue.dart';
 import 'package:spotlight_connect/backend/backend_mode.dart';
-import 'package:spotlight_connect/nav.dart';
 import 'package:spotlight_connect/supabase/supabase_config.dart';
 import 'package:spotlight_connect/widgets/app_back_button.dart';
+import 'package:spotlight_connect/core/routing/app_routes.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key, this.initialEmail, this.initialStep});

@@ -1,5 +1,5 @@
 import 'package:spotlight_connect/models/user_model.dart';
-import 'package:spotlight_connect/nav.dart';
+import 'package:spotlight_connect/core/routing/app_routes.dart';
 
 class RoleCapabilities {
   final UserModel user;

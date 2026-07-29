@@ -5,10 +5,10 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:spotlight_connect/models/studio_session_model.dart';
-import 'package:spotlight_connect/nav.dart';
 import 'package:spotlight_connect/providers/app_auth_provider.dart';
 import 'package:spotlight_connect/services/studio_service.dart';
 import 'package:spotlight_connect/theme.dart';
+import 'package:spotlight_connect/core/routing/app_routes.dart';
 
 class LiveWatchSheet extends StatelessWidget {
   const LiveWatchSheet({super.key, required this.session});

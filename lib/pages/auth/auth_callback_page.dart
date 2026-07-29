@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:spotlight_connect/nav.dart';
 import 'package:spotlight_connect/supabase/supabase_config.dart';
 import 'package:spotlight_connect/widgets/app_back_button.dart';
+import 'package:spotlight_connect/core/routing/app_routes.dart';
 
 /// Universal handler for Supabase email links (confirm signup, magic link, recovery).
 ///

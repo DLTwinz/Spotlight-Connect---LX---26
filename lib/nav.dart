@@ -8,6 +8,7 @@ import 'package:spotlight_connect/providers/feature_flag_provider.dart';
 import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
 import 'package:spotlight_connect/models/user_model.dart';
 import 'package:spotlight_connect/core/access/role_capabilities.dart';
+import 'package:spotlight_connect/core/routing/app_routes.dart';
 import 'package:spotlight_connect/models/studio_session_model.dart';
 // ... Add any other necessary project-specific imports here ...
 import 'package:provider/provider.dart';
@@ -39,43 +40,6 @@ import 'pages/progression/rewards_page.dart';
 import 'pages/shared/feature_disabled_page.dart';
 import 'pages/studio/livekit_room_page.dart';
 // ... Add any other necessary project-specific imports here ...
-
-class AppRoutes {
-  static const String root = '/';
-  static const String earlyAccess = '/early-access';
-  static const String login = '/login';
-  static const String onboarding = '/onboarding';
-  static const String authCallback = '/auth/callback';
-  static const String resetPassword = '/reset-password';
-  static const String waitingApproval = '/waiting-approval';
-  static const String accessDenied = '/access';
-  static const String permissionDenied = '/permission-denied';
-  static const String audience = '/audience';
-  static const String talent = '/talent';
-  static const String business = '/business';
-  static const String admin = '/admin';
-
-  // Progression system
-  static const String missions = '/missions';
-  static const String rewards = '/rewards';
-  static const String campaigns = '/campaigns';
-  static const String progress = '/progress';
-
-  // Admin progression tooling
-  static const String adminMissions = '/admin/missions';
-  static const String adminCampaigns = '/admin/campaigns';
-
-  // Policy-blocked fallback
-  static const String featureDisabled = '/feature-disabled';
-
-  // Docs-aligned aliases.
-  static const String audienceDashboard = '/audience/dashboard';
-  static const String talentDashboard = '/talent/dashboard';
-  static const String businessDashboard = '/business/dashboard';
-
-  static const String livekit = '/livekit';
-  static const String qa = '/__qa';
-} // <--- THIS BRACE IS THE FIX
 
 class EnvConfig {
   static const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
