@@ -7,6 +7,7 @@ import 'package:spotlight_connect/providers/app_auth_provider.dart';
 import 'package:spotlight_connect/providers/feature_flag_provider.dart';
 import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
 import 'package:spotlight_connect/models/user_model.dart';
+import 'package:spotlight_connect/core/access/role_capabilities.dart';
 import 'package:spotlight_connect/models/studio_session_model.dart';
 // ... Add any other necessary project-specific imports here ...
 import 'package:provider/provider.dart';
@@ -362,8 +363,8 @@ class AppRouter {
         }
 
         final currentUser = user!;
-        final canAccessAdmin =
-            currentUser.isAdmin;
+        final caps = RoleCapabilities(currentUser);
+        final canAccessAdmin = currentUser.isAdmin;
 
         // Logged in but hasn't completed onboarding
         if (canAccessAdmin && location.startsWith("/admin")) return null;
@@ -387,7 +388,9 @@ class AppRouter {
           logRedirect(AppRoutes.waitingApproval);
           return AppRoutes.waitingApproval;
         }
-        if (currentUser.isRejected || currentUser.isRestricted || currentUser.isSuspended) {
+        if (currentUser.isRejected ||
+            currentUser.isRestricted ||
+            currentUser.isSuspended) {
           if (isAccessDeniedRoute) return null;
           final target = accessDenied(
             missing: currentUser.isRejected
@@ -406,19 +409,9 @@ class AppRouter {
           return target;
         }
 
-        bool isKnownRole(String? r) =>
-            r == 'audience' || r == 'talent' || r == 'business' || r == 'admin';
-
         // Launch-grade invariants: if the profile is malformed or role state is
         // unresolved, we must not silently route the user into Audience.
-        final approved = currentUser.approvedRoles;
-        final active = currentUser.activeRole;
-        final profileMalformed =
-            currentUser.userId.isEmpty ||
-            approved.isEmpty ||
-            !approved.contains('audience') ||
-            !isKnownRole(active);
-        if (profileMalformed) {
+        if (!caps.hasValidProfile) {
           // Allow staying on /access to view the message, otherwise route there.
           if (isAccessDeniedRoute) return null;
           final target = accessDenied(missing: 'profile');
@@ -428,7 +421,8 @@ class AppRouter {
 
         // If the user is trying to operate as a gated role but is not approved,
         // this is a resolved denial state and must go to the blocked screen.
-        if (active == 'talent' && !approved.contains('talent')) {
+        if (currentUser.parsedActiveRole == UserRole.talent &&
+            !caps.activeRoleApproved) {
           if (isAccessDeniedRoute) return null;
           final target = accessDenied(
             missing: 'approval',
@@ -437,7 +431,8 @@ class AppRouter {
           logRedirect(target);
           return target;
         }
-        if (active == 'business' && !approved.contains('business')) {
+        if (currentUser.parsedActiveRole == UserRole.business &&
+            !caps.activeRoleApproved) {
           if (isAccessDeniedRoute) return null;
           final target = accessDenied(
             missing: 'approval',
@@ -448,22 +443,7 @@ class AppRouter {
         }
 
         String defaultDashboardRouteFor(UserModel u) {
-          final canAccessAdmin =
-              u.isAdmin;
-          if (canAccessAdmin) {
-            if (u.activeRole == 'talent') return AppRoutes.talent;
-            if (u.activeRole == 'business') return AppRoutes.business;
-            if (u.activeRole == 'audience') return AppRoutes.audience;
-            return AppRoutes.admin;
-          }
-          if (u.activeRole == 'talent' && u.approvedRoles.contains('talent')) {
-            return AppRoutes.talent;
-          }
-          if (u.activeRole == 'business' &&
-              u.approvedRoles.contains('business')) {
-            return AppRoutes.business;
-          }
-          return AppRoutes.audience;
+          return RoleCapabilities(u).defaultDashboardRoute;
         }
 
         // Onboarding complete, should not be on login or onboarding.
@@ -560,14 +540,12 @@ class AppRouter {
           return target;
         }
         // Role guards
-        if (location == AppRoutes.talent &&
-            !user.approvedRoles.contains('talent')) {
+        if (location == AppRoutes.talent && !caps.canAccessRoute(location)) {
           final target = accessDenied(missing: 'role', requiredRole: 'talent');
           logRedirect(target);
           return target;
         }
-        if (location == AppRoutes.business &&
-            !user.approvedRoles.contains('business')) {
+        if (location == AppRoutes.business && !caps.canAccessRoute(location)) {
           final target = accessDenied(
             missing: 'role',
             requiredRole: 'business',
@@ -575,8 +553,7 @@ class AppRouter {
           logRedirect(target);
           return target;
         }
-        if (location == AppRoutes.admin &&
-            !user.isAdmin) {
+        if (location == AppRoutes.admin && !caps.canAccessRoute(location)) {
           final target = accessDenied(missing: 'role', requiredRole: 'admin');
           logRedirect(target);
           return target;
@@ -586,7 +563,7 @@ class AppRouter {
         final isAdminTooling =
             location == AppRoutes.adminMissions ||
             location == AppRoutes.adminCampaigns;
-        if (isAdminTooling && !user.isAdmin) {
+        if (isAdminTooling && !caps.canAccessRoute(location)) {
           final target = accessDenied(missing: 'role', requiredRole: 'admin');
           logRedirect(target);
           return target;
