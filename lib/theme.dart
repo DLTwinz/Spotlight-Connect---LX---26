@@ -231,9 +231,9 @@ extension SpotlightDashboardThemeX on BuildContext {
       case DashboardRoleVariant.admin:
         return const Color(0xFFFF6B6B);
       case DashboardRoleVariant.business:
-        return SpotlightColors.accentTeal;
+        return SpotlightAccents.cyan;
       case DashboardRoleVariant.audience:
-        return const Color(0xFF8EBCFF);
+        return const Color(0xFF38BDF8);
       case DashboardRoleVariant.talent:
         return const Color(0xFF7CFFB2);
     }
@@ -244,11 +244,11 @@ extension SpotlightDashboardThemeX on BuildContext {
       case DashboardRoleVariant.admin:
         return const Color(0xFF090B10);
       case DashboardRoleVariant.business:
-        return const Color(0xFF071118);
+        return SpotlightAccents.bg;
       case DashboardRoleVariant.audience:
-        return const Color(0xFF0B1016);
+        return SpotlightAccents.bg;
       case DashboardRoleVariant.talent:
-        return const Color(0xFF0A0D12);
+        return SpotlightAccents.bg;
     }
   }
 
@@ -257,11 +257,11 @@ extension SpotlightDashboardThemeX on BuildContext {
       case DashboardRoleVariant.admin:
         return const Color(0xFF12161D);
       case DashboardRoleVariant.business:
-        return const Color(0xFF0E1821);
+        return SpotlightAccents.surface;
       case DashboardRoleVariant.audience:
-        return const Color(0xFF111925);
+        return SpotlightAccents.surface;
       case DashboardRoleVariant.talent:
-        return const Color(0xFF11161F);
+        return SpotlightAccents.surface;
     }
   }
 
