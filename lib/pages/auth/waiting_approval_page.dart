@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:spotlight_connect/nav.dart';
 import 'package:spotlight_connect/providers/app_auth_provider.dart';
+import 'package:spotlight_connect/theme.dart';
 
 class WaitingApprovalPage extends StatelessWidget {
   const WaitingApprovalPage({super.key});
@@ -16,6 +17,7 @@ class WaitingApprovalPage extends StatelessWidget {
         : user!.activeRole;
 
     return Scaffold(
+      backgroundColor: SpotlightAccents.bg,
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -75,16 +77,12 @@ class WaitingApprovalPage extends StatelessWidget {
                             : () async {
                                 await auth.refreshCurrentUser();
                               },
-                        icon: Icon(
-                          Icons.refresh,
-                          color: Theme.of(context).colorScheme.onPrimary,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: SpotlightAccents.cyan,
+                          foregroundColor: const Color(0xFF041016),
                         ),
-                        label: Text(
-                          'Refresh',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                          ),
-                        ),
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Refresh'),
                       ),
                       OutlinedButton.icon(
                         onPressed: () => context.go(AppRoutes.audience),

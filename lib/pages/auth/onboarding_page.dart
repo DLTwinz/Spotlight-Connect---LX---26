@@ -54,7 +54,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
         _selectedRole != null &&
         (user?.approvedRoles.contains(_selectedRole) ?? false);
     return Scaffold(
+      backgroundColor: SpotlightAccents.bg,
       appBar: AppBar(
+        backgroundColor: SpotlightAccents.bg,
+        foregroundColor: SpotlightAccents.textPrimary,
+        elevation: 0,
         title: const Text('Complete Profile'),
         automaticallyImplyLeading: false,
         leading: AppBackButton(
@@ -149,8 +153,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   onPressed: _busy ? null : _submit,
                   style: ElevatedButton.styleFrom(
                     padding: AppSpacing.verticalMd,
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    backgroundColor: SpotlightAccents.cyan,
+                    foregroundColor: const Color(0xFF041016),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppRadius.md),
                     ),
@@ -209,13 +213,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
             borderRadius: BorderRadius.circular(AppRadius.lg),
             border: Border.all(
               color: isSelected
-                  ? colorScheme.primary
+                  ? SpotlightAccents.cyan
                   : colorScheme.outline.withValues(alpha: 0.3),
               width: isSelected ? 2 : 1,
             ),
             color: isSelected
-                ? colorScheme.primary.withValues(alpha: 0.1)
-                : theme.colorScheme.surface,
+                ? SpotlightAccents.cyan.withValues(alpha: 0.1)
+                : SpotlightAccents.surface,
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
