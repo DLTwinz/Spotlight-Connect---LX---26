@@ -502,3 +502,24 @@ TextTheme _buildTextTheme(Brightness brightness) {
     ),
   );
 }
+
+/// Marketing landing accents (cyan–purple–magenta).
+/// Does not replace app-wide primary (lime). Use only on public marketing surfaces.
+class SpotlightAccents {
+  static const cyan = Color(0xFF00E5FF);
+  static const cyanBright = Color(0xFF22F0FF);
+  static const purple = Color(0xFFA855F7);
+  static const magenta = Color(0xFFEC4899);
+  static const pink = Color(0xFFF472B6);
+  static const success = Color(0xFF34D399);
+
+  static const bg = Color(0xFF050508);
+  static const surface = Color(0xFF0D0D12);
+  static const surfaceElevated = Color(0xFF14141C);
+  static const border = Color(0x22FFFFFF);
+  static const borderGlow = Color(0x33FFFFFF);
+
+  static const textPrimary = Color(0xFFF8FAFC);
+  static const textSecondary = Color(0xFF94A3B8);
+  static const textMuted = Color(0xFF64748B);
+}
