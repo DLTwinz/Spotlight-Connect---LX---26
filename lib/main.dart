@@ -3,6 +3,7 @@ import 'theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:spotlight_connect/supabase/supabase_config.dart';
 
 import 'package:spotlight_connect/nav.dart';
 import 'package:spotlight_connect/providers/app_auth_provider.dart';
@@ -22,28 +23,10 @@ import 'package:spotlight_connect/services/progression_service.dart';
 import 'package:spotlight_connect/services/monetization_service.dart';
 import 'package:spotlight_connect/storage/key_value_store.dart';
 
-abstract class EnvConfig {
-  static const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
-  static const String supabaseKey = String.fromEnvironment('SUPABASE_ANON_KEY');
-
-  static void validate() {
-    if (supabaseUrl.isEmpty || supabaseKey.isEmpty) {
-      throw Exception(
-        'PRODUCTION BOOT DENIED: SUPABASE_URL and SUPABASE_ANON_KEY must be provided via --dart-define.',
-      );
-    }
-  }
-}
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  EnvConfig.validate();
-
-  await Supabase.initialize(
-    url: EnvConfig.supabaseUrl,
-    publishableKey: EnvConfig.supabaseKey,
-  );
+  await SupabaseConfig.initialize();
 
   runApp(const MyApp());
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:spotlight_connect/providers/app_auth_provider.dart';
 import 'package:provider/provider.dart';
 import '../providers/supabase_auth_provider.dart';
 import '../models/user_model.dart';
@@ -11,7 +12,7 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 1. Reactively listen to the single source of truth
-    final authProvider = Provider.of<SupabaseAuthProvider>(context);
+    final authProvider = Provider.of<AppAuthProvider>(context);
     final UserModel? user = authProvider.currentUser;
 
     // 2. Handle global bootstrap loading state cleanly
@@ -141,7 +142,7 @@ class DashboardScreen extends StatelessWidget {
   Widget _buildConsoleHeader(
     BuildContext context,
     UserModel user,
-    SupabaseAuthProvider auth,
+    AppAuthProvider auth,
   ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:spotlight_connect/providers/supabase_auth_provider.dart';
+import 'package:spotlight_connect/providers/app_auth_provider.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -18,10 +18,7 @@ class _AuthPageState extends State<AuthPage> {
   Future<void> _submit() async {
     debugPrint("Submit button pressed!"); // New debug print
 
-    final authProvider = Provider.of<SupabaseAuthProvider>(
-      context,
-      listen: false,
-    );
+    final authProvider = Provider.of<AppAuthProvider>(context, listen: false);
     final email = _emailCtrl.text.trim();
     final password = _passCtrl.text.trim();
 

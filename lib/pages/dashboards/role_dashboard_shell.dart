@@ -1,14 +1,40 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:spotlight_connect/models/dashboard_tab_spec.dart';
 import 'package:spotlight_connect/theme.dart';
 
+Widget _shellTabBadge(int? badge, {required Color accent}) {
+  if (badge == null || badge <= 0) return const SizedBox.shrink();
+  return Container(
+    margin: const EdgeInsets.only(left: 8),
+    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+    decoration: BoxDecoration(
+      color: accent,
+      borderRadius: BorderRadius.circular(999),
+    ),
+    child: Text(
+      badge > 99 ? '99+' : '$badge',
+      style: const TextStyle(
+        color: Color(0xFF07090F),
+        fontSize: 10,
+        fontWeight: FontWeight.w800,
+        height: 1.1,
+      ),
+    ),
+  );
+}
+
 class RoleDashboardShell extends StatefulWidget {
+  const RoleDashboardShell({
+    super.key,
+    required this.role,
+    required this.tabs,
+    this.title,
+  });
+
   final String role;
   final List<DashboardTabSpec> tabs;
-
-  const RoleDashboardShell({super.key, required this.role, required this.tabs});
+  final String? title;
 
   @override
   State<RoleDashboardShell> createState() => _RoleDashboardShellState();
@@ -361,6 +387,7 @@ class _DesktopSidebar extends StatelessWidget {
                                 ),
                               ),
                             ),
+                  _shellTabBadge(tab.badge, accent: accentColor),
                           ],
                         ),
                       ),
@@ -757,6 +784,7 @@ class _TopTabStrip extends StatelessWidget {
                       fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
                     ),
                   ),
+                  _shellTabBadge(tab.badge, accent: accentColor),
                 ],
               ),
             ),

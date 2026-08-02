@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:spotlight_connect/providers/app_auth_provider.dart';
+import 'package:spotlight_connect/services/opportunity_service.dart';
+import 'package:spotlight_connect/widgets/post_feed_view.dart';
+import 'package:spotlight_connect/services/post_service.dart';
 import 'package:spotlight_connect/theme.dart';
 import 'package:spotlight_connect/services/database_service.dart';
 import 'package:spotlight_connect/models/brand_attribution_summary_model.dart';
@@ -93,8 +98,17 @@ class FeedTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isTalent = (role ?? 'talent').trim().toLowerCase() == 'talent';
-    final Color accentColor = context.roleAccent(role);
+    final r = (role ?? 'talent').trim().toLowerCase();
+    final accentColor = context.roleAccent(role);
+    final isTalent = r == 'talent';
+
+    // Kick off load if empty
+    final postSvc = context.read<PostService>();
+    if (postSvc.posts.isEmpty && !postSvc.isLoading) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        postSvc.ensureInitialized();
+      });
+    }
 
     return Scaffold(
       backgroundColor: context.roleShellBackground(role),
@@ -112,82 +126,11 @@ class FeedTab extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.refresh, color: accentColor, size: 20),
-            onPressed: () {},
+            onPressed: () => postSvc.ensureInitialized(),
           ),
         ],
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: 5,
-        itemBuilder: (context, index) {
-          return Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: context.rolePanelBackground(role),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: context.rolePanelBorder(role)),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  backgroundColor: accentColor.withValues(alpha: 0.1),
-                  radius: 18,
-                  child: Icon(
-                    isTalent ? Icons.bolt : Icons.analytics_outlined,
-                    color: accentColor,
-                    size: 18,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            isTalent
-                                ? 'CONVERSION CAPTURED'
-                                : 'PROMPT IMPACT METRIC',
-                            style: TextStyle(
-                              color: context.roleTextPrimary(role),
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            '${index + 1}h ago',
-                            style: TextStyle(
-                              color: context
-                                  .roleTextSubtle(role)
-                                  .withValues(alpha: 0.6),
-                              fontSize: 10,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        isTalent
-                            ? 'Attribution node #8902 generated safe conversion signature via TikTok link-out.'
-                            : 'Campaign contract Alpha-Omicron verified proof-of-impact payload from Node 4.',
-                        style: TextStyle(
-                          color: context.roleTextMuted(role),
-                          fontSize: 11,
-                          height: 1.4,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+      body: PostFeedView(role: r),
     );
   }
 }
@@ -663,18 +606,141 @@ class OpportunitiesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accent = context.roleAccent(role);
+    final svc = Provider.of<OpportunityService>(context);
+    final items = svc.opportunities;
+    final loading = svc.isLoading;
+    final isBusiness = (role ?? '').toLowerCase() == 'business';
+
     return Scaffold(
       backgroundColor: context.roleShellBackground(role),
-      body: Center(
-        child: Text(
-          'PIPELINE CONTRACTS ENCRYPTED',
+      appBar: AppBar(
+        backgroundColor: context.roleShellBackground(role),
+        title: Text(
+          isBusiness ? 'CAMPAIGNS' : 'OPPORTUNITIES',
           style: TextStyle(
-            color: context.roleTextSubtle(role),
-            fontSize: 11,
-            letterSpacing: 2,
+            color: context.roleTextPrimary(role),
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.5,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh, color: accent, size: 20),
+            onPressed: () => svc.fetchActiveOpportunities(),
+          ),
+        ],
       ),
+      body: loading
+          ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
+          : items.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.work_outline, color: context.roleTextSubtle(role), size: 36),
+                      const SizedBox(height: 12),
+                      Text(
+                        isBusiness ? 'No campaigns yet' : 'No open opportunities',
+                        style: TextStyle(color: context.roleTextPrimary(role), fontSize: 14, fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Pull to refresh or check back later',
+                        style: TextStyle(color: context.roleTextMuted(role), fontSize: 12),
+                      ),
+                    ],
+                  ),
+                )
+              : RefreshIndicator(
+                  onRefresh: svc.fetchActiveOpportunities,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final row = items[index];
+                      final title = (row['title'] ?? 'Untitled').toString();
+                      final description = (row['description'] ?? '').toString();
+                      final status = (row['status'] ?? 'open').toString();
+                      final budget = row['budget_cents'];
+                      final budgetLabel = budget is int
+                          ? '\$${(budget / 100).toStringAsFixed(0)}'
+                          : '—';
+                      final profile = row['profiles'];
+                      String poster = '';
+                      if (profile is Map) {
+                        poster = (profile['display_name'] ?? profile['username'] ?? '').toString();
+                      }
+
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: context.rolePanelBackground(role),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: context.rolePanelBorder(role)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    title,
+                                    style: TextStyle(
+                                      color: context.roleTextPrimary(role),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: accent.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(999),
+                                    border: Border.all(color: accent.withValues(alpha: 0.28)),
+                                  ),
+                                  child: Text(
+                                    status.toUpperCase(),
+                                    style: TextStyle(color: accent, fontSize: 10, fontWeight: FontWeight.w700),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (description.isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              Text(
+                                description,
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(color: context.roleTextMuted(role), fontSize: 12, height: 1.4),
+                              ),
+                            ],
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                Text(
+                                  budgetLabel,
+                                  style: TextStyle(color: context.roleTextPrimary(role), fontSize: 13, fontWeight: FontWeight.w600),
+                                ),
+                                if (poster.isNotEmpty) ...[
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    poster,
+                                    style: TextStyle(color: context.roleTextSubtle(role), fontSize: 11),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
     );
   }
 }
@@ -685,10 +751,19 @@ class OpportunitiesTab extends StatelessWidget {
 class ProfileTab extends StatelessWidget {
   final String? role;
   const ProfileTab({super.key, this.role});
-
   @override
   Widget build(BuildContext context) {
     final Color accentColor = context.roleAccent(role);
+    final auth = Provider.of<AppAuthProvider>(context);
+    final user = auth.currentUser;
+    final name = user?.displayName.isNotEmpty == true
+        ? user!.displayName
+        : (user?.username.isNotEmpty == true ? user!.username : 'User');
+    final email = user?.email ?? '—';
+    final activeRole = user?.activeRole ?? role ?? 'audience';
+    final status = user?.applicationStatusSummary ?? 'none';
+    final photo = user?.profilePhoto;
+    final roles = user?.approvedRoles ?? const <String>[];
 
     return Scaffold(
       backgroundColor: context.roleShellBackground(role),
@@ -702,26 +777,28 @@ class ProfileTab extends StatelessWidget {
                 child: CircleAvatar(
                   radius: 40,
                   backgroundColor: context.rolePanelBackground(role),
-                  child: Icon(
-                    Icons.account_circle_outlined,
-                    color: accentColor,
-                    size: 50,
-                  ),
+                  backgroundImage: (photo != null && photo.isNotEmpty)
+                      ? NetworkImage(photo)
+                      : null,
+                  child: (photo == null || photo.isEmpty)
+                      ? Icon(Icons.account_circle_outlined, color: accentColor, size: 50)
+                      : null,
                 ),
               ),
               const SizedBox(height: 16),
               Text(
-                'CORE PROFILE ATTESTATION',
+                name,
                 style: TextStyle(
                   color: context.roleTextPrimary(role),
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
+              Text(email, style: TextStyle(color: context.roleTextMuted(role), fontSize: 12)),
+              const SizedBox(height: 8),
               Text(
-                'ROLE INSTANCE: ${role?.toUpperCase() ?? 'TALENT'}',
+                'ROLE: ${activeRole.toUpperCase()}',
                 style: TextStyle(
                   color: accentColor,
                   fontSize: 10,
@@ -739,25 +816,15 @@ class ProfileTab extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    _buildIdentityRow(
-                      context,
-                      role,
-                      'Ecosystem Identity Key',
-                      '0x71C...392A',
-                    ),
+                    _buildIdentityRow(context, role, 'User ID', _shortId(user?.userId)),
+                    Divider(color: context.rolePanelBorder(role), height: 24),
+                    _buildIdentityRow(context, role, 'Application Status', status),
                     Divider(color: context.rolePanelBorder(role), height: 24),
                     _buildIdentityRow(
                       context,
                       role,
-                      'Routing Token Claim',
-                      'Valid',
-                    ),
-                    Divider(color: context.rolePanelBorder(role), height: 24),
-                    _buildIdentityRow(
-                      context,
-                      role,
-                      'Database Protocol',
-                      'Supabase Realtime RLS',
+                      'Approved Roles',
+                      roles.isEmpty ? 'audience' : roles.join(', '),
                     ),
                   ],
                 ),
@@ -767,6 +834,12 @@ class ProfileTab extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _shortId(String? id) {
+    if (id == null || id.isEmpty) return '—';
+    if (id.length <= 12) return id;
+    return '${id.substring(0, 6)}…${id.substring(id.length - 4)}';
   }
 
   Widget _buildIdentityRow(

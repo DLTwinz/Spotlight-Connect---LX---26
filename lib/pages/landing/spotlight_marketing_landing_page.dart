@@ -1,60 +1,55 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../nav.dart';
-import '../../theme.dart';
+import 'package:spotlight_connect/nav.dart';
+import 'package:spotlight_connect/theme/spotlight_tokens.dart';
 
-// Reference photography (same strategy as Figma Make prototype)
-const _heroImg =
-    'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1200&h=900&fit=crop&crop=faces&auto=format&q=85';
-const _fansImg =
-    'https://images.unsplash.com/photo-1459749411175-047fc749d9b0?w=800&h=500&fit=crop&auto=format&q=80';
-const _creatorsImg =
-    'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&h=500&fit=crop&auto=format&q=80';
-const _brandsImg =
-    'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=500&fit=crop&auto=format&q=80';
-const _avatars = [
-  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=64&h=64&fit=crop&auto=format',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop&auto=format',
-  'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=64&h=64&fit=crop&auto=format',
-  'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=64&h=64&fit=crop&auto=format',
-];
-const _communityAvatars = [
-  'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=48&h=48&fit=crop&auto=format',
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=48&h=48&fit=crop&auto=format',
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=48&h=48&fit=crop&auto=format',
-];
-
+/// Public marketing front door — aligned to Figma / screenshot composition.
 class SpotlightMarketingLandingPage extends StatelessWidget {
   const SpotlightMarketingLandingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF050508),
+      backgroundColor: SpotlightTokens.bgPrimary,
       body: CustomScrollView(
-        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
         slivers: const [
-          // Sticky-style top bar
           SliverToBoxAdapter(child: _NavBar()),
-          // Hero
           SliverToBoxAdapter(child: _Hero()),
-          SliverToBoxAdapter(child: SizedBox(height: 48)),
-          // Feature grid
-          SliverToBoxAdapter(child: _Features()),
-          SliverToBoxAdapter(child: SizedBox(height: 32)),
-          // Trust strip
-          SliverToBoxAdapter(child: _Trust()),
-          SliverToBoxAdapter(child: SizedBox(height: 48)),
+          SliverToBoxAdapter(child: SizedBox(height: 28)),
+          SliverToBoxAdapter(child: _FeatureCards()),
+          SliverToBoxAdapter(child: SizedBox(height: 28)),
+          SliverToBoxAdapter(child: _TrustStrip()),
+          SliverToBoxAdapter(child: SizedBox(height: 40)),
         ],
       ),
     );
   }
 }
 
-// ═══════════════════════════════════════════
-// NAV
-// ═══════════════════════════════════════════
+// ── tokens (locked to DESIRED.WELCOME.PAGE.png via SpotlightTokens) ───────────
+class _L {
+  static const bg = SpotlightTokens.bgPrimary;
+  static const surface = SpotlightTokens.bgSurface;
+  static const text = SpotlightTokens.textPrimary;
+  static const muted = SpotlightTokens.textSecondary;
+  static const dim = SpotlightTokens.textMuted;
+  static const cyan = SpotlightTokens.cyan;
+  static const magenta = SpotlightTokens.magenta;
+  static const purple = SpotlightTokens.purple;
+  static const border = SpotlightTokens.borderSubtle;
+}
+
+ImageProvider _img(String asset, String network) {
+  // Prefer local asset when present; fall back to network.
+  return AssetImage(asset);
+}
+
+// ── NAV ──────────────────────────────────────────────────────────────────────
 class _NavBar extends StatefulWidget {
   const _NavBar();
   @override
@@ -62,659 +57,1123 @@ class _NavBar extends StatefulWidget {
 }
 
 class _NavBarState extends State<_NavBar> {
-  bool open = false;
-  void login() => context.go(AppRoutes.login);
+  String? _hover;
+
+  static const _links = [
+    'Platform',
+    'For Creators',
+    'For Brands',
+    'Community',
+    'Resources',
+    'Pricing',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final wide = MediaQuery.sizeOf(context).width >= 960;
+    return Container(
+      height: 64,
+      padding: EdgeInsets.symmetric(horizontal: wide ? 32 : 16),
+      decoration: BoxDecoration(
+        color: SpotlightTokens.bgPrimary.withValues(alpha: 0.92),
+        border: Border(
+          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
+        ),
+      ),
+      child: Row(
+        children: [
+          // Logo
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  gradient: const LinearGradient(
+                    colors: [SpotlightTokens.purple, _L.cyan],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: _L.cyan.withValues(alpha: 0.35),
+                      blurRadius: 12,
+                    ),
+                  ],
+                ),
+                alignment: Alignment.center,
+                child: const Text(
+                  'S',
+                  style: TextStyle(
+                    color: SpotlightTokens.bgPrimary,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'SPOTLIGHT',
+                    style: TextStyle(
+                      color: _L.text,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 13,
+                      letterSpacing: 0.2,
+                      height: 1.05,
+                    ),
+                  ),
+                  Text(
+                    'Connect',
+                    style: TextStyle(
+                      color: _L.muted,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 10,
+                      height: 1.05,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          if (wide) ...[
+            const SizedBox(width: 36),
+            Expanded(
+              child: Row(
+                children: [
+                  for (final l in _links)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 22),
+                      child: MouseRegion(
+                        onEnter: (_) => setState(() => _hover = l),
+                        onExit: (_) => setState(() => _hover = null),
+                        child: Text(
+                          l,
+                          style: TextStyle(
+                            color: _hover == l ? _L.text : SpotlightTokens.textMuted,
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ] else
+            const Spacer(),
+          // Sign in
+          TextButton(
+            onPressed: () => context.go(AppRoutes.login),
+            style: TextButton.styleFrom(
+              foregroundColor: SpotlightTokens.textMuted,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            ),
+            child: const Text('Sign in', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500)),
+          ),
+          const SizedBox(width: 8),
+          // Join Spotlight
+          _CyanCta(
+            label: 'Join Spotlight',
+            onTap: () => context.go(AppRoutes.login),
+            compact: true,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── HERO ─────────────────────────────────────────────────────────────────────
+class _Hero extends StatelessWidget {
+  const _Hero();
 
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
-    final desk = w >= 1100;
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xE6050508),
-        border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.06))),
-      ),
-      child: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-          child: SafeArea(
-            bottom: false,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: desk ? 40 : 16, vertical: 12),
-              child: Column(children: [
-                Row(children: [
-                  _brand(),
-                  const Spacer(),
-                  if (desk) ...[
-                    ...['Platform', 'For Creators', 'For Brands', 'Community', 'Resources', 'Pricing']
-                        .map((l) => _link(l, chevron: l == 'Platform' || l == 'Resources')),
-                    const SizedBox(width: 20),
-                    TextButton(
-                      onPressed: login,
-                      style: TextButton.styleFrom(foregroundColor: const Color(0xFF94A3B8)),
-                      child: const Text('Sign in', style: TextStyle(fontWeight: FontWeight.w500)),
-                    ),
-                    const SizedBox(width: 8),
-                    _Btn(label: 'Join Spotlight', onTap: login, primary: true, compact: true),
-                  ] else
-                    IconButton(
-                      onPressed: () => setState(() => open = !open),
-                      icon: Icon(open ? Icons.close : Icons.menu, color: Colors.white),
-                    ),
-                ]),
-                if (!desk && open) ...[
-                  const SizedBox(height: 8),
-                  ...['Platform', 'For Creators', 'For Brands', 'Community', 'Resources', 'Pricing']
-                      .map((l) => ListTile(
-                            dense: true,
-                            title: Text(l, style: const TextStyle(color: Colors.white)),
-                            onTap: () => setState(() => open = false),
-                          )),
-                  _Btn(label: 'Join Spotlight', onTap: login, primary: true),
-                  TextButton(onPressed: login, child: const Text('Sign in', style: TextStyle(color: Color(0xFF94A3B8)))),
-                ],
-              ]),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+    final wide = w >= 1000;
 
-  Widget _brand() => Row(mainAxisSize: MainAxisSize.min, children: [
-        Container(
-          width: 32, height: 32,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(colors: [Color(0xFF00E5FF), Color(0xFFA855F7)]),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: const Center(child: Text('S', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 17))),
-        ),
-        const SizedBox(width: 10),
-        const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('SPOTLIGHT', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14, letterSpacing: 0.6, height: 1.1)),
-          Text('Connect', style: TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w500, fontSize: 11, height: 1.1)),
-        ]),
-      ]);
-
-  Widget _link(String label, {bool chevron = false}) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 11),
-        child: Row(mainAxisSize: MainAxisSize.min, children: [
-          Text(label, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13.5, fontWeight: FontWeight.w500)),
-          if (chevron) const Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: Color(0xFF94A3B8)),
-        ]),
-      );
-}
-
-// ═══════════════════════════════════════════
-// HERO
-// ═══════════════════════════════════════════
-class _Hero extends StatelessWidget {
-  const _Hero();
-  @override
-  Widget build(BuildContext context) {
-    final desk = MediaQuery.sizeOf(context).width >= 1050;
     return Padding(
-      padding: EdgeInsets.fromLTRB(desk ? 48 : 20, desk ? 40 : 28, desk ? 48 : 20, 8),
-      child: desk
-          ? const Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Expanded(flex: 5, child: _Copy(large: true)),
-              SizedBox(width: 36),
-              Expanded(flex: 6, child: _Visual()),
-            ])
-          : const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              _Copy(large: false),
-              SizedBox(height: 32),
-              _Visual(),
-            ]),
+      padding: EdgeInsets.fromLTRB(wide ? 40 : 20, 28, wide ? 40 : 20, 8),
+      child: wide
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(flex: 5, child: _HeroCopy()),
+                const SizedBox(width: 28),
+                Expanded(flex: 6, child: _HeroVisual()),
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _HeroCopy(),
+                const SizedBox(height: 28),
+                _HeroVisual(),
+              ],
+            ),
     );
   }
 }
 
-class _Copy extends StatelessWidget {
-  final bool large;
-  const _Copy({required this.large});
+class _HeroCopy extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Text('THE CREATOR ECOSYSTEM, CONNECTED',
-          style: TextStyle(color: Color(0xFF00E5FF), fontSize: 11.5, fontWeight: FontWeight.w600, letterSpacing: 1.5)),
-      const SizedBox(height: 16),
-      RichText(
-        text: TextSpan(
-          style: TextStyle(fontSize: large ? 52 : 34, fontWeight: FontWeight.w800, height: 1.1, color: Colors.white, letterSpacing: -1),
-          children: [
-            const TextSpan(text: 'Where Passion\nMeets '),
-            TextSpan(
-              text: 'Possibility.',
-              style: TextStyle(
-                foreground: Paint()
-                  ..shader = const LinearGradient(colors: [Color(0xFF00E5FF), Color(0xFFA855F7), Color(0xFFEC4899)])
-                      .createShader(const Rect.fromLTWH(0, 0, 300, 70)),
-              ),
-            ),
-          ],
-        ),
-      ),
-      const SizedBox(height: 18),
-      ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 420),
-        child: const Text(
-          'SPOTLIGHT Connect brings fans, creators, and brands together to discover, collaborate, and grow—together.',
-          style: TextStyle(color: Color(0xFF94A3B8), fontSize: 15.5, height: 1.55),
-        ),
-      ),
-      const SizedBox(height: 28),
-      Wrap(spacing: 12, runSpacing: 12, children: [
-        _Btn(label: 'Join as a Creator', onTap: () => context.go(AppRoutes.login), primary: true, icon: Icons.arrow_forward_rounded),
-        _Btn(label: 'Partner with Brands', onTap: () => context.go(AppRoutes.login), primary: false, icon: Icons.arrow_forward_rounded),
-      ]),
-      const SizedBox(height: 28),
-      Row(children: [
-        SizedBox(
-          width: 100, height: 34,
-          child: Stack(children: List.generate(4, (i) {
-            return Positioned(
-              left: i * 22.0,
-              child: Container(
-                width: 34, height: 34,
-                decoration: BoxDecoration(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Eyebrow
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: _L.cyan.withValues(alpha: 0.28)),
+            color: _L.cyan.withValues(alpha: 0.06),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 6,
+                height: 6,
+                decoration: const BoxDecoration(
+                  color: _L.cyan,
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFF050508), width: 2),
-                  image: DecorationImage(image: NetworkImage(_avatars[i]), fit: BoxFit.cover),
                 ),
               ),
-            );
-          })),
+              const SizedBox(width: 8),
+              Text(
+                'THE CREATOR ECOSYSTEM, CONNECTED',
+                style: TextStyle(
+                  color: _L.cyan.withValues(alpha: 0.95),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.6,
+                ),
+              ),
+            ],
+          ),
         ),
-        const SizedBox(width: 8),
-        ...List.generate(5, (_) => const Icon(Icons.star_rounded, size: 15, color: Color(0xFFFBBF24))),
-        const SizedBox(width: 8),
-        const Flexible(child: Text('Trusted by 50K+ creators and brands', style: TextStyle(color: Color(0xFF64748B), fontSize: 12.5, fontWeight: FontWeight.w500))),
-      ]),
-    ]);
+        const SizedBox(height: 22),
+        // Headline — single authoritative gradient version
+        const _Headline(),
+        const SizedBox(height: 16),
+        const Text(
+          'SPOTLIGHT Connect brings fans, creators, and brands together to discover, collaborate, and grow—together.',
+          style: TextStyle(
+            color: SpotlightTokens.textMuted,
+            fontSize: 15.5,
+            height: 1.65,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        const SizedBox(height: 26),
+        // CTAs
+        Wrap(
+          spacing: 12,
+          runSpacing: 10,
+          children: [
+            _CyanCta(
+              label: 'Join as a Creator',
+              trailing: Icons.arrow_forward_rounded,
+              onTap: () => context.go(AppRoutes.login),
+            ),
+            _OutlineCta(
+              label: 'Partner with Brands',
+              trailing: Icons.arrow_forward_rounded,
+              onTap: () => context.go(AppRoutes.login),
+            ),
+          ],
+        ),
+        const SizedBox(height: 22),
+        // Social proof
+        Row(
+          children: [
+            SizedBox(
+              width: 108,
+              height: 32,
+              child: Stack(
+                children: [
+                  for (var i = 0; i < 4; i++)
+                    Positioned(
+                      left: i * 22.0,
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: _L.bg, width: 2),
+                          image: DecorationImage(
+                            image: NetworkImage(
+                              [
+                                'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=64&h=64&fit=crop&auto=format',
+                                'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop&auto=format',
+                                'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=64&h=64&fit=crop&auto=format',
+                                'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=64&h=64&fit=crop&auto=format',
+                              ][i],
+                            ),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            Row(
+              children: List.generate(
+                5,
+                (_) => const Icon(Icons.star_rounded, size: 14, color: SpotlightTokens.warning),
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Flexible(
+              child: Text(
+                'Trusted by 50K+ creators and brands',
+                style: TextStyle(color: SpotlightTokens.textMuted, fontSize: 12.5),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }
 
-class _Visual extends StatelessWidget {
-  const _Visual();
+class _Headline extends StatelessWidget {
+  const _Headline();
+
   @override
   Widget build(BuildContext context) {
-    final compact = MediaQuery.sizeOf(context).width < 700;
-    return AspectRatio(
-      aspectRatio: compact ? 1.0 : 1.12,
-      child: LayoutBuilder(builder: (context, c) {
-        return Stack(clipBehavior: Clip.none, children: [
-          // Main photo
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-                boxShadow: [BoxShadow(color: const Color(0xFFA855F7).withValues(alpha: 0.18), blurRadius: 48, spreadRadius: -6)],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(18),
-                child: Stack(fit: StackFit.expand, children: [
-                  Image.network(_heroImg, fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(color: const Color(0xFF1A1030))),
-                  // cinematic overlays
-                  Container(decoration: BoxDecoration(gradient: LinearGradient(
-                    begin: Alignment.topLeft, end: Alignment.bottomRight,
-                    colors: [const Color(0xFF00E5FF).withValues(alpha: 0.12), Colors.transparent, const Color(0xFFA855F7).withValues(alpha: 0.25)],
-                  ))),
-                  Container(decoration: BoxDecoration(gradient: RadialGradient(
-                    center: Alignment.center, radius: 0.95,
-                    colors: [Colors.transparent, const Color(0xFF050508).withValues(alpha: 0.45)],
-                  ))),
-                ]),
+    final size = MediaQuery.sizeOf(context).width >= 1000 ? 52.0 : 36.0;
+    return Text.rich(
+      TextSpan(
+        style: TextStyle(
+          fontSize: size,
+          fontWeight: FontWeight.w800,
+          height: 1.05,
+          letterSpacing: -1.2,
+        ),
+        children: [
+          const TextSpan(text: 'Where Passion\nMeets ', style: TextStyle(color: _L.text)),
+          WidgetSpan(
+            alignment: PlaceholderAlignment.baseline,
+            baseline: TextBaseline.alphabetic,
+            child: ShaderMask(
+              blendMode: BlendMode.srcIn,
+              shaderCallback: (b) => const LinearGradient(
+                colors: [SpotlightTokens.cyanSoft, SpotlightTokens.purple, SpotlightTokens.magenta],
+              ).createShader(b),
+              child: Text(
+                'Possibility.',
+                style: TextStyle(
+                  fontSize: size,
+                  fontWeight: FontWeight.w800,
+                  height: 1.05,
+                  letterSpacing: -1.2,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
-          // Floating KPI cards
-          if (!compact) ...[
-            Positioned(top: 14, right: 14, child: _GlassStat(
-              title: 'Total Earnings', value: '\$128,610', delta: '+24.8%',
-              chart: CustomPaint(size: const Size(140, 32), painter: _LinePainter(const Color(0xFF00E5FF))),
-            )),
-            Positioned(top: c.maxHeight * 0.30, left: 10, child: _GlassStat(
-              title: 'New Followers', value: '24,590', delta: '+18.6%',
-              chart: const SizedBox(height: 36, child: _Bars()),
-            )),
-            Positioned(bottom: c.maxHeight * 0.20, right: 6, child: _GlassStat(
-              title: 'Campaign ROI', value: '4.7x', delta: '+32.1%',
-              chart: CustomPaint(size: const Size(120, 28), painter: _LinePainter(const Color(0xFFEC4899))),
-            )),
-            Positioned(bottom: 14, left: c.maxWidth * 0.16, child: const _SocialCard()),
-          ] else ...[
-            const Positioned(top: 10, right: 10, child: _GlassStat(title: 'Total Earnings', value: '\$128,610', delta: '+24.8%', compact: true)),
-            const Positioned(bottom: 10, left: 10, right: 10, child: _SocialCard(compact: true)),
-          ],
-        ]);
-      }),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeroVisual extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 1.35,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // Base collage
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(
+                    'assets/landing/hero_collage.png',
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(color: _L.surface),
+                  ),
+                  // Cyan/purple lighting overlays
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          SpotlightTokens.purple.withValues(alpha: 0.25),
+                          Colors.transparent,
+                          _L.cyan.withValues(alpha: 0.18),
+                        ],
+                      ),
+                    ),
+                  ),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: [
+                          _L.bg.withValues(alpha: 0.55),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Floating: Total Earnings
+          Positioned(
+            top: 16,
+            right: 12,
+            child: _GlassStat(
+              label: 'Total Earnings',
+              value: '\$128,610',
+              change: '+24.8%',
+              up: true,
+              spark: true,
+            ),
+          ),
+          // Floating: New Followers
+          Positioned(
+            top: 110,
+            left: 8,
+            child: _GlassStat(
+              label: 'New Followers',
+              value: '24,590',
+              change: '+18.6%',
+              up: true,
+              bars: true,
+            ),
+          ),
+          // Floating: Campaign ROI
+          Positioned(
+            bottom: 88,
+            right: 8,
+            child: _GlassStat(
+              label: 'Campaign ROI',
+              value: '4.7x',
+              change: '+32.1%',
+              up: true,
+              spark: true,
+            ),
+          ),
+          // Floating post card
+          Positioned(
+            left: 24,
+            right: 48,
+            bottom: 16,
+            child: _PostCard(),
+          ),
+        ],
+      ),
     );
   }
 }
 
 class _GlassStat extends StatelessWidget {
-  final String title, value, delta;
-  final Widget? chart;
-  final bool compact;
-  const _GlassStat({required this.title, required this.value, required this.delta, this.chart, this.compact = false});
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-        child: Container(
-          width: compact ? 148 : 170,
-          padding: EdgeInsets.all(compact ? 10 : 12),
-          decoration: BoxDecoration(
-            color: const Color(0xE60C0C14),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-          ),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-            Row(children: [
-              Expanded(child: Text(title, style: const TextStyle(color: Color(0xFF64748B), fontSize: 11, fontWeight: FontWeight.w500))),
-              Text(delta, style: const TextStyle(color: Color(0xFF34D399), fontSize: 11, fontWeight: FontWeight.w600)),
-            ]),
-            const SizedBox(height: 3),
-            Text(value, style: TextStyle(color: Colors.white, fontSize: compact ? 17 : 20, fontWeight: FontWeight.w700, letterSpacing: -0.3)),
-            if (chart != null && !compact) ...[const SizedBox(height: 8), chart!],
-          ]),
-        ),
-      ),
-    );
-  }
-}
+  const _GlassStat({
+    required this.label,
+    required this.value,
+    required this.change,
+    required this.up,
+    this.spark = false,
+    this.bars = false,
+  });
+  final String label, value, change;
+  final bool up, spark, bars;
 
-class _SocialCard extends StatelessWidget {
-  final bool compact;
-  const _SocialCard({this.compact = false});
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(14),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
         child: Container(
-          width: compact ? null : 260,
-          padding: const EdgeInsets.all(12),
+          width: 148,
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
           decoration: BoxDecoration(
-            color: const Color(0xE60C0C14),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+            color: const Color(0xCC0A0F1A),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
           ),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-            Row(children: [
-              Container(
-                width: 32, height: 32,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(image: NetworkImage(_avatars[0]), fit: BoxFit.cover),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: const TextStyle(color: _L.dim, fontSize: 10, fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                  Text(
+                    change,
+                    style: TextStyle(
+                      color: up ? SpotlightTokens.success : _L.magenta,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'monospace',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: const TextStyle(
+                  color: _L.text,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.3,
                 ),
               ),
-              const SizedBox(width: 8),
-              const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Row(children: [
-                  Text('@dreamwithkayla', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
-                  SizedBox(width: 3),
-                  Icon(Icons.verified, size: 13, color: Color(0xFF00E5FF)),
-                ]),
-                Text('2m ago', style: TextStyle(color: Color(0xFF64748B), fontSize: 10)),
-              ])),
-            ]),
-            const SizedBox(height: 8),
-            const Text('Just dropped a new behind-the-scenes 🎬', style: TextStyle(color: Color(0xFF94A3B8), fontSize: 12, height: 1.35)),
-            const SizedBox(height: 10),
-            const Row(children: [
-              Icon(Icons.favorite_border, size: 14, color: Color(0xFF64748B)), SizedBox(width: 4),
-              Text('3.2K', style: TextStyle(color: Color(0xFF64748B), fontSize: 11)),
-              SizedBox(width: 14),
-              Icon(Icons.chat_bubble_outline, size: 14, color: Color(0xFF64748B)), SizedBox(width: 4),
-              Text('201', style: TextStyle(color: Color(0xFF64748B), fontSize: 11)),
-              SizedBox(width: 14),
-              Icon(Icons.share_outlined, size: 14, color: Color(0xFF64748B)), SizedBox(width: 4),
-              Text('120', style: TextStyle(color: Color(0xFF64748B), fontSize: 11)),
-            ]),
-          ]),
+              if (spark || bars) ...[
+                const SizedBox(height: 6),
+                SizedBox(
+                  height: 28,
+                  width: double.infinity,
+                  child: CustomPaint(
+                    painter: bars ? _BarsPainter() : _SparkPainter(),
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _Bars extends StatelessWidget {
-  const _Bars();
-  @override
-  Widget build(BuildContext context) {
-    const h = [0.35, 0.55, 0.4, 0.7, 0.5, 0.85, 0.65, 0.9, 0.75, 1.0];
-    return Row(crossAxisAlignment: CrossAxisAlignment.end, children: h.map((v) {
-      return Expanded(child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 1.5),
-        child: FractionallySizedBox(
-          heightFactor: v,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(2),
-              gradient: LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter,
-                colors: [const Color(0xFF00E5FF).withValues(alpha: 0.25), const Color(0xFF00E5FF)]),
-            ),
-          ),
-        ),
-      ));
-    }).toList());
-  }
-}
-
-class _LinePainter extends CustomPainter {
-  final Color color;
-  _LinePainter(this.color);
+class _SparkPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    const pts = [0.4, 0.35, 0.5, 0.45, 0.6, 0.55, 0.7, 0.65, 0.8, 0.75, 0.9];
     final path = Path();
-    for (var i = 0; i < pts.length; i++) {
-      final x = size.width * (i / (pts.length - 1));
-      final y = size.height * (1 - pts[i]);
-      i == 0 ? path.moveTo(x, y) : path.lineTo(x, y);
+    final pts = [0.1, 0.45, 0.3, 0.55, 0.4, 0.35, 0.55, 0.6, 0.7, 0.4, 0.85, 0.2, 1.0, 0.15];
+    for (var i = 0; i < pts.length; i += 2) {
+      final x = pts[i] * size.width;
+      final y = pts[i + 1] * size.height;
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
     }
-    canvas.drawPath(path, Paint()..color = color..strokeWidth = 2..style = PaintingStyle.stroke..strokeCap = StrokeCap.round);
-    canvas.drawPath(path, Paint()..color = color.withValues(alpha: 0.25)..strokeWidth = 5..style = PaintingStyle.stroke
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4));
+    final paint = Paint()
+      ..color = _L.cyan
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.6
+      ..strokeCap = StrokeCap.round;
+    canvas.drawPath(path, paint);
   }
+
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-// ═══════════════════════════════════════════
-// FEATURES
-// ═══════════════════════════════════════════
-class _Features extends StatelessWidget {
-  const _Features();
+class _BarsPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final vals = [0.35, 0.55, 0.4, 0.7, 0.5, 0.85, 0.6, 0.95];
+    final gap = 3.0;
+    final barW = (size.width - gap * (vals.length - 1)) / vals.length;
+    final paint = Paint()..color = _L.cyan.withValues(alpha: 0.85);
+    for (var i = 0; i < vals.length; i++) {
+      final h = vals[i] * size.height;
+      final r = RRect.fromRectAndRadius(
+        Rect.fromLTWH(i * (barW + gap), size.height - h, barW, h),
+        const Radius.circular(2),
+      );
+      canvas.drawRRect(r, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _PostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final w = MediaQuery.sizeOf(context).width;
-    final cols = w >= 1100 ? 4 : w >= 700 ? 2 : 1;
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: w >= 1100 ? 48 : 16),
-      child: LayoutBuilder(builder: (context, c) {
-        const gap = 14.0;
-        final itemW = (c.maxWidth - gap * (cols - 1)) / cols;
-        return Wrap(spacing: gap, runSpacing: gap, children: [
-          _FCard(width: itemW, eyebrow: 'FOR FANS', title: 'Discover. Connect.\nSupport.',
-              desc: 'Find creators you love, engage with their content, and support their journey.',
-              accent: const Color(0xFF0EA5E9), icon: Icons.people_outline_rounded, image: _fansImg,
-              stats: const [('1M+', 'Active Fans'), ('15K+', 'Communities'), ('2.5M+', 'Interactions Daily')]),
-          _FCard(width: itemW, eyebrow: 'FOR CREATORS', title: 'Create. Grow.\nMonetize.',
-              desc: 'Build your audience, create impact, and unlock new revenue streams.',
-              accent: const Color(0xFFA855F7), icon: Icons.rocket_launch_outlined, image: _creatorsImg,
-              stats: const [('50K+', 'Active Creators'), ('\$20M+', 'Paid to Creators'), ('200+', 'Monetization Tools')]),
-          _FCard(width: itemW, eyebrow: 'FOR BRANDS', title: 'Connect. Collaborate.\nCreate Impact.',
-              desc: 'Partner with authentic creators and drive real results.',
-              accent: const Color(0xFFEC4899), icon: Icons.business_center_outlined, image: _brandsImg,
-              stats: const [('1K+', 'Partner Brands'), ('3K+', 'Campaigns Live'), ('4.7x', 'Average ROI')]),
-          _LoopCard(width: itemW),
-        ]);
-      }),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(14),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+          decoration: BoxDecoration(
+            color: const Color(0xD00A0F1A),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: _L.cyan.withValues(alpha: 0.4)),
+                  image: const DecorationImage(
+                    image: NetworkImage(
+                      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=64&h=64&fit=crop&auto=format',
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          '@dreamwithkayla',
+                          style: TextStyle(color: _L.text, fontSize: 12.5, fontWeight: FontWeight.w700),
+                        ),
+                        SizedBox(width: 4),
+                        Icon(Icons.verified, size: 13, color: _L.cyan),
+                        Spacer(),
+                        Text('2m ago', style: TextStyle(color: _L.dim, fontSize: 10)),
+                      ],
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Just dropped a new behind-the-scenes ✨',
+                      style: TextStyle(color: _L.muted, fontSize: 11.5),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(Icons.favorite_border, size: 13, color: _L.dim),
+                        SizedBox(width: 3),
+                        Text('3.2K', style: TextStyle(color: _L.dim, fontSize: 11)),
+                        SizedBox(width: 12),
+                        Icon(Icons.chat_bubble_outline, size: 13, color: _L.dim),
+                        SizedBox(width: 3),
+                        Text('201', style: TextStyle(color: _L.dim, fontSize: 11)),
+                        SizedBox(width: 12),
+                        Icon(Icons.share_outlined, size: 13, color: _L.dim),
+                        SizedBox(width: 3),
+                        Text('120', style: TextStyle(color: _L.dim, fontSize: 11)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
-class _FCard extends StatefulWidget {
-  final double width;
-  final String eyebrow, title, desc, image;
-  final Color accent;
-  final IconData icon;
-  final List<(String, String)> stats;
-  const _FCard({required this.width, required this.eyebrow, required this.title, required this.desc, required this.accent, required this.icon, required this.image, required this.stats});
-  @override
-  State<_FCard> createState() => _FCardState();
-}
+// ── FEATURE CARDS ────────────────────────────────────────────────────────────
+class _FeatureCards extends StatelessWidget {
+  const _FeatureCards();
 
-class _FCardState extends State<_FCard> {
-  bool h = false;
   @override
   Widget build(BuildContext context) {
+    final w = MediaQuery.sizeOf(context).width;
+    final cols = w >= 1100 ? 4 : (w >= 700 ? 2 : 1);
+    final cards = const [
+      _FeatureData(
+        eyebrow: 'FOR FANS',
+        title: 'Discover. Connect.\nSupport.',
+        body: 'Find creators you love, engage with their content, and support their journey.',
+        stats: [('1M+', 'Active Fans'), ('15K+', 'Communities'), ('2.5M+', 'Interactions Daily')],
+        image: 'https://images.unsplash.com/photo-1459749411175-047fc749d9b0?w=800&h=500&fit=crop&auto=format&q=80',
+        accent: _L.cyan,
+      ),
+      _FeatureData(
+        eyebrow: 'FOR CREATORS',
+        title: 'Create. Grow.\nMonetize.',
+        body: 'Build your audience, create impact, and unlock new revenue streams.',
+        stats: [('50K+', 'Active Creators'), ('\$20M+', 'Paid to Creators'), ('200+', 'Monetization Tools')],
+        image: 'assets/landing/card_creators.png',
+        accent: _L.purple,
+      ),
+      _FeatureData(
+        eyebrow: 'FOR BRANDS',
+        title: 'Connect. Collaborate.\nCreate Impact.',
+        body: 'Partner with authentic creators and drive real results.',
+        stats: [('1K+', 'Partner Brands'), ('3K+', 'Campaigns Live'), ('4.7x', 'Average ROI')],
+        image: 'assets/landing/card_brands.png',
+        accent: const Color(0xFF3B82F6),
+      ),
+      _FeatureData(
+        eyebrow: 'THE ECOSYSTEM LOOP',
+        title: 'Stronger Together',
+        body: 'A connected cycle that powers growth for everyone.',
+        stats: const [],
+        image: 'assets/landing/card_loop.png',
+        accent: _L.magenta,
+        isLoop: true,
+      ),
+    ];
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: w >= 1000 ? 40 : 16),
+      child: LayoutBuilder(
+        builder: (context, c) {
+          final gap = 14.0;
+          final cardW = cols == 1 ? c.maxWidth : (c.maxWidth - gap * (cols - 1)) / cols;
+          return Wrap(
+            spacing: gap,
+            runSpacing: gap,
+            children: [
+              for (final d in cards)
+                SizedBox(
+                  width: cardW,
+                  height: 320,
+                  child: _FeatureCard(data: d),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _FeatureData {
+  const _FeatureData({
+    required this.eyebrow,
+    required this.title,
+    required this.body,
+    required this.stats,
+    required this.image,
+    required this.accent,
+    this.isLoop = false,
+  });
+  final String eyebrow, title, body, image;
+  final List<(String, String)> stats;
+  final Color accent;
+  final bool isLoop;
+}
+
+class _FeatureCard extends StatefulWidget {
+  const _FeatureCard({required this.data});
+  final _FeatureData data;
+  @override
+  State<_FeatureCard> createState() => _FeatureCardState();
+}
+
+class _FeatureCardState extends State<_FeatureCard> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final d = widget.data;
     return MouseRegion(
-      onEnter: (_) => setState(() => h = true),
-      onExit: (_) => setState(() => h = false),
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: widget.width,
-        transform: Matrix4.translationValues(0, h ? -4 : 0, 0),
+        duration: const Duration(milliseconds: 180),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: h ? widget.accent.withValues(alpha: 0.45) : Colors.white.withValues(alpha: 0.08)),
-          boxShadow: h ? [BoxShadow(color: widget.accent.withValues(alpha: 0.12), blurRadius: 28, offset: const Offset(0, 10))] : null,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: _hover ? d.accent.withValues(alpha: 0.35) : _L.border,
+          ),
+          boxShadow: _hover
+              ? [BoxShadow(color: d.accent.withValues(alpha: 0.12), blurRadius: 24)]
+              : null,
         ),
         clipBehavior: Clip.antiAlias,
-        child: Stack(children: [
-          Positioned.fill(child: Image.network(widget.image, fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(color: const Color(0xFF0D0D12)))),
-          Positioned.fill(child: Container(decoration: BoxDecoration(gradient: LinearGradient(
-            begin: Alignment.topCenter, end: Alignment.bottomCenter,
-            colors: [const Color(0xFF050508).withValues(alpha: 0.55), const Color(0xFF050508).withValues(alpha: 0.92)],
-          )))),
-          Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [
-                Container(
-                  width: 34, height: 34,
-                  decoration: BoxDecoration(color: widget.accent.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(9)),
-                  child: Icon(widget.icon, size: 17, color: widget.accent),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            d.image.startsWith('assets/')
+                ? Image.asset(
+                    d.image,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(color: _L.surface),
+                  )
+                : Image.network(
+                    d.image,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(color: _L.surface),
+                  ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    const Color(0x99050508),
+                    const Color(0xE6050508),
+                    const Color(0xF2050508),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                Text(widget.eyebrow, style: TextStyle(color: widget.accent, fontSize: 10.5, fontWeight: FontWeight.w700, letterSpacing: 0.8)),
-              ]),
-              const SizedBox(height: 14),
-              Text(widget.title, style: const TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.w700, height: 1.25)),
-              const SizedBox(height: 8),
-              Text(widget.desc, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13, height: 1.45)),
-              const SizedBox(height: 18),
-              Row(children: widget.stats.map((s) => Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(s.$1, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w700)),
-                Text(s.$2, style: const TextStyle(color: Color(0xFF64748B), fontSize: 10.5)),
-              ]))).toList()),
-            ]),
-          ),
-        ]),
-      ),
-    );
-  }
-}
-
-class _LoopCard extends StatelessWidget {
-  final double width;
-  const _LoopCard({required this.width});
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0D0D12),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-      ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Container(
-            width: 34, height: 34,
-            decoration: BoxDecoration(color: const Color(0xFF00E5FF).withValues(alpha: 0.12), borderRadius: BorderRadius.circular(9)),
-            child: const Icon(Icons.sync_rounded, size: 17, color: Color(0xFF00E5FF)),
-          ),
-          const SizedBox(width: 8),
-          const Text('THE ECOSYSTEM LOOP', style: TextStyle(color: Color(0xFF00E5FF), fontSize: 10.5, fontWeight: FontWeight.w700, letterSpacing: 0.8)),
-        ]),
-        const SizedBox(height: 14),
-        const Text('Stronger Together', style: TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.w700)),
-        const SizedBox(height: 8),
-        const Text('A connected cycle that powers growth for everyone.', style: TextStyle(color: Color(0xFF94A3B8), fontSize: 13, height: 1.45)),
-        const SizedBox(height: 20),
-        SizedBox(
-          height: 100,
-          child: Stack(alignment: Alignment.center, children: [
-            Container(width: 90, height: 90, decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: const Color(0xFF00E5FF).withValues(alpha: 0.2)))),
-            const Positioned(top: 0, child: _Node(label: 'FANS', sub: 'Discover & Support', color: Color(0xFF00E5FF), icon: Icons.people_outline)),
-            const Positioned(bottom: 0, left: 8, child: _Node(label: 'CREATORS', sub: 'Create & Grow', color: Color(0xFFA855F7), icon: Icons.rocket_launch_outlined)),
-            const Positioned(bottom: 0, right: 8, child: _Node(label: 'BRANDS', sub: 'Collaborate & Invest', color: Color(0xFFEC4899), icon: Icons.business_center_outlined)),
-          ]),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    d.eyebrow,
+                    style: TextStyle(
+                      color: d.accent,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    d.title,
+                    style: const TextStyle(
+                      color: _L.text,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      height: 1.15,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    d.body,
+                    style: const TextStyle(color: _L.muted, fontSize: 12.5, height: 1.45),
+                  ),
+                  const Spacer(),
+                  if (d.isLoop)
+                    const _EcosystemLoop()
+                  else
+                    Row(
+                      children: [
+                        for (var i = 0; i < d.stats.length; i++) ...[
+                          if (i > 0) const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  d.stats[i].$1,
+                                  style: TextStyle(
+                                    color: d.accent,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                Text(
+                                  d.stats[i].$2,
+                                  style: const TextStyle(color: _L.dim, fontSize: 10),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                ],
+              ),
+            ),
+          ],
         ),
-      ]),
+      ),
     );
   }
 }
 
-class _Node extends StatelessWidget {
-  final String label, sub;
-  final Color color;
-  final IconData icon;
-  const _Node({required this.label, required this.sub, required this.color, required this.icon});
+class _EcosystemLoop extends StatelessWidget {
+  const _EcosystemLoop();
+
   @override
   Widget build(BuildContext context) {
-    return Column(mainAxisSize: MainAxisSize.min, children: [
-      Container(
-        width: 32, height: 32,
-        decoration: BoxDecoration(shape: BoxShape.circle, color: color.withValues(alpha: 0.15), border: Border.all(color: color.withValues(alpha: 0.5))),
-        child: Icon(icon, size: 14, color: color),
-      ),
-      const SizedBox(height: 3),
-      Text(label, style: TextStyle(color: color, fontSize: 9.5, fontWeight: FontWeight.w700, letterSpacing: 0.4)),
-      Text(sub, style: const TextStyle(color: Color(0xFF64748B), fontSize: 8.5)),
-    ]);
+    Widget node(IconData icon, String label, Color c) {
+      return Column(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: c.withValues(alpha: 0.12),
+              border: Border.all(color: c.withValues(alpha: 0.35)),
+            ),
+            child: Icon(icon, size: 16, color: c),
+          ),
+          const SizedBox(height: 4),
+          Text(label, style: TextStyle(color: c, fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: 0.4)),
+        ],
+      );
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        node(Icons.people_outline, 'FANS', _L.cyan),
+        const Icon(Icons.arrow_forward, size: 14, color: _L.dim),
+        node(Icons.rocket_launch_outlined, 'CREATORS', _L.purple),
+        const Icon(Icons.arrow_forward, size: 14, color: _L.dim),
+        node(Icons.business_center_outlined, 'BRANDS', _L.magenta),
+      ],
+    );
   }
 }
 
-// ═══════════════════════════════════════════
-// TRUST
-// ═══════════════════════════════════════════
-class _Trust extends StatelessWidget {
-  const _Trust();
+// ── TRUST STRIP ──────────────────────────────────────────────────────────────
+class _TrustStrip extends StatelessWidget {
+  const _TrustStrip();
+
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
-    final desk = w >= 900;
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: w >= 1100 ? 48 : 16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 22),
-        decoration: BoxDecoration(
-          color: const Color(0xFF0D0D12),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-        ),
-        child: desk
-            ? Row(children: [
-                const Expanded(child: _Brands()),
-                Container(width: 1, height: 48, color: Colors.white.withValues(alpha: 0.08), margin: const EdgeInsets.symmetric(horizontal: 28)),
-                const _Community(),
-              ])
-            : const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                _Brands(),
-                SizedBox(height: 20),
-                Divider(color: Color(0x22FFFFFF), height: 1),
-                SizedBox(height: 20),
-                _Community(),
-              ]),
+    final brands = ['Nike', 'Red Bull', 'SAMSUNG', 'SONY', "L'ORÉAL", 'Adobe'];
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: w >= 1000 ? 40 : 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0A0D14),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _L.border),
+      ),
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        alignment: WrapAlignment.spaceBetween,
+        spacing: 24,
+        runSpacing: 16,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'TRUSTED BY LEADING BRANDS',
+                style: TextStyle(
+                  color: _L.dim,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(width: 18),
+              for (final b in brands)
+                Padding(
+                  padding: const EdgeInsets.only(right: 18),
+                  child: Text(
+                    b,
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.28),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.4,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 72,
+                height: 28,
+                child: Stack(
+                  children: [
+                    for (var i = 0; i < 3; i++)
+                      Positioned(
+                        left: i * 18.0,
+                        child: Container(
+                          width: 28,
+                          height: 28,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: _L.bg, width: 2),
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                [
+                                  'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=48&h=48&fit=crop&auto=format',
+                                  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=48&h=48&fit=crop&auto=format',
+                                  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=48&h=48&fit=crop&auto=format',
+                                ][i],
+                              ),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'JOIN A GLOBAL COMMUNITY',
+                    style: TextStyle(color: _L.cyan, fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: 1.0),
+                  ),
+                  Text(
+                    '5M+ members worldwide',
+                    style: TextStyle(color: _L.text, fontSize: 13, fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 }
 
-class _Brands extends StatelessWidget {
-  const _Brands();
-  @override
-  Widget build(BuildContext context) {
-    const brands = ['Nike', 'Red Bull', 'SAMSUNG', 'SONY', "L'ORÉAL", 'Adobe'];
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Text('TRUSTED BY LEADING BRANDS', style: TextStyle(color: Color(0xFF64748B), fontSize: 10.5, fontWeight: FontWeight.w600, letterSpacing: 1.1)),
-      const SizedBox(height: 14),
-      Wrap(spacing: 28, runSpacing: 10, children: brands.map((b) => Text(b, style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: 0.3))).toList()),
-    ]);
-  }
-}
-
-class _Community extends StatelessWidget {
-  const _Community();
-  @override
-  Widget build(BuildContext context) {
-    return Row(mainAxisSize: MainAxisSize.min, children: [
-      SizedBox(
-        width: 72, height: 32,
-        child: Stack(children: List.generate(3, (i) {
-          return Positioned(
-            left: i * 18.0,
-            child: Container(
-              width: 32, height: 32,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFF0D0D12), width: 2),
-                image: DecorationImage(image: NetworkImage(_communityAvatars[i]), fit: BoxFit.cover),
-              ),
-            ),
-          );
-        })),
-      ),
-      const SizedBox(width: 12),
-      const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('JOIN A GLOBAL COMMUNITY', style: TextStyle(color: Color(0xFF64748B), fontSize: 10, fontWeight: FontWeight.w600, letterSpacing: 0.8)),
-        SizedBox(height: 2),
-        Text.rich(TextSpan(style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w700), children: [
-          TextSpan(text: '5M+ '),
-          TextSpan(text: 'members worldwide', style: TextStyle(color: Color(0xFF94A3B8), fontSize: 13, fontWeight: FontWeight.w500)),
-        ])),
-      ]),
-    ]);
-  }
-}
-
-// ═══════════════════════════════════════════
-// BUTTON
-// ═══════════════════════════════════════════
-class _Btn extends StatefulWidget {
+// ── BUTTONS ──────────────────────────────────────────────────────────────────
+class _CyanCta extends StatefulWidget {
+  const _CyanCta({
+    required this.label,
+    required this.onTap,
+    this.trailing,
+    this.compact = false,
+  });
   final String label;
   final VoidCallback onTap;
-  final bool primary;
+  final IconData? trailing;
   final bool compact;
-  final IconData? icon;
-  const _Btn({required this.label, required this.onTap, this.primary = true, this.compact = false, this.icon});
+
   @override
-  State<_Btn> createState() => _BtnState();
+  State<_CyanCta> createState() => _CyanCtaState();
 }
 
-class _BtnState extends State<_Btn> {
-  bool h = false, p = false;
+class _CyanCtaState extends State<_CyanCta> {
+  bool _hover = false;
+
   @override
   Widget build(BuildContext context) {
-    final bg = widget.primary
-        ? (p ? const Color(0xFF00E5FF).withValues(alpha: 0.85) : h ? const Color(0xFF22F0FF) : const Color(0xFF00E5FF))
-        : Colors.transparent;
-    final border = widget.primary ? Colors.transparent : (h ? const Color(0xFFA855F7) : const Color(0xFFA855F7).withValues(alpha: 0.7));
-    final fg = widget.primary ? const Color(0xFF041016) : Colors.white;
     return MouseRegion(
-      onEnter: (_) => setState(() => h = true),
-      onExit: (_) => setState(() => h = false),
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTapDown: (_) => setState(() => p = true),
-        onTapUp: (_) { setState(() => p = false); widget.onTap(); },
-        onTapCancel: () => setState(() => p = false),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 160),
-          transform: Matrix4.translationValues(0, h && !p ? -2 : 0, 0),
-          padding: EdgeInsets.symmetric(horizontal: widget.compact ? 18 : 22, vertical: widget.compact ? 11 : 13),
-          decoration: BoxDecoration(
-            color: bg, borderRadius: BorderRadius.circular(999), border: Border.all(color: border, width: 1.5),
-            boxShadow: widget.primary && h ? [BoxShadow(color: const Color(0xFF00E5FF).withValues(alpha: 0.35), blurRadius: 16, offset: const Offset(0, 4))] : null,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 140),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: _hover ? const Color(0xFF00C4A8) : _L.cyan,
+          boxShadow: [
+            BoxShadow(
+              color: _L.cyan.withValues(alpha: _hover ? 0.55 : 0.40),
+              blurRadius: _hover ? 22 : 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: widget.onTap,
+            borderRadius: BorderRadius.circular(10),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: widget.compact ? 14 : 18,
+                vertical: widget.compact ? 9 : 12,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.label,
+                    style: TextStyle(
+                      color: SpotlightTokens.bgPrimary,
+                      fontWeight: FontWeight.w800,
+                      fontSize: widget.compact ? 12.5 : 13.5,
+                    ),
+                  ),
+                  if (widget.trailing != null) ...[
+                    const SizedBox(width: 6),
+                    Icon(widget.trailing, size: 16, color: SpotlightTokens.bgPrimary),
+                  ],
+                ],
+              ),
+            ),
           ),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Text(widget.label, style: TextStyle(color: fg, fontWeight: FontWeight.w600, fontSize: widget.compact ? 13.5 : 14.5)),
-            if (widget.icon != null) ...[const SizedBox(width: 6), Icon(widget.icon, size: 16, color: fg)],
-          ]),
+        ),
+      ),
+    );
+  }
+}
+
+class _OutlineCta extends StatefulWidget {
+  const _OutlineCta({
+    required this.label,
+    required this.onTap,
+    this.trailing,
+  });
+  final String label;
+  final VoidCallback onTap;
+  final IconData? trailing;
+
+  @override
+  State<_OutlineCta> createState() => _OutlineCtaState();
+}
+
+class _OutlineCtaState extends State<_OutlineCta> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 140),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: _hover ? Colors.white.withValues(alpha: 0.04) : Colors.transparent,
+          border: Border.all(
+            color: _hover ? SpotlightTokens.purple : Colors.white.withValues(alpha: 0.16),
+          ),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: widget.onTap,
+            borderRadius: BorderRadius.circular(10),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.label,
+                    style: const TextStyle(
+                      color: Color(0xFFC8D0E0),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13.5,
+                    ),
+                  ),
+                  if (widget.trailing != null) ...[
+                    const SizedBox(width: 6),
+                    Icon(widget.trailing, size: 16, color: _L.cyan),
+                  ],
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
