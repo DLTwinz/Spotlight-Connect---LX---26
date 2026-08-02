@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:spotlight_connect/providers/app_auth_provider.dart';
+import 'package:spotlight_connect/theme.dart';
 import 'package:spotlight_connect/core/routing/app_routes.dart';
 
 class WaitingApprovalPage extends StatelessWidget {

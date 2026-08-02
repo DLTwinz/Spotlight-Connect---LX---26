@@ -1,5 +1,6 @@
 class AppRoutes {
   static const String root = '/';
+  static const String welcome = '/welcome';
   static const String earlyAccess = '/early-access';
   static const String login = '/login';
   static const String onboarding = '/onboarding';
