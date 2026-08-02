@@ -705,7 +705,25 @@ class _PendingApprovalsPreviewState extends State<_PendingApprovalsPreview> {
           else if (_error != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Center(child: Text(_error!, style: const TextStyle(color: _AdminUi.rose, fontSize: 12))),
+              child: Center(
+                child: Column(
+                  children: [
+                    const Icon(Icons.error_outline, color: _AdminUi.rose, size: 28),
+                    const SizedBox(height: 10),
+                    Text(
+                      _error!,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: _AdminUi.rose, fontSize: 12),
+                    ),
+                    const SizedBox(height: 12),
+                    TextButton(
+                      onPressed: _load,
+                      style: TextButton.styleFrom(foregroundColor: _AdminUi.cyan),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
             )
           else if (_items.isEmpty)
             Padding(
