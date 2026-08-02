@@ -576,7 +576,13 @@ class _ShellMainFrame extends StatelessWidget {
                 ),
                 child: IndexedStack(
                   index: currentIndex,
-                  children: tabs.map((tab) => tab.builder()).toList(),
+                  children: [
+                    for (final tab in tabs)
+                      KeyedSubtree(
+                        key: ValueKey<String>(tab.label),
+                        child: tab.builder(),
+                      ),
+                  ],
                 ),
               ),
             ),

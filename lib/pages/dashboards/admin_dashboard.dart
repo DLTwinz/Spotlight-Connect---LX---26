@@ -20,6 +20,21 @@ class AdminDashboard extends StatefulWidget {
 class _AdminDashboardState extends State<AdminDashboard> {
   int _pendingCount = 0;
   int _flaggedCount = 4;
+  final _approvalsService = AdminApprovalsService();
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshPendingCount();
+  }
+
+  Future<void> _refreshPendingCount() async {
+    try {
+      final list = await _approvalsService.fetchPending();
+      if (!mounted) return;
+      setState(() => _pendingCount = list.length.clamp(0, 999));
+    } catch (_) {}
+  }
 
   void _onPendingChanged(int delta) {
     setState(() => _pendingCount = (_pendingCount + delta).clamp(0, 999));
