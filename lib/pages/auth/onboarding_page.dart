@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spotlight_connect/providers/app_auth_provider.dart';
 import 'package:spotlight_connect/theme.dart';
-import 'package:spotlight_connect/nav.dart';
 import 'package:spotlight_connect/widgets/app_back_button.dart';
+import 'package:spotlight_connect/core/routing/app_routes.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});

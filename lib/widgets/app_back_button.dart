@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spotlight_connect/backend/backend_mode.dart';
-import 'package:spotlight_connect/nav.dart';
+import 'package:spotlight_connect/core/routing/app_routes.dart';
 
 /// A go_router-safe back button that never strands the user.
 ///
