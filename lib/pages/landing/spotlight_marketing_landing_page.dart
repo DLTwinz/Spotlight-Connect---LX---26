@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:spotlight_connect/nav.dart';
+import 'package:spotlight_connect/core/routing/app_routes.dart';
 import 'package:spotlight_connect/theme/spotlight_tokens.dart';
 
 /// Public marketing front door — aligned to Figma / screenshot composition.
