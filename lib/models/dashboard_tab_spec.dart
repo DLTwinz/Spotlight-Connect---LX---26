@@ -4,10 +4,12 @@ class DashboardTabSpec {
   final String label;
   final IconData icon;
   final Widget Function() builder;
+  final int? badge;
 
-  DashboardTabSpec({
+  const DashboardTabSpec({
     required this.label,
     required this.icon,
     required this.builder,
+    this.badge,
   });
 }

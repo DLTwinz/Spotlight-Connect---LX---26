@@ -104,8 +104,9 @@ class LightModeColors {
   // Surface and background: High contrast for readability
   static const lightSurface = Color(0xFFFFFFFF); // Sharper white
   static const lightOnSurface = Color(0xFF111111); // Sharper dark text
-  static const lightBackground =
-      Color(0xFFF5F7FA); // Very light crisp background
+  static const lightBackground = Color(
+    0xFFF5F7FA,
+  ); // Very light crisp background
   static const lightSurfaceVariant = Color(0xFFE2E8F0);
   static const lightOnSurfaceVariant = Color(0xFF44474E);
 
@@ -138,8 +139,9 @@ class DarkModeColors {
   static const darkOnErrorContainer = Color(0xFFFFDAD6);
 
   // Surface and background: True cinematic dark mode
-  static const darkSurface =
-      Color(0xFF121212); // Slightly elevated from pure black
+  static const darkSurface = Color(
+    0xFF121212,
+  ); // Slightly elevated from pure black
   static const darkOnSurface = Color(0xFFF8FAFC); // Crisp light text
   static const darkSurfaceVariant = Color(0xFF1E1E1E);
   static const darkOnSurfaceVariant = Color(0xFFC4C7CF);
@@ -202,7 +204,6 @@ extension SpotlightThemeX on BuildContext {
   Color get spotlightAccent => SpotlightColors.accentTeal;
 }
 
-
 enum DashboardRoleVariant { admin, business, talent, audience }
 
 extension DashboardRoleVariantX on DashboardRoleVariant {
@@ -230,9 +231,9 @@ extension SpotlightDashboardThemeX on BuildContext {
       case DashboardRoleVariant.admin:
         return const Color(0xFFFF6B6B);
       case DashboardRoleVariant.business:
-        return SpotlightColors.accentTeal;
+        return SpotlightAccents.cyan;
       case DashboardRoleVariant.audience:
-        return const Color(0xFF8EBCFF);
+        return const Color(0xFF38BDF8);
       case DashboardRoleVariant.talent:
         return const Color(0xFF7CFFB2);
     }
@@ -243,11 +244,11 @@ extension SpotlightDashboardThemeX on BuildContext {
       case DashboardRoleVariant.admin:
         return const Color(0xFF090B10);
       case DashboardRoleVariant.business:
-        return const Color(0xFF071118);
+        return SpotlightAccents.bg;
       case DashboardRoleVariant.audience:
-        return const Color(0xFF0B1016);
+        return SpotlightAccents.bg;
       case DashboardRoleVariant.talent:
-        return const Color(0xFF0A0D12);
+        return SpotlightAccents.bg;
     }
   }
 
@@ -256,11 +257,11 @@ extension SpotlightDashboardThemeX on BuildContext {
       case DashboardRoleVariant.admin:
         return const Color(0xFF12161D);
       case DashboardRoleVariant.business:
-        return const Color(0xFF0E1821);
+        return SpotlightAccents.surface;
       case DashboardRoleVariant.audience:
-        return const Color(0xFF111925);
+        return SpotlightAccents.surface;
       case DashboardRoleVariant.talent:
-        return const Color(0xFF11161F);
+        return SpotlightAccents.surface;
     }
   }
 
@@ -340,93 +341,93 @@ class FontSizes {
 
 /// Light theme with modern, neutral aesthetic
 ThemeData get lightTheme => ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.light(
-        primary: LightModeColors.lightPrimary,
-        onPrimary: LightModeColors.lightOnPrimary,
-        primaryContainer: LightModeColors.lightPrimaryContainer,
-        onPrimaryContainer: LightModeColors.lightOnPrimaryContainer,
-        secondary: LightModeColors.lightSecondary,
-        onSecondary: LightModeColors.lightOnSecondary,
-        tertiary: LightModeColors.lightTertiary,
-        onTertiary: LightModeColors.lightOnTertiary,
-        error: LightModeColors.lightError,
-        onError: LightModeColors.lightOnError,
-        errorContainer: LightModeColors.lightErrorContainer,
-        onErrorContainer: LightModeColors.lightOnErrorContainer,
-        surface: LightModeColors.lightSurface,
-        onSurface: LightModeColors.lightOnSurface,
-        surfaceContainerHighest: LightModeColors.lightSurfaceVariant,
-        onSurfaceVariant: LightModeColors.lightOnSurfaceVariant,
-        outline: LightModeColors.lightOutline,
-        shadow: LightModeColors.lightShadow,
-        inversePrimary: LightModeColors.lightInversePrimary,
+  useMaterial3: true,
+  colorScheme: ColorScheme.light(
+    primary: LightModeColors.lightPrimary,
+    onPrimary: LightModeColors.lightOnPrimary,
+    primaryContainer: LightModeColors.lightPrimaryContainer,
+    onPrimaryContainer: LightModeColors.lightOnPrimaryContainer,
+    secondary: LightModeColors.lightSecondary,
+    onSecondary: LightModeColors.lightOnSecondary,
+    tertiary: LightModeColors.lightTertiary,
+    onTertiary: LightModeColors.lightOnTertiary,
+    error: LightModeColors.lightError,
+    onError: LightModeColors.lightOnError,
+    errorContainer: LightModeColors.lightErrorContainer,
+    onErrorContainer: LightModeColors.lightOnErrorContainer,
+    surface: LightModeColors.lightSurface,
+    onSurface: LightModeColors.lightOnSurface,
+    surfaceContainerHighest: LightModeColors.lightSurfaceVariant,
+    onSurfaceVariant: LightModeColors.lightOnSurfaceVariant,
+    outline: LightModeColors.lightOutline,
+    shadow: LightModeColors.lightShadow,
+    inversePrimary: LightModeColors.lightInversePrimary,
+  ),
+  brightness: Brightness.light,
+  scaffoldBackgroundColor: LightModeColors.lightBackground,
+  appBarTheme: const AppBarTheme(
+    backgroundColor: Colors.transparent,
+    foregroundColor: LightModeColors.lightOnSurface,
+    elevation: 0,
+    scrolledUnderElevation: 0,
+  ),
+  cardTheme: CardThemeData(
+    elevation: 0,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+      side: BorderSide(
+        color: LightModeColors.lightOutline.withValues(alpha: 0.2),
+        width: 1,
       ),
-      brightness: Brightness.light,
-      scaffoldBackgroundColor: LightModeColors.lightBackground,
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.transparent,
-        foregroundColor: LightModeColors.lightOnSurface,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-      ),
-      cardTheme: CardThemeData(
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(
-            color: LightModeColors.lightOutline.withValues(alpha: 0.2),
-            width: 1,
-          ),
-        ),
-      ),
-      textTheme: _buildTextTheme(Brightness.light),
-    );
+    ),
+  ),
+  textTheme: _buildTextTheme(Brightness.light),
+);
 
 /// Dark theme with good contrast and readability
 ThemeData get darkTheme => ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.dark(
-        primary: DarkModeColors.darkPrimary,
-        onPrimary: DarkModeColors.darkOnPrimary,
-        primaryContainer: DarkModeColors.darkPrimaryContainer,
-        onPrimaryContainer: DarkModeColors.darkOnPrimaryContainer,
-        secondary: DarkModeColors.darkSecondary,
-        onSecondary: DarkModeColors.darkOnSecondary,
-        tertiary: DarkModeColors.darkTertiary,
-        onTertiary: DarkModeColors.darkOnTertiary,
-        error: DarkModeColors.darkError,
-        onError: DarkModeColors.darkOnError,
-        errorContainer: DarkModeColors.darkErrorContainer,
-        onErrorContainer: DarkModeColors.darkOnErrorContainer,
-        surface: DarkModeColors.darkSurface,
-        onSurface: DarkModeColors.darkOnSurface,
-        surfaceContainerHighest: DarkModeColors.darkSurfaceVariant,
-        onSurfaceVariant: DarkModeColors.darkOnSurfaceVariant,
-        outline: DarkModeColors.darkOutline,
-        shadow: DarkModeColors.darkShadow,
-        inversePrimary: DarkModeColors.darkInversePrimary,
+  useMaterial3: true,
+  colorScheme: ColorScheme.dark(
+    primary: DarkModeColors.darkPrimary,
+    onPrimary: DarkModeColors.darkOnPrimary,
+    primaryContainer: DarkModeColors.darkPrimaryContainer,
+    onPrimaryContainer: DarkModeColors.darkOnPrimaryContainer,
+    secondary: DarkModeColors.darkSecondary,
+    onSecondary: DarkModeColors.darkOnSecondary,
+    tertiary: DarkModeColors.darkTertiary,
+    onTertiary: DarkModeColors.darkOnTertiary,
+    error: DarkModeColors.darkError,
+    onError: DarkModeColors.darkOnError,
+    errorContainer: DarkModeColors.darkErrorContainer,
+    onErrorContainer: DarkModeColors.darkOnErrorContainer,
+    surface: DarkModeColors.darkSurface,
+    onSurface: DarkModeColors.darkOnSurface,
+    surfaceContainerHighest: DarkModeColors.darkSurfaceVariant,
+    onSurfaceVariant: DarkModeColors.darkOnSurfaceVariant,
+    outline: DarkModeColors.darkOutline,
+    shadow: DarkModeColors.darkShadow,
+    inversePrimary: DarkModeColors.darkInversePrimary,
+  ),
+  brightness: Brightness.dark,
+  scaffoldBackgroundColor: DarkModeColors.darkBackground,
+  appBarTheme: const AppBarTheme(
+    backgroundColor: Colors.transparent,
+    foregroundColor: DarkModeColors.darkOnSurface,
+    elevation: 0,
+    scrolledUnderElevation: 0,
+  ),
+  cardTheme: CardThemeData(
+    elevation: 0,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+      side: BorderSide(
+        color: DarkModeColors.darkOutline.withValues(alpha: 0.2),
+        width: 1,
       ),
-      brightness: Brightness.dark,
-      scaffoldBackgroundColor: DarkModeColors.darkBackground,
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.transparent,
-        foregroundColor: DarkModeColors.darkOnSurface,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-      ),
-      cardTheme: CardThemeData(
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(
-            color: DarkModeColors.darkOutline.withValues(alpha: 0.2),
-            width: 1,
-          ),
-        ),
-      ),
-      textTheme: _buildTextTheme(Brightness.dark),
-    );
+    ),
+  ),
+  textTheme: _buildTextTheme(Brightness.dark),
+);
 
 /// Build text theme using Inter font family
 TextTheme _buildTextTheme(Brightness brightness) {
@@ -500,4 +501,25 @@ TextTheme _buildTextTheme(Brightness brightness) {
       letterSpacing: 0.4,
     ),
   );
+}
+
+/// Marketing landing accents (cyan–purple–magenta).
+/// Does not replace app-wide primary (lime). Use only on public marketing surfaces.
+class SpotlightAccents {
+  static const cyan = Color(0xFF00E5FF);
+  static const cyanBright = Color(0xFF22F0FF);
+  static const purple = Color(0xFFA855F7);
+  static const magenta = Color(0xFFEC4899);
+  static const pink = Color(0xFFF472B6);
+  static const success = Color(0xFF34D399);
+
+  static const bg = Color(0xFF050508);
+  static const surface = Color(0xFF0D0D12);
+  static const surfaceElevated = Color(0xFF14141C);
+  static const border = Color(0x22FFFFFF);
+  static const borderGlow = Color(0x33FFFFFF);
+
+  static const textPrimary = Color(0xFFF8FAFC);
+  static const textSecondary = Color(0xFF94A3B8);
+  static const textMuted = Color(0xFF64748B);
 }

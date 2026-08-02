@@ -10,7 +10,11 @@ import 'package:flutter/foundation.dart';
 /// - Backend RPCs/Edge Functions MUST re-check these flags.
 @immutable
 class ProgressionFeaturePolicy {
-  const ProgressionFeaturePolicy({required this.flags, required this.loadedAt, required this.source});
+  const ProgressionFeaturePolicy({
+    required this.flags,
+    required this.loadedAt,
+    required this.source,
+  });
 
   /// Key -> enabled.
   ///
@@ -28,7 +32,8 @@ class ProgressionFeaturePolicy {
   bool get missionsEnabled => isEnabled('missions_enabled');
   bool get campaignsEnabled => isEnabled('campaigns_enabled');
   bool get redemptionsEnabled => isEnabled('redemptions_enabled');
-  bool get profilesProgressionEnabled => isEnabled('profiles_progression_enabled');
+  bool get profilesProgressionEnabled =>
+      isEnabled('profiles_progression_enabled');
 
   /// Subfeatures.
   bool get momentumEnabled => isEnabled('momentum_enabled');
@@ -38,13 +43,18 @@ class ProgressionFeaturePolicy {
   bool get rewardFulfillmentEnabled => isEnabled('reward_fulfillment_enabled');
 
   /// Role toggles.
-  bool roleMissionsEnabled(String roleKey) => isEnabled('${roleKey}_missions_enabled');
-  bool roleDashboardEnabled(String roleKey) => isEnabled('${roleKey}_dashboard_enabled');
-  bool get publicProfileProgressionEnabled => isEnabled('public_profile_progression_enabled');
-  bool get selfProfileProgressionEnabled => isEnabled('self_profile_progression_enabled');
+  bool roleMissionsEnabled(String roleKey) =>
+      isEnabled('${roleKey}_missions_enabled');
+  bool roleDashboardEnabled(String roleKey) =>
+      isEnabled('${roleKey}_dashboard_enabled');
+  bool get publicProfileProgressionEnabled =>
+      isEnabled('public_profile_progression_enabled');
+  bool get selfProfileProgressionEnabled =>
+      isEnabled('self_profile_progression_enabled');
 
   /// Kill switches (emergency).
-  bool get killProgressionWritePaths => isEnabled('kill_progression_write_paths');
+  bool get killProgressionWritePaths =>
+      isEnabled('kill_progression_write_paths');
   bool get killMissionClaims => isEnabled('kill_mission_claims');
   bool get killRedemptions => isEnabled('kill_redemptions');
   bool get killBehaviorEventIngest => isEnabled('kill_behavior_event_ingest');
@@ -110,10 +120,17 @@ class ProgressionFeaturePolicy {
           }
         }
         final source = (payload['source'] ?? 'rpc').toString();
-        final loadedAtRaw = (payload['loaded_at'] ?? payload['loadedAt'])?.toString();
-        final loadedAt = loadedAtRaw == null ? DateTime.now() : (DateTime.tryParse(loadedAtRaw) ?? DateTime.now());
+        final loadedAtRaw = (payload['loaded_at'] ?? payload['loadedAt'])
+            ?.toString();
+        final loadedAt = loadedAtRaw == null
+            ? DateTime.now()
+            : (DateTime.tryParse(loadedAtRaw) ?? DateTime.now());
         if (map.isEmpty) return safeFallback(source: 'fallback_empty_policy');
-        return ProgressionFeaturePolicy(flags: map, loadedAt: loadedAt, source: source);
+        return ProgressionFeaturePolicy(
+          flags: map,
+          loadedAt: loadedAt,
+          source: source,
+        );
       }
     } catch (_) {
       // Handled below.

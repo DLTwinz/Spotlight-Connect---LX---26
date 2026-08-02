@@ -21,6 +21,7 @@ import 'package:provider/provider.dart';
 import 'pages/auth/auth_callback_page.dart';
 import 'pages/auth/early_access_gate_page.dart';
 import 'pages/auth/landing_auth_page.dart';
+import 'pages/landing/spotlight_marketing_landing_page.dart';
 import 'pages/auth/onboarding_page.dart';
 import 'pages/auth/permission_denied_page.dart';
 import 'pages/auth/reset_password_page.dart';
@@ -128,6 +129,7 @@ class AppRouter {
         // Use the resolved URI path to make redirects deterministic.
         final location = state.uri.path;
         final isAuthRoute = location == AppRoutes.login;
+        final isWelcomeRoute = location == AppRoutes.welcome;
         final isAuthCallbackRoute = location == AppRoutes.authCallback;
         final isEarlyAccessRoute = location == AppRoutes.earlyAccess;
         final isOnboardingRoute = location == AppRoutes.onboarding;
@@ -315,15 +317,18 @@ class AppRouter {
           // NOTE: /early-access is a beta-only surface; when launch is enabled,
           // it should not be reachable.
           if (isEarlyAccessRoute) {
-            logRedirect(AppRoutes.login);
-            return AppRoutes.login;
+            logRedirect(AppRoutes.welcome);
+            return AppRoutes.welcome;
           }
 
-          if (isAuthRoute || isResetPasswordRoute || isAccessDeniedRoute) {
+          if (isWelcomeRoute ||
+              isAuthRoute ||
+              isResetPasswordRoute ||
+              isAccessDeniedRoute) {
             return null;
           }
-          logRedirect(AppRoutes.login);
-          return AppRoutes.login;
+          logRedirect(AppRoutes.welcome);
+          return AppRoutes.welcome;
         }
 
         final currentUser = user!;
@@ -331,14 +336,26 @@ class AppRouter {
         final canAccessAdmin = currentUser.isAdmin;
 
         // Logged in but hasn't completed onboarding
-        if (canAccessAdmin && location.startsWith("/admin")) return null;
-
+        // Admin redirect
+        if (currentUser.activeRole == "admin") {
+          if (location.startsWith("/admin")) return null;
+          logRedirect(AppRoutes.admin);
+          return AppRoutes.admin;
+        }
         if (!currentUser.onboardingComplete) {
-          if (canAccessAdmin) {
+          // Admin redirect
+          if (currentUser.activeRole == "admin") {
+            if (location.startsWith("/admin")) return null;
             logRedirect(AppRoutes.admin);
             return AppRoutes.admin;
           }
           if (isOnboardingRoute) return null;
+          // Admin redirect
+          if (currentUser.activeRole == "admin") {
+            if (location.startsWith("/admin")) return null;
+            logRedirect(AppRoutes.admin);
+            return AppRoutes.admin;
+          }
           logRedirect(AppRoutes.onboarding);
           return AppRoutes.onboarding;
         }
@@ -414,7 +431,7 @@ class AppRouter {
         // IMPORTANT: do NOT auto-redirect away from /reset-password.
         // Supabase recovery links establish a session, and users must stay on
         // the reset password screen long enough to set a new password.
-        if (isEarlyAccessRoute) {
+        if (isEarlyAccessRoute || isWelcomeRoute) {
           final target = defaultDashboardRouteFor(currentUser);
           logRedirect(target);
           return target;
@@ -466,6 +483,7 @@ class AppRouter {
         // Once authenticated + onboarded, always funnel to the proper dashboard.
         final knownPaths = <String>{
           AppRoutes.root,
+          AppRoutes.welcome,
           AppRoutes.earlyAccess,
           AppRoutes.login,
           AppRoutes.onboarding,
@@ -628,6 +646,11 @@ class AppRouter {
           path: AppRoutes.earlyAccess,
           pageBuilder: (context, state) =>
               _fadeSlidePage(const EarlyAccessGatePage(), state),
+        ),
+        GoRoute(
+          path: AppRoutes.welcome,
+          pageBuilder: (context, state) =>
+              _fadeSlidePage(const SpotlightMarketingLandingPage(), state),
         ),
         GoRoute(
           path: AppRoutes.login,

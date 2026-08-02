@@ -3,7 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:spotlight_connect/theme.dart';
 
 /// Brand Mission Creator interface for deploying algorithmic missions.
-/// 
+///
 /// This interface gives enterprise brands tactical control over deployment parameters.
 /// Missions drive creator engagement through automated requirements (e.g., stream duration).
 class BrandMissionCreator extends StatefulWidget {
@@ -19,7 +19,7 @@ class _BrandMissionCreatorState extends State<BrandMissionCreator> {
   final _descriptionController = TextEditingController();
   final _budgetController = TextEditingController();
   final _targetValueController = TextEditingController();
-  
+
   String _selectedPlatform = 'Twitch';
   String _requirementType = 'Stream Duration (Hours)';
   int _prestigeReward = 100;
@@ -49,11 +49,14 @@ class _BrandMissionCreatorState extends State<BrandMissionCreator> {
 
     try {
       final client = Supabase.instance.client;
-      
+
       // Build mission payload matching admin_mission_upsert schema
       final missionData = {
         'title': _titleController.text,
-        'short_label': _titleController.text.substring(0, (20).clamp(0, _titleController.text.length)),
+        'short_label': _titleController.text.substring(
+          0,
+          (20).clamp(0, _titleController.text.length),
+        ),
         'category': _selectedPlatform.toLowerCase(),
         'mission_type': _requirementType,
         'action_type': _requirementType.toLowerCase().replaceAll(' ', '_'),
@@ -65,10 +68,13 @@ class _BrandMissionCreatorState extends State<BrandMissionCreator> {
       };
 
       // Call admin mission upsert function
-      await client.functions.invoke('admin_mission_upsert', body: {
-        'mission': missionData,
-        'reason': 'Brand mission deployment via UI',
-      });
+      await client.functions.invoke(
+        'admin_mission_upsert',
+        body: {
+          'mission': missionData,
+          'reason': 'Brand mission deployment via UI',
+        },
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -84,7 +90,7 @@ class _BrandMissionCreatorState extends State<BrandMissionCreator> {
             duration: const Duration(seconds: 3),
           ),
         );
-        
+
         // Reset form
         _titleController.clear();
         _descriptionController.clear();
@@ -121,7 +127,7 @@ class _BrandMissionCreatorState extends State<BrandMissionCreator> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
@@ -159,7 +165,10 @@ class _BrandMissionCreatorState extends State<BrandMissionCreator> {
                   TextFormField(
                     controller: _titleController,
                     style: const TextStyle(color: Colors.white),
-                    decoration: _buildInputDecoration('Mission Title', Icons.campaign),
+                    decoration: _buildInputDecoration(
+                      'Mission Title',
+                      Icons.campaign,
+                    ),
                     validator: (v) => v!.isEmpty ? 'Title is required' : null,
                   ),
                   const SizedBox(height: AppSpacing.lg),
@@ -169,7 +178,10 @@ class _BrandMissionCreatorState extends State<BrandMissionCreator> {
                     controller: _descriptionController,
                     style: const TextStyle(color: Colors.white),
                     maxLines: 3,
-                    decoration: _buildInputDecoration('Description (optional)', Icons.description),
+                    decoration: _buildInputDecoration(
+                      'Description (optional)',
+                      Icons.description,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
 
@@ -178,7 +190,10 @@ class _BrandMissionCreatorState extends State<BrandMissionCreator> {
                     initialValue: _selectedPlatform,
                     dropdownColor: Colors.black,
                     style: const TextStyle(color: Colors.white),
-                    decoration: _buildInputDecoration('Target Platform', Icons.layers),
+                    decoration: _buildInputDecoration(
+                      'Target Platform',
+                      Icons.layers,
+                    ),
                     items: _platforms
                         .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                         .toList(),
@@ -191,7 +206,10 @@ class _BrandMissionCreatorState extends State<BrandMissionCreator> {
                     initialValue: _requirementType,
                     dropdownColor: Colors.black,
                     style: const TextStyle(color: Colors.white),
-                    decoration: _buildInputDecoration('Requirement Type', Icons.rule),
+                    decoration: _buildInputDecoration(
+                      'Requirement Type',
+                      Icons.rule,
+                    ),
                     items: _requirementTypes
                         .map((t) => DropdownMenuItem(value: t, child: Text(t)))
                         .toList(),
@@ -207,7 +225,10 @@ class _BrandMissionCreatorState extends State<BrandMissionCreator> {
                           controller: _targetValueController,
                           keyboardType: TextInputType.number,
                           style: const TextStyle(color: Colors.white),
-                          decoration: _buildInputDecoration('Target Value', Icons.trending_up),
+                          decoration: _buildInputDecoration(
+                            'Target Value',
+                            Icons.trending_up,
+                          ),
                           validator: (v) => v!.isEmpty ? 'Required' : null,
                         ),
                       ),
@@ -217,7 +238,10 @@ class _BrandMissionCreatorState extends State<BrandMissionCreator> {
                           controller: _budgetController,
                           keyboardType: TextInputType.number,
                           style: const TextStyle(color: Colors.white),
-                          decoration: _buildInputDecoration('Budget (\$)', Icons.attach_money),
+                          decoration: _buildInputDecoration(
+                            'Budget (\$)',
+                            Icons.attach_money,
+                          ),
                           validator: (v) => v!.isEmpty ? 'Required' : null,
                         ),
                       ),
@@ -231,7 +255,9 @@ class _BrandMissionCreatorState extends State<BrandMissionCreator> {
                     children: [
                       Text(
                         'Prestige Reward: $_prestigeReward points',
-                        style: theme.textTheme.labelMedium?.copyWith(color: const Color(0xFF39FF14)),
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: const Color(0xFF39FF14),
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Slider(
@@ -241,7 +267,8 @@ class _BrandMissionCreatorState extends State<BrandMissionCreator> {
                         divisions: 99,
                         activeColor: const Color(0xFF39FF14),
                         inactiveColor: Colors.grey.withValues(alpha: 0.3),
-                        onChanged: (v) => setState(() => _prestigeReward = v.toInt()),
+                        onChanged: (v) =>
+                            setState(() => _prestigeReward = v.toInt()),
                       ),
                     ],
                   ),
@@ -255,17 +282,26 @@ class _BrandMissionCreatorState extends State<BrandMissionCreator> {
                       style: FilledButton.styleFrom(
                         backgroundColor: const Color(0xFF39FF14),
                         foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                        ),
                       ),
                       onPressed: _isSubmitting ? null : _deployMission,
                       icon: _isSubmitting
                           ? const SizedBox(
                               width: 20,
                               height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.black,
+                                ),
+                              ),
                             )
                           : const Icon(Icons.rocket_launch),
-                      label: Text(_isSubmitting ? 'DEPLOYING...' : 'INITIALIZE MISSION'),
+                      label: Text(
+                        _isSubmitting ? 'DEPLOYING...' : 'INITIALIZE MISSION',
+                      ),
                     ),
                   ),
 
@@ -274,7 +310,9 @@ class _BrandMissionCreatorState extends State<BrandMissionCreator> {
                     padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
                       color: const Color(0xFF39FF14).withValues(alpha: 0.05),
-                      border: Border.all(color: const Color(0xFF39FF14).withValues(alpha: 0.2)),
+                      border: Border.all(
+                        color: const Color(0xFF39FF14).withValues(alpha: 0.2),
+                      ),
                       borderRadius: BorderRadius.circular(AppRadius.md),
                     ),
                     child: Text(
@@ -312,7 +350,10 @@ class _BrandMissionCreatorState extends State<BrandMissionCreator> {
       ),
       filled: true,
       fillColor: const Color(0xFF0A0A0A),
-      contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.md,
+      ),
     );
   }
 }

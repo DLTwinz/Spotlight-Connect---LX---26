@@ -11,7 +11,7 @@ class DashboardShell extends StatelessWidget {
       builder: (context, constraints) {
         // Switch layout based on width
         int crossAxisCount = constraints.maxWidth > 900 ? 3 : 1;
-        
+
         return GridView.count(
           padding: const EdgeInsets.all(16.0),
           crossAxisCount: crossAxisCount,

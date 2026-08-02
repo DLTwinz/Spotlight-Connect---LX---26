@@ -55,72 +55,110 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
       appBar: AppBar(
         title: Text(c?.title ?? 'Campaign'),
         actions: [
-          IconButton(onPressed: _loading ? null : _load, icon: const Icon(Icons.refresh)),
+          IconButton(
+            onPressed: _loading ? null : _load,
+            icon: const Icon(Icons.refresh),
+          ),
         ],
       ),
       body: SafeArea(
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : c == null
-                ? Center(
-                    child: Padding(
-                      padding: AppSpacing.paddingLg,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Campaign not found', style: theme.textTheme.titleMedium?.bold),
-                          const SizedBox(height: AppSpacing.sm),
-                          Text('This campaign may be private or no longer available.', style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant), textAlign: TextAlign.center),
-                          const SizedBox(height: AppSpacing.md),
-                          FilledButton(onPressed: () => context.pop(), child: const Text('Back')),
-                        ],
+            ? Center(
+                child: Padding(
+                  padding: AppSpacing.paddingLg,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Campaign not found',
+                        style: theme.textTheme.titleMedium?.bold,
                       ),
-                    ),
-                  )
-                : RefreshIndicator(
-                    onRefresh: () async {
-                      await _load();
-                      await svc.refreshHome();
-                    },
-                    child: ListView(
-                      padding: AppSpacing.paddingLg,
-                      children: [
-                        _HeaderCard(campaign: c),
-                        const SizedBox(height: AppSpacing.md),
-                        _CampaignActions(campaignId: c.id),
-                        const SizedBox(height: AppSpacing.lg),
-                        Row(
-                          children: [
-                            Expanded(child: Text('Missions', style: theme.textTheme.titleMedium?.bold)),
-                            Text('${_missions.length}', style: theme.textTheme.labelLarge?.withColor(theme.colorScheme.onSurfaceVariant)),
-                          ],
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(
+                        'This campaign may be private or no longer available.',
+                        style: theme.textTheme.bodyMedium?.withColor(
+                          theme.colorScheme.onSurfaceVariant,
                         ),
-                        const SizedBox(height: AppSpacing.sm),
-                        if (_missions.isEmpty)
-                          Text('No missions have been attached yet.', style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant))
-                        else
-                          ..._missions.map((m) => Padding(
-                                padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                                child: _CampaignMissionCard(item: m),
-                              )),
-                        const SizedBox(height: AppSpacing.lg),
-                        Text('Rewards', style: theme.textTheme.titleMedium?.bold),
-                        const SizedBox(height: AppSpacing.sm),
-                        Container(
-                          padding: AppSpacing.paddingLg,
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.surface,
-                            borderRadius: BorderRadius.circular(AppRadius.lg),
-                            border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22)),
-                          ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      FilledButton(
+                        onPressed: () => context.pop(),
+                        child: const Text('Back'),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : RefreshIndicator(
+                onRefresh: () async {
+                  await _load();
+                  await svc.refreshHome();
+                },
+                child: ListView(
+                  padding: AppSpacing.paddingLg,
+                  children: [
+                    _HeaderCard(campaign: c),
+                    const SizedBox(height: AppSpacing.md),
+                    _CampaignActions(campaignId: c.id),
+                    const SizedBox(height: AppSpacing.lg),
+                    Row(
+                      children: [
+                        Expanded(
                           child: Text(
-                            'Campaign rewards will appear here once the reward catalog is linked. Mission rewards grant Prestige immediately after verification.',
-                            style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+                            'Missions',
+                            style: theme.textTheme.titleMedium?.bold,
+                          ),
+                        ),
+                        Text(
+                          '${_missions.length}',
+                          style: theme.textTheme.labelLarge?.withColor(
+                            theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: AppSpacing.sm),
+                    if (_missions.isEmpty)
+                      Text(
+                        'No missions have been attached yet.',
+                        style: theme.textTheme.bodyMedium?.withColor(
+                          theme.colorScheme.onSurfaceVariant,
+                        ),
+                      )
+                    else
+                      ..._missions.map(
+                        (m) => Padding(
+                          padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                          child: _CampaignMissionCard(item: m),
+                        ),
+                      ),
+                    const SizedBox(height: AppSpacing.lg),
+                    Text('Rewards', style: theme.textTheme.titleMedium?.bold),
+                    const SizedBox(height: AppSpacing.sm),
+                    Container(
+                      padding: AppSpacing.paddingLg,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surface,
+                        borderRadius: BorderRadius.circular(AppRadius.lg),
+                        border: Border.all(
+                          color: theme.colorScheme.outlineVariant.withValues(
+                            alpha: 0.22,
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        'Campaign rewards will appear here once the reward catalog is linked. Mission rewards grant Prestige immediately after verification.',
+                        style: theme.textTheme.bodyMedium?.withColor(
+                          theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
       ),
     );
   }
@@ -149,7 +187,9 @@ class _HeaderCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -164,42 +204,72 @@ class _HeaderCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppRadius.lg),
                 ),
                 alignment: Alignment.center,
-                child: Icon(Icons.campaign_outlined, color: theme.colorScheme.primary),
+                child: Icon(
+                  Icons.campaign_outlined,
+                  color: theme.colorScheme.primary,
+                ),
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(campaign.title, style: theme.textTheme.titleLarge?.bold),
+                    Text(
+                      campaign.title,
+                      style: theme.textTheme.titleLarge?.bold,
+                    ),
                     const SizedBox(height: 2),
-                    Text(windowLabel(), style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant)),
+                    Text(
+                      windowLabel(),
+                      style: theme.textTheme.bodySmall?.withColor(
+                        theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                   ],
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(999),
-                  border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25)),
+                  border: Border.all(
+                    color: theme.colorScheme.outlineVariant.withValues(
+                      alpha: 0.25,
+                    ),
+                  ),
                 ),
-                child: Text(campaign.status.toUpperCase(), style: theme.textTheme.labelSmall?.bold),
+                child: Text(
+                  campaign.status.toUpperCase(),
+                  style: theme.textTheme.labelSmall?.bold,
+                ),
               ),
             ],
           ),
           if ((campaign.summary ?? '').trim().isNotEmpty) ...[
             const SizedBox(height: AppSpacing.md),
-            Text(campaign.summary!.trim(), style: theme.textTheme.bodyMedium?.copyWith(height: 1.45)),
+            Text(
+              campaign.summary!.trim(),
+              style: theme.textTheme.bodyMedium?.copyWith(height: 1.45),
+            ),
           ],
-          if ((campaign.primaryAudience ?? '').trim().isNotEmpty || campaign.primaryActions.isNotEmpty) ...[
+          if ((campaign.primaryAudience ?? '').trim().isNotEmpty ||
+              campaign.primaryActions.isNotEmpty) ...[
             const SizedBox(height: AppSpacing.md),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
-                if ((campaign.primaryAudience ?? '').trim().isNotEmpty) _Pill(text: campaign.primaryAudience!, icon: Icons.groups_outlined),
-                for (final a in campaign.primaryActions.take(3)) _Pill(text: a, icon: Icons.task_alt),
+                if ((campaign.primaryAudience ?? '').trim().isNotEmpty)
+                  _Pill(
+                    text: campaign.primaryAudience!,
+                    icon: Icons.groups_outlined,
+                  ),
+                for (final a in campaign.primaryActions.take(3))
+                  _Pill(text: a, icon: Icons.task_alt),
               ],
             ),
           ],
@@ -237,18 +307,40 @@ class _CampaignActions extends StatelessWidget {
                     final ok = await svc.joinCampaign(campaignId);
                     if (!context.mounted) return;
                     if (!ok) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not join campaign.')));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Could not join campaign.'),
+                        ),
+                      );
                     }
                   },
-            icon: Icon(joined ? Icons.check_circle_outline : Icons.add, color: theme.colorScheme.onPrimary),
-            label: Text(joined ? 'Joined' : 'Join campaign', style: theme.textTheme.labelLarge?.bold.withColor(theme.colorScheme.onPrimary)),
+            icon: Icon(
+              joined ? Icons.check_circle_outline : Icons.add,
+              color: theme.colorScheme.onPrimary,
+            ),
+            label: Text(
+              joined ? 'Joined' : 'Join campaign',
+              style: theme.textTheme.labelLarge?.bold.withColor(
+                theme.colorScheme.onPrimary,
+              ),
+            ),
           ),
         ),
         const SizedBox(width: AppSpacing.sm),
         OutlinedButton.icon(
-          onPressed: () => Scrollable.ensureVisible(context, duration: const Duration(milliseconds: 240), curve: Curves.easeOutCubic, alignment: 0.1),
+          onPressed: () => Scrollable.ensureVisible(
+            context,
+            duration: const Duration(milliseconds: 240),
+            curve: Curves.easeOutCubic,
+            alignment: 0.1,
+          ),
           icon: Icon(Icons.list_alt, color: theme.colorScheme.onSurface),
-          label: Text('View missions', style: theme.textTheme.labelLarge?.bold.withColor(theme.colorScheme.onSurface)),
+          label: Text(
+            'View missions',
+            style: theme.textTheme.labelLarge?.bold.withColor(
+              theme.colorScheme.onSurface,
+            ),
+          ),
         ),
       ],
     );
@@ -264,12 +356,12 @@ class _CampaignMissionCard extends StatelessWidget {
     final theme = Theme.of(context);
     final status = item.computedStatus;
     Color tint() => switch (status) {
-          'completed' => theme.colorScheme.tertiary,
-          'claimed' => theme.colorScheme.onSurfaceVariant,
-          'in_progress' => theme.colorScheme.secondary,
-          'available' => theme.colorScheme.primary,
-          _ => theme.colorScheme.onSurfaceVariant,
-        };
+      'completed' => theme.colorScheme.tertiary,
+      'claimed' => theme.colorScheme.onSurfaceVariant,
+      'in_progress' => theme.colorScheme.secondary,
+      'available' => theme.colorScheme.primary,
+      _ => theme.colorScheme.onSurfaceVariant,
+    };
 
     return InkWell(
       splashColor: Colors.transparent,
@@ -281,7 +373,9 @@ class _CampaignMissionCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22)),
+          border: Border.all(
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -291,7 +385,10 @@ class _CampaignMissionCard extends StatelessWidget {
                 Container(
                   width: 38,
                   height: 38,
-                  decoration: BoxDecoration(color: tint().withValues(alpha: 0.12), borderRadius: BorderRadius.circular(AppRadius.md)),
+                  decoration: BoxDecoration(
+                    color: tint().withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
                   alignment: Alignment.center,
                   child: Icon(Icons.flag_outlined, color: tint()),
                 ),
@@ -300,17 +397,38 @@ class _CampaignMissionCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(item.mission.shortLabel, style: theme.textTheme.titleMedium?.bold, maxLines: 2, overflow: TextOverflow.ellipsis),
+                      Text(
+                        item.mission.shortLabel,
+                        style: theme.textTheme.titleMedium?.bold,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       const SizedBox(height: 2),
-                      Text(item.mission.description, style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant), maxLines: 2, overflow: TextOverflow.ellipsis),
+                      Text(
+                        item.mission.description,
+                        style: theme.textTheme.bodySmall?.withColor(
+                          theme.colorScheme.onSurfaceVariant,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(color: tint().withValues(alpha: 0.12), borderRadius: BorderRadius.circular(999)),
-                  child: Text(status.replaceAll('_', ' ').toUpperCase(), style: theme.textTheme.labelSmall?.bold.withColor(tint())),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: tint().withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    status.replaceAll('_', ' ').toUpperCase(),
+                    style: theme.textTheme.labelSmall?.bold.withColor(tint()),
+                  ),
                 ),
               ],
             ),
@@ -327,8 +445,20 @@ class _CampaignMissionCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             Row(
               children: [
-                Expanded(child: Text('${item.progressValue} / ${item.progressTarget}', style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant))),
-                Text('+${item.mission.prestigeReward} prestige', style: theme.textTheme.labelSmall?.bold.withColor(theme.colorScheme.onSurfaceVariant)),
+                Expanded(
+                  child: Text(
+                    '${item.progressValue} / ${item.progressTarget}',
+                    style: theme.textTheme.bodySmall?.withColor(
+                      theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                Text(
+                  '+${item.mission.prestigeReward} prestige',
+                  style: theme.textTheme.labelSmall?.bold.withColor(
+                    theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
               ],
             ),
           ],
@@ -349,16 +479,25 @@ class _Pill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.16),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(
+          alpha: 0.16,
+        ),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 16, color: theme.colorScheme.onSurfaceVariant),
           const SizedBox(width: 6),
-          Text(text, style: theme.textTheme.labelMedium?.bold.withColor(theme.colorScheme.onSurface)),
+          Text(
+            text,
+            style: theme.textTheme.labelMedium?.bold.withColor(
+              theme.colorScheme.onSurface,
+            ),
+          ),
         ],
       ),
     );

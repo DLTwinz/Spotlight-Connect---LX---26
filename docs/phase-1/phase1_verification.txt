@@ -1,0 +1,24 @@
+Phase 1 verified manually in Supabase dashboard.
+
+Verified tables:
+- profiles
+- user_roles
+- brand_memberships
+- creator_settings
+
+Verified RLS enabled on all four tables.
+
+Verified policies present:
+- brand_memberships_insert_own
+- brand_memberships_select_own_or_admin
+- creator_settings_select_own_or_admin
+- creator_settings_update_own
+- creator_settings_upsert_own
+- admin_all_profiles
+- profiles_safe_insert
+- profiles_self_or_admin_read
+- user_roles_admin_write
+- user_roles_self_read
+
+Note:
+profiles and user_roles contain preexisting legacy policies and should be reconciled in a later cleanup pass.

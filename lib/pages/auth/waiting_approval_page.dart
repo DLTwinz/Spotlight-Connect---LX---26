@@ -11,9 +11,12 @@ class WaitingApprovalPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = context.watch<AppAuthProvider>();
     final user = auth.currentUser;
-    final requested = (user?.activeRole ?? '').trim().isEmpty ? null : user!.activeRole;
+    final requested = (user?.activeRole ?? '').trim().isEmpty
+        ? null
+        : user!.activeRole;
 
     return Scaffold(
+      backgroundColor: SpotlightAccents.bg,
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -24,7 +27,10 @@ class WaitingApprovalPage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Under review', style: Theme.of(context).textTheme.headlineSmall),
+                  Text(
+                    'Under review',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
                   const SizedBox(height: 10),
                   Text(
                     requested == null
@@ -35,14 +41,19 @@ class WaitingApprovalPage extends StatelessWidget {
                   const SizedBox(height: 18),
                   DecoratedBox(
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Row(
                         children: [
-                          Icon(Icons.hourglass_top, color: Theme.of(context).colorScheme.primary),
+                          Icon(
+                            Icons.hourglass_top,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
@@ -65,13 +76,25 @@ class WaitingApprovalPage extends StatelessWidget {
                             : () async {
                                 await auth.refreshCurrentUser();
                               },
-                        icon: Icon(Icons.refresh, color: Theme.of(context).colorScheme.onPrimary),
-                        label: Text('Refresh', style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: SpotlightAccents.cyan,
+                          foregroundColor: const Color(0xFF041016),
+                        ),
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Refresh'),
                       ),
                       OutlinedButton.icon(
                         onPressed: () => context.go(AppRoutes.audience),
-                        icon: Icon(Icons.home, color: Theme.of(context).colorScheme.primary),
-                        label: Text('Back to Audience', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+                        icon: Icon(
+                          Icons.home,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        label: Text(
+                          'Back to Audience',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
                       ),
                       TextButton.icon(
                         onPressed: auth.isLoading
@@ -81,8 +104,16 @@ class WaitingApprovalPage extends StatelessWidget {
                                 if (!context.mounted) return;
                                 context.go(AppRoutes.login);
                               },
-                        icon: Icon(Icons.logout, color: Theme.of(context).colorScheme.tertiary),
-                        label: Text('Log out', style: TextStyle(color: Theme.of(context).colorScheme.tertiary)),
+                        icon: Icon(
+                          Icons.logout,
+                          color: Theme.of(context).colorScheme.tertiary,
+                        ),
+                        label: Text(
+                          'Log out',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.tertiary,
+                          ),
+                        ),
                       ),
                     ],
                   ),

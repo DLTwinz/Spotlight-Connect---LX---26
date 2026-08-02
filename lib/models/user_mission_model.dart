@@ -22,7 +22,9 @@ class UserMissionModel {
       missionId: json['mission_id'] ?? '',
       currentProgress: json['current_progress'] ?? 0,
       status: json['status'] ?? 'active',
-      completedAt: json['completed_at'] != null ? DateTime.parse(json['completed_at']) : null,
+      completedAt: json['completed_at'] != null
+          ? DateTime.parse(json['completed_at'])
+          : null,
     );
   }
 }

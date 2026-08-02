@@ -13,7 +13,13 @@ import 'package:flutter/material.dart';
 /// It does not impose any visual styling (your child is responsible for its
 /// background, borders, etc.).
 class ViewportConstrainedSheet extends StatelessWidget {
-  const ViewportConstrainedSheet({super.key, required this.child, this.maxWidth = 640, this.maxHeight = 760, this.margin = const EdgeInsets.all(12)});
+  const ViewportConstrainedSheet({
+    super.key,
+    required this.child,
+    this.maxWidth = 640,
+    this.maxHeight = 760,
+    this.margin = const EdgeInsets.all(12),
+  });
 
   final Widget child;
   final double maxWidth;
@@ -26,7 +32,9 @@ class ViewportConstrainedSheet extends StatelessWidget {
     final safe = mq.padding;
     final insets = mq.viewInsets;
     final availableHeight = mq.size.height - safe.vertical;
-    final cappedHeight = math.min(maxHeight, math.max(320.0, availableHeight - 24.0)).toDouble();
+    final cappedHeight = math
+        .min(maxHeight, math.max(320.0, availableHeight - 24.0))
+        .toDouble();
 
     // Keep the overlay centered and fully in-bounds even with the keyboard open.
     // We use AnimatedPadding to avoid jarring jumps when viewInsets change.
@@ -41,13 +49,13 @@ class ViewportConstrainedSheet extends StatelessWidget {
       ),
       child: Center(
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: maxWidth, maxHeight: cappedHeight),
+          constraints: BoxConstraints(
+            maxWidth: maxWidth,
+            maxHeight: cappedHeight,
+          ),
           child: ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(24)),
-            child: Material(
-              type: MaterialType.transparency,
-              child: child,
-            ),
+            child: Material(type: MaterialType.transparency, child: child),
           ),
         ),
       ),

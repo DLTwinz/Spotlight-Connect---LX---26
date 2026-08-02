@@ -9,7 +9,8 @@
 // 3. Implement all abstract methods with your auth provider logic
 
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show User, UserAttributes;
+import 'package:supabase_flutter/supabase_flutter.dart'
+    show User, UserAttributes;
 import 'package:spotlight_connect/supabase/supabase_config.dart';
 
 // Core authentication operations that all auth implementations must provide
@@ -32,7 +33,8 @@ abstract class AuthManager {
 /// - Supabase Auth handles email verification internally.
 /// - We intentionally keep this class focused on auth operations only; loading
 ///   the app user profile (from `public.users`) should happen elsewhere.
-class SupabaseAuthManager extends AuthManager with EmailSignInManager, JwtSignInManager {
+class SupabaseAuthManager extends AuthManager
+    with EmailSignInManager, JwtSignInManager {
   @override
   Future<void> signOut() async {
     try {
@@ -47,11 +49,16 @@ class SupabaseAuthManager extends AuthManager with EmailSignInManager, JwtSignIn
   Future<void> deleteUser(BuildContext context) async {
     // Deleting auth users requires the service role key and should be done via
     // an Edge Function for security. We explicitly do not attempt it client-side.
-    throw UnsupportedError('Deleting a Supabase auth user must be done server-side.');
+    throw UnsupportedError(
+      'Deleting a Supabase auth user must be done server-side.',
+    );
   }
 
   @override
-  Future<void> updateEmail({required String email, required BuildContext context}) async {
+  Future<void> updateEmail({
+    required String email,
+    required BuildContext context,
+  }) async {
     try {
       await SupabaseConfig.auth.updateUser(UserAttributes(email: email));
     } catch (e, st) {
@@ -61,7 +68,10 @@ class SupabaseAuthManager extends AuthManager with EmailSignInManager, JwtSignIn
   }
 
   @override
-  Future<void> resetPassword({required String email, required BuildContext context}) async {
+  Future<void> resetPassword({
+    required String email,
+    required BuildContext context,
+  }) async {
     try {
       await SupabaseConfig.auth.resetPasswordForEmail(
         email,
@@ -74,9 +84,16 @@ class SupabaseAuthManager extends AuthManager with EmailSignInManager, JwtSignIn
   }
 
   @override
-  Future<User?> signInWithEmail(BuildContext context, String email, String password) async {
+  Future<User?> signInWithEmail(
+    BuildContext context,
+    String email,
+    String password,
+  ) async {
     try {
-      final res = await SupabaseConfig.auth.signInWithPassword(email: email, password: password);
+      final res = await SupabaseConfig.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
       return res.user;
     } catch (e, st) {
       debugPrint('SupabaseAuthManager.signInWithEmail failed: $e\n$st');
@@ -85,7 +102,11 @@ class SupabaseAuthManager extends AuthManager with EmailSignInManager, JwtSignIn
   }
 
   @override
-  Future<User?> createAccountWithEmail(BuildContext context, String email, String password) async {
+  Future<User?> createAccountWithEmail(
+    BuildContext context,
+    String email,
+    String password,
+  ) async {
     try {
       final res = await SupabaseConfig.auth.signUp(
         email: email,
@@ -100,7 +121,10 @@ class SupabaseAuthManager extends AuthManager with EmailSignInManager, JwtSignIn
   }
 
   @override
-  Future<User?> signInWithJwtToken(BuildContext context, String jwtToken) async {
+  Future<User?> signInWithJwtToken(
+    BuildContext context,
+    String jwtToken,
+  ) async {
     try {
       final res = await SupabaseConfig.auth.recoverSession(jwtToken);
       return res.user;
@@ -143,10 +167,7 @@ mixin GoogleSignInManager on AuthManager {
 
 // JWT token authentication for custom backends
 mixin JwtSignInManager on AuthManager {
-  Future<User?> signInWithJwtToken(
-    BuildContext context,
-    String jwtToken,
-  );
+  Future<User?> signInWithJwtToken(BuildContext context, String jwtToken);
 }
 
 // Phone number authentication with SMS verification

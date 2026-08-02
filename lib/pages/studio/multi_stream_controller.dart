@@ -77,11 +77,19 @@ class _MultiStreamControllerState extends State<MultiStreamController> {
               color: const Color(0xFF111111),
               borderRadius: BorderRadius.circular(AppRadius.lg),
               border: Border.all(
-                color: _isLive ? const Color(0xFF39FF14).withValues(alpha: 0.4) : const Color(0xFF1A1A1A),
+                color: _isLive
+                    ? const Color(0xFF39FF14).withValues(alpha: 0.4)
+                    : const Color(0xFF1A1A1A),
                 width: _isLive ? 1.5 : 1.0,
               ),
               boxShadow: _isLive
-                  ? [BoxShadow(color: const Color(0xFF39FF14).withValues(alpha: 0.1), blurRadius: 20, spreadRadius: 2)]
+                  ? [
+                      BoxShadow(
+                        color: const Color(0xFF39FF14).withValues(alpha: 0.1),
+                        blurRadius: 20,
+                        spreadRadius: 2,
+                      ),
+                    ]
                   : null,
             ),
             child: Column(
@@ -132,7 +140,9 @@ class _MultiStreamControllerState extends State<MultiStreamController> {
                 Expanded(
                   child: Text(
                     'Live broadcasts are monitored in real-time. Ensure compliance with platform ToS and content policies.',
-                    style: theme.textTheme.bodySmall?.copyWith(color: Colors.orange.withValues(alpha: 0.8)),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: Colors.orange.withValues(alpha: 0.8),
+                    ),
                   ),
                 ),
               ],
@@ -185,16 +195,21 @@ class _MultiStreamControllerState extends State<MultiStreamController> {
                   decoration: BoxDecoration(
                     color: Colors.red,
                     shape: BoxShape.circle,
-                    boxShadow: [BoxShadow(color: Colors.red.withValues(alpha: 0.5), blurRadius: 8)],
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.red.withValues(alpha: 0.5),
+                        blurRadius: 8,
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(width: 8),
                 Text(
                   'LIVE',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -210,7 +225,11 @@ class _MultiStreamControllerState extends State<MultiStreamController> {
       decoration: BoxDecoration(
         color: Colors.black,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: _isLive ? const Color(0xFF39FF14) : Colors.grey.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: _isLive
+              ? const Color(0xFF39FF14)
+              : Colors.grey.withValues(alpha: 0.3),
+        ),
       ),
       child: Center(
         child: Column(
@@ -219,7 +238,9 @@ class _MultiStreamControllerState extends State<MultiStreamController> {
             Icon(
               Icons.videocam,
               size: 64,
-              color: _isLive ? const Color(0xFF39FF14) : Colors.grey.withValues(alpha: 0.5),
+              color: _isLive
+                  ? const Color(0xFF39FF14)
+                  : Colors.grey.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
             if (_isLive)
@@ -294,14 +315,24 @@ class _MultiStreamControllerState extends State<MultiStreamController> {
     );
   }
 
-  Widget _buildPlatformSwitch(String name, bool val, Function(bool) onChange, Color platformColor) {
+  Widget _buildPlatformSwitch(
+    String name,
+    bool val,
+    Function(bool) onChange,
+    Color platformColor,
+  ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
       decoration: BoxDecoration(
         color: const Color(0xFF0A0A0A),
         borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(
-          color: val ? platformColor.withValues(alpha: 0.5) : Colors.grey.withValues(alpha: 0.2),
+          color: val
+              ? platformColor.withValues(alpha: 0.5)
+              : Colors.grey.withValues(alpha: 0.2),
           width: val ? 1.5 : 1,
         ),
       ),
@@ -334,7 +365,11 @@ class _MultiStreamControllerState extends State<MultiStreamController> {
   }
 
   Widget _buildBroadcastTriggerButton() {
-    final activeCount = [_twitchActive, _youtubeActive, _kickActive].where((x) => x).length;
+    final activeCount = [
+      _twitchActive,
+      _youtubeActive,
+      _kickActive,
+    ].where((x) => x).length;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -346,12 +381,20 @@ class _MultiStreamControllerState extends State<MultiStreamController> {
             style: FilledButton.styleFrom(
               backgroundColor: _isLive ? Colors.red : const Color(0xFF39FF14),
               foregroundColor: _isLive ? Colors.white : Colors.black,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadius.md),
+              ),
             ),
             onPressed: _toggleLiveStatus,
             child: Text(
-              _isLive ? '⏹ DISCONNECT BROADCAST ARRAY' : '● LAUNCH LIVE STREAM MATRIX',
-              style: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14),
+              _isLive
+                  ? '⏹ DISCONNECT BROADCAST ARRAY'
+                  : '● LAUNCH LIVE STREAM MATRIX',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
+                fontSize: 14,
+              ),
             ),
           ),
         ),
@@ -444,9 +487,15 @@ class _MultiStreamControllerState extends State<MultiStreamController> {
             ),
           ),
           const SizedBox(height: 16),
-          _buildPlatformConfig('TWITCH', 'Bitrate: 6 Mbps | Resolution: 1080p60'),
+          _buildPlatformConfig(
+            'TWITCH',
+            'Bitrate: 6 Mbps | Resolution: 1080p60',
+          ),
           const SizedBox(height: 12),
-          _buildPlatformConfig('YOUTUBE', 'Bitrate: 5.5 Mbps | Resolution: 1080p30'),
+          _buildPlatformConfig(
+            'YOUTUBE',
+            'Bitrate: 5.5 Mbps | Resolution: 1080p30',
+          ),
           const SizedBox(height: 12),
           _buildPlatformConfig('KICK', 'Bitrate: 8 Mbps | Resolution: 1440p60'),
         ],
@@ -467,13 +516,14 @@ class _MultiStreamControllerState extends State<MultiStreamController> {
         children: [
           Text(
             platform,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
           ),
           const SizedBox(height: 6),
-          Text(
-            config,
-            style: TextStyle(color: Colors.grey, fontSize: 11),
-          ),
+          Text(config, style: TextStyle(color: Colors.grey, fontSize: 11)),
         ],
       ),
     );

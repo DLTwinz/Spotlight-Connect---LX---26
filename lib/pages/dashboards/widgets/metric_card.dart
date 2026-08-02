@@ -32,4 +32,3 @@ class MetricCard extends StatelessWidget {
     );
   }
 }
-

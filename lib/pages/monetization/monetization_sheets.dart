@@ -7,9 +7,7 @@ class MonetizationSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
-      child: const Center(
-        child: Text('Subscription Plans Coming Soon'),
-      ),
+      child: const Center(child: Text('Subscription Plans Coming Soon')),
     );
   }
 }

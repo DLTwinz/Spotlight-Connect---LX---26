@@ -54,14 +54,14 @@ class GroupModel {
 
   /// Supabase row mapping (snake_case DB columns).
   Map<String, dynamic> toSupabaseJson() => {
-        'id': groupId,
-        'name': name,
-        'description': description,
-        'created_by_user_id': createdByUserId,
-        'visibility': visibility,
-        'created_at': createdAt.toIso8601String(),
-        'updated_at': updatedAt.toIso8601String(),
-      };
+    'id': groupId,
+    'name': name,
+    'description': description,
+    'created_by_user_id': createdByUserId,
+    'visibility': visibility,
+    'created_at': createdAt.toIso8601String(),
+    'updated_at': updatedAt.toIso8601String(),
+  };
 
   static GroupModel? fromSupabaseRow(Object? raw) {
     try {
@@ -74,7 +74,13 @@ class GroupModel {
       final createdAtRaw = raw['created_at']?.toString();
       final updatedAtRaw = raw['updated_at']?.toString();
 
-      if (id == null || name == null || description == null || createdByUserId == null || visibility == null || createdAtRaw == null || updatedAtRaw == null) {
+      if (id == null ||
+          name == null ||
+          description == null ||
+          createdByUserId == null ||
+          visibility == null ||
+          createdAtRaw == null ||
+          updatedAtRaw == null) {
         return null;
       }
       final createdAt = DateTime.tryParse(createdAtRaw);
@@ -173,11 +179,11 @@ class GroupMembershipModel {
   }
 
   Map<String, dynamic> toSupabaseJson() => {
-        'group_id': groupId,
-        'user_id': userId,
-        'role': role,
-        'joined_at': joinedAt.toIso8601String(),
-      };
+    'group_id': groupId,
+    'user_id': userId,
+    'role': role,
+    'joined_at': joinedAt.toIso8601String(),
+  };
 
   static GroupMembershipModel? fromSupabaseRow(Object? raw) {
     try {
@@ -186,10 +192,20 @@ class GroupMembershipModel {
       final userId = raw['user_id']?.toString();
       final role = raw['role']?.toString();
       final joinedAtRaw = raw['joined_at']?.toString();
-      if (groupId == null || userId == null || role == null || joinedAtRaw == null) return null;
+      if (groupId == null ||
+          userId == null ||
+          role == null ||
+          joinedAtRaw == null) {
+        return null;
+      }
       final joinedAt = DateTime.tryParse(joinedAtRaw);
       if (joinedAt == null) return null;
-      return GroupMembershipModel(groupId: groupId, userId: userId, role: role, joinedAt: joinedAt);
+      return GroupMembershipModel(
+        groupId: groupId,
+        userId: userId,
+        role: role,
+        joinedAt: joinedAt,
+      );
     } catch (_) {
       return null;
     }
@@ -202,10 +218,20 @@ class GroupMembershipModel {
       final userId = raw['userId'];
       final role = raw['role'];
       final joinedAt = raw['joinedAt'];
-      if (groupId is! String || userId is! String || role is! String || joinedAt is! String) return null;
+      if (groupId is! String ||
+          userId is! String ||
+          role is! String ||
+          joinedAt is! String) {
+        return null;
+      }
       final parsedJoinedAt = DateTime.tryParse(joinedAt);
       if (parsedJoinedAt == null) return null;
-      return GroupMembershipModel(groupId: groupId, userId: userId, role: role, joinedAt: parsedJoinedAt);
+      return GroupMembershipModel(
+        groupId: groupId,
+        userId: userId,
+        role: role,
+        joinedAt: parsedJoinedAt,
+      );
     } catch (_) {
       return null;
     }

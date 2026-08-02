@@ -10,7 +10,8 @@ class AdminFeatureControlsTab extends StatefulWidget {
   const AdminFeatureControlsTab({super.key});
 
   @override
-  State<AdminFeatureControlsTab> createState() => _AdminFeatureControlsTabState();
+  State<AdminFeatureControlsTab> createState() =>
+      _AdminFeatureControlsTabState();
 }
 
 class _AdminFeatureControlsTabState extends State<AdminFeatureControlsTab> {
@@ -98,7 +99,11 @@ class _AdminFeatureControlsTabState extends State<AdminFeatureControlsTab> {
 
   Future<Map<String, bool>> _loadPolicyForRole(String roleKey) async {
     final client = SupabaseConfig.client;
-    final row = await client.from('feature_policies').select('policy').eq('role_key', roleKey).maybeSingle();
+    final row = await client
+        .from('feature_policies')
+        .select('policy')
+        .eq('role_key', roleKey)
+        .maybeSingle();
     final policy = (row == null ? null : row['policy']);
     final out = <String, bool>{};
     if (policy is Map) {
@@ -111,14 +116,20 @@ class _AdminFeatureControlsTabState extends State<AdminFeatureControlsTab> {
     }
     // Defaults when missing.
     for (final k in _flagKeys) {
-      out.putIfAbsent(k, () => ProgressionFeaturePolicy.safeFallback().flags[k] ?? false);
+      out.putIfAbsent(
+        k,
+        () => ProgressionFeaturePolicy.safeFallback().flags[k] ?? false,
+      );
     }
     return out;
   }
 
   Future<Map<String, bool>> _loadKillSwitches() async {
     final client = SupabaseConfig.client;
-    final rows = await client.from('kill_switches').select('key,is_enabled').inFilter('key', _killSwitchKeys);
+    final rows = await client
+        .from('kill_switches')
+        .select('key,is_enabled')
+        .inFilter('key', _killSwitchKeys);
     final out = <String, bool>{for (final k in _killSwitchKeys) k: false};
 
     for (final r in (rows as List)) {
@@ -133,11 +144,11 @@ class _AdminFeatureControlsTabState extends State<AdminFeatureControlsTab> {
 
   Future<void> _savePolicyFlag(String key, bool enabled) async {
     final vf = context.read<VerifiedFandomProvider>();
-    
+
     // Using the specific API signature to update a flag directly
     final success = await vf.runWriteGuarded(() async {
       await vf.client.setFeaturePolicy(
-        policyKey: '${_selectedRoleKey}_$key', 
+        policyKey: '${_selectedRoleKey}_$key',
         enabled: enabled,
         reason: 'Admin dashboard toggle via Flutter',
       );
@@ -148,14 +159,17 @@ class _AdminFeatureControlsTabState extends State<AdminFeatureControlsTab> {
       // Removed provider.refresh() if it doesn't exist, otherwise add back if applicable
     } else if (vf.lastError != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(vf.lastError!), backgroundColor: Theme.of(context).colorScheme.error),
+        SnackBar(
+          content: Text(vf.lastError!),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
       );
     }
   }
 
   Future<void> _saveKillSwitch(String key, bool enabled) async {
     final vf = context.read<VerifiedFandomProvider>();
-    
+
     final success = await vf.runWriteGuarded(() async {
       await vf.client.setKillSwitch(
         switchKey: key,
@@ -168,7 +182,10 @@ class _AdminFeatureControlsTabState extends State<AdminFeatureControlsTab> {
       setState(() => _killSwitches[key] = enabled);
     } else if (vf.lastError != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(vf.lastError!), backgroundColor: Theme.of(context).colorScheme.error),
+        SnackBar(
+          content: Text(vf.lastError!),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
       );
     }
   }
@@ -188,13 +205,23 @@ class _AdminFeatureControlsTabState extends State<AdminFeatureControlsTab> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.admin_panel_settings_outlined, size: 44, color: theme.colorScheme.primary),
+                Icon(
+                  Icons.admin_panel_settings_outlined,
+                  size: 44,
+                  color: theme.colorScheme.primary,
+                ),
                 const SizedBox(height: 12),
-                Text('Admin controls are restricted.', style: theme.textTheme.titleLarge, textAlign: TextAlign.center),
+                Text(
+                  'Admin controls are restricted.',
+                  style: theme.textTheme.titleLarge,
+                  textAlign: TextAlign.center,
+                ),
                 const SizedBox(height: 8),
                 Text(
                   'This panel is locked to authorized platform administrators only.',
-                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -211,28 +238,54 @@ class _AdminFeatureControlsTabState extends State<AdminFeatureControlsTab> {
         children: [
           Text('Feature Controls', style: theme.textTheme.titleLarge),
           const SizedBox(height: 6),
-          Text('Server-authoritative toggles (Supabase).', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          Text(
+            'Server-authoritative toggles (Supabase).',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
           const SizedBox(height: 16),
           if (_error != null)
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: theme.colorScheme.errorContainer, borderRadius: BorderRadius.circular(AppRadius.md)),
-              child: Text(_error!, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onErrorContainer)),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.errorContainer,
+                borderRadius: BorderRadius.circular(AppRadius.md),
+              ),
+              child: Text(
+                _error!,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onErrorContainer,
+                ),
+              ),
             ),
           if (_error != null) const SizedBox(height: 12),
           _ControlCard(
             title: 'Kill switches',
             subtitle: 'Emergency stop controls (writes + sensitive actions).',
-            trailing: isProcessing ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : null,
+            trailing: isProcessing
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : null,
             child: Column(
               children: [
                 for (final k in _killSwitchKeys)
                   SwitchListTile.adaptive(
                     contentPadding: EdgeInsets.zero,
                     value: _killSwitches[k] ?? false,
-                    onChanged: isProcessing ? null : (v) => _saveKillSwitch(k, v),
+                    onChanged: isProcessing
+                        ? null
+                        : (v) => _saveKillSwitch(k, v),
                     title: Text(k),
-                    subtitle: Text('Stored via API: $k', style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                    subtitle: Text(
+                      'Stored via API: $k',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                   ),
               ],
             ),
@@ -246,7 +299,9 @@ class _AdminFeatureControlsTabState extends State<AdminFeatureControlsTab> {
               children: [
                 DropdownButton<String>(
                   value: _selectedRoleKey,
-                  items: _roleKeys.map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
+                  items: _roleKeys
+                      .map((r) => DropdownMenuItem(value: r, child: Text(r)))
+                      .toList(),
                   onChanged: isProcessing
                       ? null
                       : (v) async {
@@ -269,7 +324,12 @@ class _AdminFeatureControlsTabState extends State<AdminFeatureControlsTab> {
                         ? null
                         : (v) => _savePolicyFlag(k, v),
                     title: Text(k),
-                    subtitle: Text('feature_policies.role_key=$_selectedRoleKey', style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                    subtitle: Text(
+                      'feature_policies.role_key=$_selectedRoleKey',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                   ),
               ],
             ),
@@ -277,7 +337,9 @@ class _AdminFeatureControlsTabState extends State<AdminFeatureControlsTab> {
           const SizedBox(height: 24),
           Text(
             'Owner-only: set SPOTLIGHT_ADMIN_OWNER_EMAIL to change the owner email.',
-            style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -286,7 +348,12 @@ class _AdminFeatureControlsTabState extends State<AdminFeatureControlsTab> {
 }
 
 class _ControlCard extends StatelessWidget {
-  const _ControlCard({required this.title, required this.subtitle, required this.child, this.trailing});
+  const _ControlCard({
+    required this.title,
+    required this.subtitle,
+    required this.child,
+    this.trailing,
+  });
   final String title;
   final String subtitle;
   final Widget child;
@@ -297,7 +364,13 @@ class _ControlCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: theme.colorScheme.surface, borderRadius: BorderRadius.circular(AppRadius.lg), border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5))),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -309,7 +382,12 @@ class _ControlCard extends StatelessWidget {
                   children: [
                     Text(title, style: theme.textTheme.titleMedium),
                     const SizedBox(height: 4),
-                    Text(subtitle, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                    Text(
+                      subtitle,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                   ],
                 ),
               ),

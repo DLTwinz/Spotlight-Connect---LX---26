@@ -70,8 +70,10 @@ class PostModel {
       repostCount: repostCount ?? this.repostCount,
       tags: tags ?? this.tags,
       repostOfPostId: repostOfPostId ?? this.repostOfPostId,
-      repostOfAuthorDisplayName: repostOfAuthorDisplayName ?? this.repostOfAuthorDisplayName,
-      repostOfAuthorPrimaryRole: repostOfAuthorPrimaryRole ?? this.repostOfAuthorPrimaryRole,
+      repostOfAuthorDisplayName:
+          repostOfAuthorDisplayName ?? this.repostOfAuthorDisplayName,
+      repostOfAuthorPrimaryRole:
+          repostOfAuthorPrimaryRole ?? this.repostOfAuthorPrimaryRole,
       repostOfText: repostOfText ?? this.repostOfText,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -141,8 +143,14 @@ class PostModel {
       }
 
       if (repostOfPostId != null && repostOfPostId is! String) return null;
-      if (repostOfAuthorDisplayName != null && repostOfAuthorDisplayName is! String) return null;
-      if (repostOfAuthorPrimaryRole != null && repostOfAuthorPrimaryRole is! String) return null;
+      if (repostOfAuthorDisplayName != null &&
+          repostOfAuthorDisplayName is! String) {
+        return null;
+      }
+      if (repostOfAuthorPrimaryRole != null &&
+          repostOfAuthorPrimaryRole is! String) {
+        return null;
+      }
       if (repostOfText != null && repostOfText is! String) return null;
       if (groupId != null && groupId is! String) return null;
 
@@ -160,7 +168,9 @@ class PostModel {
         likeCount: likeCount,
         commentCount: commentCount,
         repostCount: repostCount,
-        tags: tags is List ? tags.whereType<String>().toList() : const <String>[],
+        tags: tags is List
+            ? tags.whereType<String>().toList()
+            : const <String>[],
         repostOfPostId: repostOfPostId as String?,
         repostOfAuthorDisplayName: repostOfAuthorDisplayName as String?,
         repostOfAuthorPrimaryRole: repostOfAuthorPrimaryRole as String?,

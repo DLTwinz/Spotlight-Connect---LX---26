@@ -16,7 +16,10 @@ class FeatureFlagsSheet extends StatefulWidget {
   /// By default this is blocked in release builds.
   ///
   /// Set [allowInRelease] to true only for admin-only entry points.
-  static Future<void> show(BuildContext context, {bool allowInRelease = false}) async {
+  static Future<void> show(
+    BuildContext context, {
+    bool allowInRelease = false,
+  }) async {
     // Launch policy: keep feature flags invisible to normal users.
     if (kReleaseMode && !allowInRelease) {
       debugPrint('FeatureFlagsSheet blocked in release mode.');
@@ -65,7 +68,9 @@ class _FeatureFlagsSheetState extends State<FeatureFlagsSheet> {
           decoration: BoxDecoration(
             color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(AppRadius.xl),
-            border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4)),
+            border: Border.all(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+            ),
           ),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 780),
@@ -76,17 +81,29 @@ class _FeatureFlagsSheetState extends State<FeatureFlagsSheet> {
                 Flexible(
                   child: ListView(
                     shrinkWrap: true,
-                    padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.md,
+                      0,
+                      AppSpacing.md,
+                      AppSpacing.md,
+                    ),
                     children: [
                       Text(
                         'Toggle feature availability for QA/beta testing. These switches affect UI visibility only (not security).',
-                        style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+                        style: theme.textTheme.bodyMedium?.withColor(
+                          theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                       const SizedBox(height: AppSpacing.md),
                       const _ProgressionPolicyStatusCard(),
                       const SizedBox(height: AppSpacing.md),
                       for (final d in FeatureFlagProvider.descriptors)
-                        _FeatureRow(descriptor: d, enabled: provider.isEnabled(d.feature), canEdit: canEdit, isAdmin: isAdmin),
+                        _FeatureRow(
+                          descriptor: d,
+                          enabled: provider.isEnabled(d.feature),
+                          canEdit: canEdit,
+                          isAdmin: isAdmin,
+                        ),
                       const SizedBox(height: AppSpacing.lg),
                       _UnlockPanel(
                         canEdit: canEdit,
@@ -99,7 +116,9 @@ class _FeatureFlagsSheetState extends State<FeatureFlagsSheet> {
                             _unlockError = null;
                           });
                           try {
-                            final ok = await context.read<FeatureFlagProvider>().unlockEditing(_unlockCtrl.text);
+                            final ok = await context
+                                .read<FeatureFlagProvider>()
+                                .unlockEditing(_unlockCtrl.text);
                             if (!mounted) return;
                             if (!ok) {
                               setState(() => _unlockError = 'Invalid code.');
@@ -114,14 +133,18 @@ class _FeatureFlagsSheetState extends State<FeatureFlagsSheet> {
                           }
                         },
                         onLock: () async {
-                          await context.read<FeatureFlagProvider>().lockEditing();
+                          await context
+                              .read<FeatureFlagProvider>()
+                              .lockEditing();
                         },
                       ),
                       if (provider.lastError != null) ...[
                         const SizedBox(height: AppSpacing.md),
                         Text(
                           'Warning: ${provider.lastError}',
-                          style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.error),
+                          style: theme.textTheme.bodySmall?.withColor(
+                            theme.colorScheme.error,
+                          ),
                         ),
                       ],
                     ],
@@ -145,7 +168,12 @@ class _SheetHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.sm,
+      ),
       child: Row(
         children: [
           Container(
@@ -154,7 +182,9 @@ class _SheetHeader extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14),
               color: theme.colorScheme.primary.withValues(alpha: 0.12),
-              border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.22)),
+              border: Border.all(
+                color: theme.colorScheme.primary.withValues(alpha: 0.22),
+              ),
             ),
             child: Icon(Icons.tune, color: theme.colorScheme.primary),
           ),
@@ -167,7 +197,9 @@ class _SheetHeader extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   canEdit ? 'Editing unlocked' : 'Read-only (unlock to edit)',
-                  style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant),
+                  style: theme.textTheme.bodySmall?.withColor(
+                    theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -187,19 +219,37 @@ class _SheetHeader extends StatelessWidget {
                 }
               },
               itemBuilder: (_) => [
-                const PopupMenuItem(value: 'enable_all', child: Text('Enable all')),
-                const PopupMenuItem(value: 'disable_all', child: Text('Disable all')),
-                const PopupMenuItem(value: 'defaults', child: Text('Reset to defaults')),
+                const PopupMenuItem(
+                  value: 'enable_all',
+                  child: Text('Enable all'),
+                ),
+                const PopupMenuItem(
+                  value: 'disable_all',
+                  child: Text('Disable all'),
+                ),
+                const PopupMenuItem(
+                  value: 'defaults',
+                  child: Text('Reset to defaults'),
+                ),
               ],
               child: Container(
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(14),
-                  color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.18),
-                  border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35)),
+                  color: theme.colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.18,
+                  ),
+                  border: Border.all(
+                    color: theme.colorScheme.outlineVariant.withValues(
+                      alpha: 0.35,
+                    ),
+                  ),
                 ),
-                child: Icon(Icons.more_horiz, color: theme.colorScheme.onSurfaceVariant),
+                child: Icon(
+                  Icons.more_horiz,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
           IconButton(
@@ -214,7 +264,12 @@ class _SheetHeader extends StatelessWidget {
 }
 
 class _FeatureRow extends StatelessWidget {
-  const _FeatureRow({required this.descriptor, required this.enabled, required this.canEdit, required this.isAdmin});
+  const _FeatureRow({
+    required this.descriptor,
+    required this.enabled,
+    required this.canEdit,
+    required this.isAdmin,
+  });
 
   final AppFeatureDescriptor descriptor;
   final bool enabled;
@@ -231,16 +286,27 @@ class _FeatureRow extends StatelessWidget {
 
     final adminLocked = descriptor.adminOnlyEdit && !isAdmin;
     final canToggle = canEdit && !adminLocked;
-    final pillBg = enabled ? theme.colorScheme.primary.withValues(alpha: 0.12) : theme.colorScheme.surfaceContainerHighest;
-    final pillFg = enabled ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant;
+    final pillBg = enabled
+        ? theme.colorScheme.primary.withValues(alpha: 0.12)
+        : theme.colorScheme.surfaceContainerHighest;
+    final pillFg = enabled
+        ? theme.colorScheme.primary
+        : theme.colorScheme.onSurfaceVariant;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.55),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35)),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(
+          alpha: 0.55,
+        ),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35),
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,29 +317,61 @@ class _FeatureRow extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Expanded(child: Text(descriptor.title, style: theme.textTheme.titleSmall?.bold)),
+                    Expanded(
+                      child: Text(
+                        descriptor.title,
+                        style: theme.textTheme.titleSmall?.bold,
+                      ),
+                    ),
                     if (showInternalLabels && descriptor.betaTag != null)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(999),
                           color: theme.colorScheme.surface,
-                          border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.45)),
+                          border: Border.all(
+                            color: theme.colorScheme.outlineVariant.withValues(
+                              alpha: 0.45,
+                            ),
+                          ),
                         ),
-                        child: Text(descriptor.betaTag!, style: theme.textTheme.labelSmall?.bold.withColor(theme.colorScheme.onSurfaceVariant)),
+                        child: Text(
+                          descriptor.betaTag!,
+                          style: theme.textTheme.labelSmall?.bold.withColor(
+                            theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                       ),
                   ],
                 ),
                 const SizedBox(height: 6),
                 if (showInternalLabels)
-                  Text(descriptor.description, style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant).copyWith(height: 1.35)),
+                  Text(
+                    descriptor.description,
+                    style: theme.textTheme.bodySmall
+                        ?.withColor(theme.colorScheme.onSurfaceVariant)
+                        .copyWith(height: 1.35),
+                  ),
                 const SizedBox(height: 10),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(999), color: pillBg, border: Border.all(color: pillFg.withValues(alpha: 0.28))),
-                    child: Text(enabled ? 'Enabled' : 'Disabled', style: theme.textTheme.labelSmall?.bold.withColor(pillFg)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(999),
+                      color: pillBg,
+                      border: Border.all(color: pillFg.withValues(alpha: 0.28)),
+                    ),
+                    child: Text(
+                      enabled ? 'Enabled' : 'Disabled',
+                      style: theme.textTheme.labelSmall?.bold.withColor(pillFg),
+                    ),
                   ),
                 ),
               ],
@@ -282,7 +380,12 @@ class _FeatureRow extends StatelessWidget {
           const SizedBox(width: AppSpacing.md),
           Switch.adaptive(
             value: enabled,
-            onChanged: canToggle ? (v) => context.read<FeatureFlagProvider>().setEnabled(descriptor.feature, v) : null,
+            onChanged: canToggle
+                ? (v) => context.read<FeatureFlagProvider>().setEnabled(
+                    descriptor.feature,
+                    v,
+                  )
+                : null,
           ),
         ],
       ),
@@ -315,18 +418,30 @@ class _UnlockPanel extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.lg),
         color: theme.colorScheme.surface,
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
-              Expanded(child: Text('Unlock editing', style: theme.textTheme.titleSmall?.bold)),
+              Expanded(
+                child: Text(
+                  'Unlock editing',
+                  style: theme.textTheme.titleSmall?.bold,
+                ),
+              ),
               if (canEdit)
                 TextButton(
                   onPressed: onLock,
-                  child: Text('Lock', style: theme.textTheme.labelLarge?.bold.withColor(theme.colorScheme.onSurfaceVariant)),
+                  child: Text(
+                    'Lock',
+                    style: theme.textTheme.labelLarge?.bold.withColor(
+                      theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 ),
             ],
           ),
@@ -335,7 +450,9 @@ class _UnlockPanel extends StatelessWidget {
             canEdit
                 ? 'Editing is unlocked on this device.'
                 : 'Enter your unlock code to enable feature toggles on this device.',
-            style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant),
+            style: theme.textTheme.bodySmall?.withColor(
+              theme.colorScheme.onSurfaceVariant,
+            ),
           ),
           if (!canEdit) ...[
             const SizedBox(height: AppSpacing.md),
@@ -351,13 +468,27 @@ class _UnlockPanel extends StatelessWidget {
             FilledButton(
               onPressed: unlocking ? null : onUnlock,
               child: unlocking
-                  ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: theme.colorScheme.onPrimary))
-                  : Text('Unlock', style: theme.textTheme.labelLarge?.bold.withColor(theme.colorScheme.onPrimary)),
+                  ? SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: theme.colorScheme.onPrimary,
+                      ),
+                    )
+                  : Text(
+                      'Unlock',
+                      style: theme.textTheme.labelLarge?.bold.withColor(
+                        theme.colorScheme.onPrimary,
+                      ),
+                    ),
             ),
             const SizedBox(height: 6),
             Text(
               'Tip: unlock code is case-sensitive.',
-              style: theme.textTheme.labelSmall?.withColor(theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.labelSmall?.withColor(
+                theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ],
@@ -389,7 +520,9 @@ class _ProgressionPolicyStatusCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -413,19 +546,32 @@ class _ProgressionPolicyStatusCard extends StatelessWidget {
                   children: [
                     Text(title, style: theme.textTheme.titleSmall?.bold),
                     const SizedBox(height: 4),
-                    Text(subtitle, style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant), maxLines: 2, overflow: TextOverflow.ellipsis),
+                    Text(
+                      subtitle,
+                      style: theme.textTheme.bodySmall?.withColor(
+                        theme.colorScheme.onSurfaceVariant,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(999),
                   color: tint.withValues(alpha: 0.12),
                   border: Border.all(color: tint.withValues(alpha: 0.25)),
                 ),
-                child: Text(badgeText, style: theme.textTheme.labelSmall?.bold.withColor(tint)),
+                child: Text(
+                  badgeText,
+                  style: theme.textTheme.labelSmall?.bold.withColor(tint),
+                ),
               ),
             ],
           ),
@@ -442,15 +588,31 @@ class _ProgressionPolicyStatusCard extends StatelessWidget {
           ),
           if (provider.lastError != null) ...[
             const SizedBox(height: AppSpacing.sm),
-            Text('Last error: ${provider.lastError}', style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.error), maxLines: 2, overflow: TextOverflow.ellipsis),
+            Text(
+              'Last error: ${provider.lastError}',
+              style: theme.textTheme.bodySmall?.withColor(
+                theme.colorScheme.error,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
           ],
           const SizedBox(height: AppSpacing.sm),
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
-              onPressed: provider.isLoading ? null : () => context.read<ProgressionFeaturePolicyProvider>().refresh(),
+              onPressed: provider.isLoading
+                  ? null
+                  : () => context
+                        .read<ProgressionFeaturePolicyProvider>()
+                        .refresh(),
               icon: Icon(Icons.refresh, color: theme.colorScheme.onSurface),
-              label: Text('Refresh server policy', style: theme.textTheme.labelLarge?.bold.withColor(theme.colorScheme.onSurface)),
+              label: Text(
+                'Refresh server policy',
+                style: theme.textTheme.labelLarge?.bold.withColor(
+                  theme.colorScheme.onSurface,
+                ),
+              ),
             ),
           ),
         ],
@@ -476,8 +638,12 @@ class _MiniPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final tint = enabled ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant;
-    final bg = enabled ? tint.withValues(alpha: 0.12) : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.22);
+    final tint = enabled
+        ? theme.colorScheme.primary
+        : theme.colorScheme.onSurfaceVariant;
+    final bg = enabled
+        ? tint.withValues(alpha: 0.12)
+        : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.22);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
@@ -485,7 +651,10 @@ class _MiniPill extends StatelessWidget {
         color: bg,
         border: Border.all(color: tint.withValues(alpha: 0.25)),
       ),
-      child: Text(label, style: theme.textTheme.labelSmall?.bold.withColor(tint)),
+      child: Text(
+        label,
+        style: theme.textTheme.labelSmall?.bold.withColor(tint),
+      ),
     );
   }
 }

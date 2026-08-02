@@ -15,7 +15,11 @@ import 'package:spotlight_connect/theme.dart';
 /// - Host mode: publishes camera + mic.
 /// - Viewer mode: subscribes only.
 class LiveKitRoomPage extends StatefulWidget {
-  const LiveKitRoomPage({super.key, required this.session, required this.hostMode});
+  const LiveKitRoomPage({
+    super.key,
+    required this.session,
+    required this.hostMode,
+  });
 
   final StudioSessionModel session;
   final bool hostMode;
@@ -59,7 +63,9 @@ class _LiveKitRoomPageState extends State<LiveKitRoomPage> {
 
     try {
       final sessionRoom = (widget.session.livekitRoom ?? '').trim();
-      if (sessionRoom.isEmpty) throw StateError('Missing LiveKit room name on session.');
+      if (sessionRoom.isEmpty) {
+        throw StateError('Missing LiveKit room name on session.');
+      }
 
       final auth = context.read<AppAuthProvider>();
       final u = auth.currentUser;
@@ -77,20 +83,29 @@ class _LiveKitRoomPageState extends State<LiveKitRoomPage> {
       final identity = u.userId;
 
       if (!kIsWeb && effectiveHostMode) {
-        final statuses = await [Permission.camera, Permission.microphone].request();
+        final statuses = await [
+          Permission.camera,
+          Permission.microphone,
+        ].request();
         final cam = statuses[Permission.camera];
         final mic = statuses[Permission.microphone];
         final camOk = cam?.isGranted ?? false;
         final micOk = mic?.isGranted ?? false;
         if (!camOk || !micOk) {
-          final permanentlyDenied = (cam?.isPermanentlyDenied ?? false) || (mic?.isPermanentlyDenied ?? false);
+          final permanentlyDenied =
+              (cam?.isPermanentlyDenied ?? false) ||
+              (mic?.isPermanentlyDenied ?? false);
           if (permanentlyDenied) {
             throw const _PermissionError(
-              message: 'Camera/microphone access is blocked. Enable permissions in Settings to go live.',
+              message:
+                  'Camera/microphone access is blocked. Enable permissions in Settings to go live.',
               canOpenSettings: true,
             );
           }
-          throw const _PermissionError(message: 'Camera and microphone permissions are required to go live.');
+          throw const _PermissionError(
+            message:
+                'Camera and microphone permissions are required to go live.',
+          );
         }
       }
 
@@ -108,13 +123,15 @@ class _LiveKitRoomPageState extends State<LiveKitRoomPage> {
       // ignore: do_not_use_environment
       const liveKitUrl = String.fromEnvironment('SPOTLIGHT_LIVEKIT_URL');
       if (liveKitUrl.trim().isEmpty) {
-  throw StateError('Missing SPOTLIGHT_LIVEKIT_URL.');
-}
-     final room = Room();
+        throw StateError('Missing SPOTLIGHT_LIVEKIT_URL.');
+      }
+      final room = Room();
       try {
         await room.connect(liveKitUrl.trim(), token);
       } catch (e) {
-        throw StateError('Failed to connect to the live room. Please try again. ($e)');
+        throw StateError(
+          'Failed to connect to the live room. Please try again. ($e)',
+        );
       }
 
       if (effectiveHostMode) {
@@ -148,7 +165,6 @@ class _LiveKitRoomPageState extends State<LiveKitRoomPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -156,13 +172,18 @@ class _LiveKitRoomPageState extends State<LiveKitRoomPage> {
 
     final auth = context.read<AppAuthProvider>();
     final currentUserId = auth.currentUser?.userId;
-    final isBroadcaster = currentUserId != null && currentUserId == widget.session.broadcasterUserId;
+    final isBroadcaster =
+        currentUserId != null &&
+        currentUserId == widget.session.broadcasterUserId;
     final effectiveHostMode = widget.hostMode || isBroadcaster;
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
-        title: Text(effectiveHostMode ? 'Broadcast' : 'Live room', style: theme.textTheme.titleLarge?.bold),
+        title: Text(
+          effectiveHostMode ? 'Broadcast' : 'Live room',
+          style: theme.textTheme.titleLarge?.bold,
+        ),
         leading: IconButton(
           onPressed: () => context.pop(),
           icon: Icon(Icons.close, color: theme.colorScheme.onSurface),
@@ -173,23 +194,32 @@ class _LiveKitRoomPageState extends State<LiveKitRoomPage> {
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
-                ? _ErrorState(
-                    message: _error!,
-                    onRetry: _connect,
-                    secondaryActionLabel: _canOpenSettings ? 'Open settings' : null,
-                    onSecondaryAction: _canOpenSettings
-                        ? () async {
-                            try {
-                              await openAppSettings();
-                            } catch (e) {
-                              debugPrint('LiveKitRoomPage: openAppSettings failed: $e');
-                            }
-                          }
-                        : null,
-                  )
-                : room == null
-                    ? _ErrorState(message: 'Failed to initialize room.', onRetry: _connect)
-                    : _LiveKitRoomBody(room: room, hostMode: effectiveHostMode, session: widget.session),
+            ? _ErrorState(
+                message: _error!,
+                onRetry: _connect,
+                secondaryActionLabel: _canOpenSettings ? 'Open settings' : null,
+                onSecondaryAction: _canOpenSettings
+                    ? () async {
+                        try {
+                          await openAppSettings();
+                        } catch (e) {
+                          debugPrint(
+                            'LiveKitRoomPage: openAppSettings failed: $e',
+                          );
+                        }
+                      }
+                    : null,
+              )
+            : room == null
+            ? _ErrorState(
+                message: 'Failed to initialize room.',
+                onRetry: _connect,
+              )
+            : _LiveKitRoomBody(
+                room: room,
+                hostMode: effectiveHostMode,
+                session: widget.session,
+              ),
       ),
     );
   }
@@ -206,7 +236,11 @@ class _PermissionError implements Exception {
 }
 
 class _LiveKitRoomBody extends StatelessWidget {
-  const _LiveKitRoomBody({required this.room, required this.hostMode, required this.session});
+  const _LiveKitRoomBody({
+    required this.room,
+    required this.hostMode,
+    required this.session,
+  });
 
   final Room room;
   final bool hostMode;
@@ -221,17 +255,25 @@ class _LiveKitRoomBody extends StatelessWidget {
         Text(session.title, style: theme.textTheme.titleMedium?.bold),
         const SizedBox(height: AppSpacing.xs),
         Text(
-          hostMode ? 'You are live in-app. Viewers can join instantly.' : 'You’re watching in-app.',
-          style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+          hostMode
+              ? 'You are live in-app. Viewers can join instantly.'
+              : 'You’re watching in-app.',
+          style: theme.textTheme.bodyMedium?.withColor(
+            theme.colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: AppSpacing.lg),
         Expanded(
           child: Container(
             width: double.infinity,
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+              color: theme.colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.35,
+              ),
               borderRadius: BorderRadius.circular(AppRadius.xl),
-              border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35)),
+              border: Border.all(
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35),
+              ),
             ),
             child: _LiveKitStage(room: room),
           ),
@@ -242,7 +284,9 @@ class _LiveKitRoomBody extends StatelessWidget {
             if (hostMode) ...[
               Expanded(
                 child: FilledButton.icon(
-                  style: FilledButton.styleFrom(backgroundColor: theme.colorScheme.error),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: theme.colorScheme.error,
+                  ),
                   onPressed: () async {
                     final ok = await showModalBottomSheet<bool>(
                       context: context,
@@ -252,22 +296,37 @@ class _LiveKitRoomBody extends StatelessWidget {
                         final theme = Theme.of(context);
                         return SafeArea(
                           child: Padding(
-                            padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.xl),
+                            padding: const EdgeInsets.fromLTRB(
+                              AppSpacing.lg,
+                              AppSpacing.md,
+                              AppSpacing.lg,
+                              AppSpacing.xl,
+                            ),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Icons.stop_circle_outlined, color: theme.colorScheme.error),
+                                    Icon(
+                                      Icons.stop_circle_outlined,
+                                      color: theme.colorScheme.error,
+                                    ),
                                     const SizedBox(width: AppSpacing.sm),
-                                    Expanded(child: Text('End broadcast?', style: theme.textTheme.titleLarge?.bold)),
+                                    Expanded(
+                                      child: Text(
+                                        'End broadcast?',
+                                        style: theme.textTheme.titleLarge?.bold,
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: AppSpacing.sm),
                                 Text(
                                   'This will immediately disconnect you and end the live session for everyone.',
-                                  style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+                                  style: theme.textTheme.bodyMedium?.withColor(
+                                    theme.colorScheme.onSurfaceVariant,
+                                  ),
                                 ),
                                 const SizedBox(height: AppSpacing.lg),
                                 Row(
@@ -275,16 +334,37 @@ class _LiveKitRoomBody extends StatelessWidget {
                                     Expanded(
                                       child: OutlinedButton(
                                         onPressed: () => context.pop(false),
-                                        child: Text('Cancel', style: theme.textTheme.labelLarge?.withColor(theme.colorScheme.onSurface)),
+                                        child: Text(
+                                          'Cancel',
+                                          style: theme.textTheme.labelLarge
+                                              ?.withColor(
+                                                theme.colorScheme.onSurface,
+                                              ),
+                                        ),
                                       ),
                                     ),
                                     const SizedBox(width: AppSpacing.md),
                                     Expanded(
                                       child: FilledButton.icon(
-                                        style: FilledButton.styleFrom(backgroundColor: theme.colorScheme.error),
+                                        style: FilledButton.styleFrom(
+                                          backgroundColor:
+                                              theme.colorScheme.error,
+                                        ),
                                         onPressed: () => context.pop(true),
-                                        icon: Icon(Icons.call_end, color: theme.colorScheme.onError),
-                                        label: Text('End', style: theme.textTheme.labelLarge?.bold.withColor(theme.colorScheme.onError)),
+                                        icon: Icon(
+                                          Icons.call_end,
+                                          color: theme.colorScheme.onError,
+                                        ),
+                                        label: Text(
+                                          'End',
+                                          style: theme
+                                              .textTheme
+                                              .labelLarge
+                                              ?.bold
+                                              .withColor(
+                                                theme.colorScheme.onError,
+                                              ),
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -313,8 +393,16 @@ class _LiveKitRoomBody extends StatelessWidget {
                     if (!context.mounted) return;
                     context.pop();
                   },
-                  icon: Icon(Icons.stop_circle_outlined, color: theme.colorScheme.onError),
-                  label: Text('End broadcast', style: theme.textTheme.labelLarge?.bold.withColor(theme.colorScheme.onError)),
+                  icon: Icon(
+                    Icons.stop_circle_outlined,
+                    color: theme.colorScheme.onError,
+                  ),
+                  label: Text(
+                    'End broadcast',
+                    style: theme.textTheme.labelLarge?.bold.withColor(
+                      theme.colorScheme.onError,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
@@ -331,18 +419,28 @@ class _LiveKitRoomBody extends StatelessWidget {
                   if (localContext.mounted) localContext.pop();
                 },
                 icon: Icon(Icons.logout, color: theme.colorScheme.onSurface),
-                label: Text(hostMode ? 'Leave room' : 'Leave', style: theme.textTheme.labelLarge?.withColor(theme.colorScheme.onSurface)),
+                label: Text(
+                  hostMode ? 'Leave room' : 'Leave',
+                  style: theme.textTheme.labelLarge?.withColor(
+                    theme.colorScheme.onSurface,
+                  ),
+                ),
               ),
             ),
           ],
-        )
+        ),
       ],
     );
   }
 }
 
 class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.message, required this.onRetry, this.secondaryActionLabel, this.onSecondaryAction});
+  const _ErrorState({
+    required this.message,
+    required this.onRetry,
+    this.secondaryActionLabel,
+    this.onSecondaryAction,
+  });
 
   final String message;
   final VoidCallback onRetry;
@@ -360,7 +458,9 @@ class _ErrorState extends StatelessWidget {
           decoration: BoxDecoration(
             color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(AppRadius.xl),
-            border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35)),
+            border: Border.all(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35),
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -370,20 +470,39 @@ class _ErrorState extends StatelessWidget {
                 children: [
                   Icon(Icons.error_outline, color: theme.colorScheme.error),
                   const SizedBox(width: AppSpacing.sm),
-                  Expanded(child: Text('Could not join room', style: theme.textTheme.titleMedium?.bold)),
+                  Expanded(
+                    child: Text(
+                      'Could not join room',
+                      style: theme.textTheme.titleMedium?.bold,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: AppSpacing.sm),
-              Text(message, style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant)),
+              Text(
+                message,
+                style: theme.textTheme.bodySmall?.withColor(
+                  theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
               const SizedBox(height: AppSpacing.md),
               Row(
                 children: [
-                  if (secondaryActionLabel != null && onSecondaryAction != null) ...[
+                  if (secondaryActionLabel != null &&
+                      onSecondaryAction != null) ...[
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: onSecondaryAction,
-                        icon: Icon(Icons.settings, color: theme.colorScheme.onSurface),
-                        label: Text(secondaryActionLabel!, style: theme.textTheme.labelLarge?.withColor(theme.colorScheme.onSurface)),
+                        icon: Icon(
+                          Icons.settings,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                        label: Text(
+                          secondaryActionLabel!,
+                          style: theme.textTheme.labelLarge?.withColor(
+                            theme.colorScheme.onSurface,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(width: AppSpacing.md),
@@ -391,12 +510,20 @@ class _ErrorState extends StatelessWidget {
                   Expanded(
                     child: FilledButton.icon(
                       onPressed: onRetry,
-                      icon: Icon(Icons.refresh, color: theme.colorScheme.onPrimary),
-                      label: Text('Retry', style: theme.textTheme.labelLarge?.bold.withColor(theme.colorScheme.onPrimary)),
+                      icon: Icon(
+                        Icons.refresh,
+                        color: theme.colorScheme.onPrimary,
+                      ),
+                      label: Text(
+                        'Retry',
+                        style: theme.textTheme.labelLarge?.bold.withColor(
+                          theme.colorScheme.onPrimary,
+                        ),
+                      ),
                     ),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),
@@ -455,7 +582,9 @@ class _LiveKitStageState extends State<_LiveKitStage> {
       for (final pub in rp.videoTrackPublications) {
         final track = pub.track;
         if (track == null) continue;
-        tiles.add(_VideoTile(track: track, label: name.isEmpty ? 'Viewer' : name));
+        tiles.add(
+          _VideoTile(track: track, label: name.isEmpty ? 'Viewer' : name),
+        );
         break;
       }
     }
@@ -464,7 +593,9 @@ class _LiveKitStageState extends State<_LiveKitStage> {
       return Center(
         child: Text(
           'Waiting for video…',
-          style: theme.textTheme.bodyMedium?.withColor(theme.colorScheme.onSurfaceVariant),
+          style: theme.textTheme.bodyMedium?.withColor(
+            theme.colorScheme.onSurfaceVariant,
+          ),
         ),
       );
     }
@@ -493,7 +624,11 @@ class _VideoTile extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          ColoredBox(color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5)),
+          ColoredBox(
+            color: theme.colorScheme.surfaceContainerHighest.withValues(
+              alpha: 0.5,
+            ),
+          ),
           VideoTrackRenderer(track),
           Positioned(
             left: AppSpacing.sm,
@@ -503,7 +638,11 @@ class _VideoTile extends StatelessWidget {
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface.withValues(alpha: 0.75),
                 borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35)),
+                border: Border.all(
+                  color: theme.colorScheme.outlineVariant.withValues(
+                    alpha: 0.35,
+                  ),
+                ),
               ),
               child: Text(label, style: theme.textTheme.labelMedium?.bold),
             ),

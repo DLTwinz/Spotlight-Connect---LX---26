@@ -1,0 +1,8 @@
+lib/providers/progression_feature_policy_provider.dart:16:class ProgressionFeaturePolicyProvider extends ChangeNotifier {
+lib/providers/feature_flag_provider.dart:50:class FeatureFlagProvider extends ChangeNotifier {
+lib/providers/app_auth_provider.dart.bak-20260718-232405:3:class AppAuthProvider extends ChangeNotifier {
+lib/providers/supabase_auth_provider.dart:7:class SupabaseAuthProvider extends AppAuthProvider {
+lib/providers/app_auth_provider.dart.bak-abstract-20260719-005207:4:class AppAuthProvider extends ChangeNotifier {
+lib/providers/supabase_auth_provider.dart.bak-typed-20260719-005242:7:class SupabaseAuthProvider extends AppAuthProvider {
+lib/pages/progression/widgets/progression_states.dart:93:class _ProgressionSkeletonCardState extends State<ProgressionSkeletonCard> with SingleTickerProviderStateMixin {
+lib/features/verified_fandom/providers/verified_fandom_providers.dart:7:class VerifiedFandomProvider extends ChangeNotifier {

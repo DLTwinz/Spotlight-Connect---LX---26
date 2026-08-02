@@ -3,10 +3,10 @@
 // =========================================================================
 
 enum SpotlightRole {
-  operator,   // Venues, Promoters, Managers
-  creator,    // Talent, Artists, Influencers
-  brand,      // Corporate Sponsors, Local Commerce
-  fan         // The Audience / Physical Nodes
+  operator, // Venues, Promoters, Managers
+  creator, // Talent, Artists, Influencers
+  brand, // Corporate Sponsors, Local Commerce
+  fan, // The Audience / Physical Nodes
 }
 
 class SystemRoleState {
@@ -15,7 +15,8 @@ class SystemRoleState {
   final bool dataStreamSyncActive;
 
   SystemRoleState({
-    this.activeRole = SpotlightRole.fan, // Defaults to standard consumer safety profile
+    this.activeRole =
+        SpotlightRole.fan, // Defaults to standard consumer safety profile
     this.clearanceToken = 'GUEST_NODE_DEFAULT',
     this.dataStreamSyncActive = true,
   });

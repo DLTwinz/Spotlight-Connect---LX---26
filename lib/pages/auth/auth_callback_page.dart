@@ -86,12 +86,26 @@ class _AuthCallbackPageState extends State<AuthCallbackPage> {
         final hasSession = SupabaseConfig.client.auth.currentSession != null;
         if (!mounted) return;
         if (hasSession) {
-          context.go(Uri(path: AppRoutes.resetPassword, queryParameters: {'step': 'set'}).toString());
+          context.go(
+            Uri(
+              path: AppRoutes.resetPassword,
+              queryParameters: {'step': 'set'},
+            ).toString(),
+          );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Enter the one-time code from your email to continue.')),
+            const SnackBar(
+              content: Text(
+                'Enter the one-time code from your email to continue.',
+              ),
+            ),
           );
-          context.go(Uri(path: AppRoutes.resetPassword, queryParameters: {'step': 'verify'}).toString());
+          context.go(
+            Uri(
+              path: AppRoutes.resetPassword,
+              queryParameters: {'step': 'verify'},
+            ).toString(),
+          );
         }
         return;
       }
@@ -145,8 +159,10 @@ class _AuthCallbackPageState extends State<AuthCallbackPage> {
     final userFacing = switch (normalizedError) {
       'access_denied' || 'accessdenied' || 'acc' =>
         'We couldn\'t confirm your email because Supabase rejected the link. Please request a new confirmation email, and if it keeps happening, verify the app redirect URL is allowed in Supabase.',
-      'otp_expired' => 'This one-time link has expired. Please request a new one.',
-      _ => 'We couldn\'t finish sign-in. Please request a new link and try again.',
+      'otp_expired' =>
+        'This one-time link has expired. Please request a new one.',
+      _ =>
+        'We couldn\'t finish sign-in. Please request a new link and try again.',
     };
 
     final debugDetails = <String, String?>{
@@ -158,7 +174,10 @@ class _AuthCallbackPageState extends State<AuthCallbackPage> {
       'fragment': uri.fragment,
     }.entries.map((e) => '${e.key}=${e.value ?? ''}').join('\n');
 
-    return _SupabaseEmailLinkError(userFacingMessage: userFacing, debugDetails: debugDetails);
+    return _SupabaseEmailLinkError(
+      userFacingMessage: userFacing,
+      debugDetails: debugDetails,
+    );
   }
 
   static Uri _normalizeSupabaseEmailLink(Uri uri) {
@@ -198,11 +217,26 @@ class _AuthCallbackPageState extends State<AuthCallbackPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (_busy) ...[
-                  const Center(child: SizedBox(height: 22, width: 22, child: CircularProgressIndicator(strokeWidth: 2))),
+                  const Center(
+                    child: SizedBox(
+                      height: 22,
+                      width: 22,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
                   const SizedBox(height: 12),
-                  Text('Processing your link…', textAlign: TextAlign.center, style: theme.textTheme.bodyMedium),
+                  Text(
+                    'Processing your link…',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium,
+                  ),
                 ] else if (_error != null) ...[
-                  Text(_error!, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.error)),
+                  Text(
+                    _error!,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.error,
+                    ),
+                  ),
                   if (kDebugMode && (_debugDetails?.isNotEmpty ?? false)) ...[
                     const SizedBox(height: 12),
                     Container(
@@ -211,7 +245,10 @@ class _AuthCallbackPageState extends State<AuthCallbackPage> {
                         color: theme.colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: SelectableText(_debugDetails!, style: theme.textTheme.labelSmall),
+                      child: SelectableText(
+                        _debugDetails!,
+                        style: theme.textTheme.labelSmall,
+                      ),
                     ),
                   ],
                   const SizedBox(height: 12),
@@ -225,7 +262,11 @@ class _AuthCallbackPageState extends State<AuthCallbackPage> {
                     child: const Text('Back to sign in'),
                   ),
                 ] else ...[
-                  Text('Done. Redirecting…', textAlign: TextAlign.center, style: theme.textTheme.bodyMedium),
+                  Text(
+                    'Done. Redirecting…',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium,
+                  ),
                 ],
               ],
             ),
@@ -237,7 +278,10 @@ class _AuthCallbackPageState extends State<AuthCallbackPage> {
 }
 
 class _SupabaseEmailLinkError {
-  const _SupabaseEmailLinkError({required this.userFacingMessage, required this.debugDetails});
+  const _SupabaseEmailLinkError({
+    required this.userFacingMessage,
+    required this.debugDetails,
+  });
   final String userFacingMessage;
   final String debugDetails;
 }

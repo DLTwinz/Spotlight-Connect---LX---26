@@ -7,9 +7,11 @@ class OpportunityService extends ChangeNotifier {
   List<Map<String, dynamic>> _opportunities = [];
   bool _isLoading = false;
 
-  OpportunityService({required SupabaseClient client, required dynamic localCache}) 
-      : _client = client, 
-        _localCache = localCache {
+  OpportunityService({
+    required SupabaseClient client,
+    required dynamic localCache,
+  }) : _client = client,
+       _localCache = localCache {
     fetchActiveOpportunities();
   }
 
@@ -33,7 +35,12 @@ class OpportunityService extends ChangeNotifier {
     }
   }
 
-  Future<void> createCampaign({required String title, required String description, required int budgetCents, required String brandId}) async {
+  Future<void> createCampaign({
+    required String title,
+    required String description,
+    required int budgetCents,
+    required String brandId,
+  }) async {
     try {
       await _client.from('opportunities').insert({
         'brand_id': brandId,

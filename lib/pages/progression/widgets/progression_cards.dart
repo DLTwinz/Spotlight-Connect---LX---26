@@ -36,9 +36,15 @@ class ProgressionCardShell extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: emphasize ? theme.colorScheme.surfaceContainerHigh : theme.colorScheme.surface,
+        color: emphasize
+            ? theme.colorScheme.surfaceContainerHigh
+            : theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: emphasize ? 0.32 : 0.22)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(
+            alpha: emphasize ? 0.32 : 0.22,
+          ),
+        ),
       ),
       padding: AppSpacing.paddingLg,
       child: Column(
@@ -49,7 +55,10 @@ class ProgressionCardShell extends StatelessWidget {
               Container(
                 width: 38,
                 height: 38,
-                decoration: BoxDecoration(color: iconBackgroundColor, borderRadius: BorderRadius.circular(AppRadius.md)),
+                decoration: BoxDecoration(
+                  color: iconBackgroundColor,
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
                 alignment: Alignment.center,
                 child: Icon(icon, color: iconColor),
               ),
@@ -58,18 +67,39 @@ class ProgressionCardShell extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: theme.textTheme.titleMedium?.bold, maxLines: 2, overflow: TextOverflow.ellipsis),
+                    Text(
+                      title,
+                      style: theme.textTheme.titleMedium?.bold,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     const SizedBox(height: 2),
-                    Text(subtitle, style: theme.textTheme.bodySmall?.withColor(theme.colorScheme.onSurfaceVariant), maxLines: 2, overflow: TextOverflow.ellipsis),
+                    Text(
+                      subtitle,
+                      style: theme.textTheme.bodySmall?.withColor(
+                        theme.colorScheme.onSurfaceVariant,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                 ),
               ),
               if ((badgeText ?? '').trim().isNotEmpty) ...[
                 const SizedBox(width: AppSpacing.sm),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(color: badgeClr.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(999)),
-                  child: Text(badgeText!.trim(), style: theme.textTheme.labelSmall?.bold.withColor(badgeClr)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: badgeClr.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    badgeText!.trim(),
+                    style: theme.textTheme.labelSmall?.bold.withColor(badgeClr),
+                  ),
                 ),
               ],
             ],

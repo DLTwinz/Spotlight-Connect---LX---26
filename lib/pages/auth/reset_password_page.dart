@@ -56,7 +56,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       _emailController.text = initialEmail;
     }
 
-    _step = _deriveInitialStep(email: _emailController.text.trim(), override: widget.initialStep);
+    _step = _deriveInitialStep(
+      email: _emailController.text.trim(),
+      override: widget.initialStep,
+    );
 
     // Supabase recovery/magic links can land on `/reset-password` directly (or be
     // rewritten by some hosts/email clients) while still carrying auth params in
@@ -72,33 +75,43 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         final uri = Uri.base;
         final frag = uri.fragment;
         final qp = uri.queryParameters;
-        final hasFragmentTokens = frag.contains('access_token=') || frag.contains('refresh_token=') || frag.contains('type=recovery');
+        final hasFragmentTokens =
+            frag.contains('access_token=') ||
+            frag.contains('refresh_token=') ||
+            frag.contains('type=recovery');
         final hasPkceCode = (qp['code'] ?? '').isNotEmpty;
         final hasRecoveryType = (qp['type'] ?? '').toLowerCase() == 'recovery';
-        final hasAuthParams = hasFragmentTokens || hasPkceCode || hasRecoveryType;
+        final hasAuthParams =
+            hasFragmentTokens || hasPkceCode || hasRecoveryType;
 
-        if (hasAuthParams && SupabaseConfig.client.auth.currentSession == null) {
-  if (kDebugMode) {
-    debugPrint(
-      'ResetPasswordPage: detected Supabase email-link params; forwarding to ${AppRoutes.authCallback}',
-    );
-  }
-  final target = Uri(
-    path: AppRoutes.authCallback,
-    queryParameters: qp,
-    fragment: frag,
-  ).toString();
-  context.go(target);
-}
+        if (hasAuthParams &&
+            SupabaseConfig.client.auth.currentSession == null) {
+          if (kDebugMode) {
+            debugPrint(
+              'ResetPasswordPage: detected Supabase email-link params; forwarding to ${AppRoutes.authCallback}',
+            );
+          }
+          final target = Uri(
+            path: AppRoutes.authCallback,
+            queryParameters: qp,
+            fragment: frag,
+          ).toString();
+          context.go(target);
+        }
       } catch (e) {
-        debugPrint('ResetPasswordPage: failed to inspect Uri.base for email-link params: $e');
+        debugPrint(
+          'ResetPasswordPage: failed to inspect Uri.base for email-link params: $e',
+        );
       }
     });
 
     // If a user enters directly via a recovery link, we may start on `set`.
     // That requires an auth session; if we don't have one, fall back to OTP verify.
-    if (_step == _ResetStep.set && SupabaseConfig.client.auth.currentSession == null) {
-      _step = _emailController.text.trim().isNotEmpty ? _ResetStep.verify : _ResetStep.request;
+    if (_step == _ResetStep.set &&
+        SupabaseConfig.client.auth.currentSession == null) {
+      _step = _emailController.text.trim().isNotEmpty
+          ? _ResetStep.verify
+          : _ResetStep.request;
     }
   }
 
@@ -124,7 +137,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
   void _startVerifyLock() {
     _verifyLockTimer?.cancel();
-    setState(() => _verifyLockedUntil = DateTime.now().add(_verifyLockDuration));
+    setState(
+      () => _verifyLockedUntil = DateTime.now().add(_verifyLockDuration),
+    );
     _verifyLockTimer = Timer.periodic(const Duration(seconds: 1), (t) {
       if (!mounted) {
         t.cancel();
@@ -168,7 +183,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     });
   }
 
-  static _ResetStep _deriveInitialStep({required String email, required String? override}) {
+  static _ResetStep _deriveInitialStep({
+    required String email,
+    required String? override,
+  }) {
     final normalizedOverride = (override ?? '').trim().toLowerCase();
     final fromOverride = switch (normalizedOverride) {
       'request' => _ResetStep.request,
@@ -198,7 +216,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     }
 
     if (_resendLocked) {
-      setState(() => _error = 'Please wait ${_resendSecondsRemaining}s before requesting another code.');
+      setState(
+        () => _error =
+            'Please wait ${_resendSecondsRemaining}s before requesting another code.',
+      );
       return;
     }
 
@@ -211,13 +232,19 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       await SupabaseConfig.client.auth.resetPasswordForEmail(email);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('One-time code sent. Check your email, then enter the code to continue.')),
+        const SnackBar(
+          content: Text(
+            'One-time code sent. Check your email, then enter the code to continue.',
+          ),
+        ),
       );
       _startResendCooldown();
       _setStep(_ResetStep.verify);
     } catch (e) {
       debugPrint('ResetPasswordPage send code failed: $e');
-      setState(() => _error = 'Could not send the reset code. Please try again.');
+      setState(
+        () => _error = 'Could not send the reset code. Please try again.',
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -225,14 +252,19 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
   Future<void> _verifyOneTimeCode() async {
     if (_verifyLocked) {
-      setState(() => _error = 'Too many attempts. Please wait ${_verifySecondsRemaining}s and try again.');
+      setState(
+        () => _error =
+            'Too many attempts. Please wait ${_verifySecondsRemaining}s and try again.',
+      );
       return;
     }
 
     final email = _normalizedEmail;
     final code = _codeController.text.trim();
     if (email.isEmpty || !email.contains('@')) {
-      setState(() => _error = 'Enter the email address you requested the reset for.');
+      setState(
+        () => _error = 'Enter the email address you requested the reset for.',
+      );
       return;
     }
     if (code.length < 6) {
@@ -251,7 +283,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         token: code,
         type: OtpType.recovery,
       );
-      final hasSession = res.session != null || SupabaseConfig.client.auth.currentSession != null;
+      final hasSession =
+          res.session != null ||
+          SupabaseConfig.client.auth.currentSession != null;
       if (!hasSession) {
         throw StateError('No session after verifyOTP');
       }
@@ -271,22 +305,35 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
       // Only count a "wrong code" as an attempt. Network/timeouts/etc should not
       // lock a user out.
-      final shouldCountAttempt = isAuthApi && (codeStr == 'otp_expired' || codeStr == 'otp_invalid');
+      final shouldCountAttempt =
+          isAuthApi && (codeStr == 'otp_expired' || codeStr == 'otp_invalid');
       if (shouldCountAttempt) {
         setState(() => _verifyAttempts = (_verifyAttempts + 1).clamp(0, 999));
       }
 
-      final remaining = (_maxVerifyAttempts - _verifyAttempts).clamp(0, _maxVerifyAttempts);
+      final remaining = (_maxVerifyAttempts - _verifyAttempts).clamp(
+        0,
+        _maxVerifyAttempts,
+      );
       if (_verifyAttempts >= _maxVerifyAttempts) {
         _startVerifyLock();
-        setState(() => _error = 'Too many incorrect codes. Please wait ${_verifyLockDuration.inSeconds}s and try again.');
+        setState(
+          () => _error =
+              'Too many incorrect codes. Please wait ${_verifyLockDuration.inSeconds}s and try again.',
+        );
         return;
       }
 
       if (codeStr == 'otp_expired') {
-        setState(() => _error = 'That code expired. Tap “Resend code” to request a fresh one. ($remaining attempts left)');
+        setState(
+          () => _error =
+              'That code expired. Tap “Resend code” to request a fresh one. ($remaining attempts left)',
+        );
       } else if (codeStr == 'otp_invalid') {
-        setState(() => _error = 'Incorrect code. Try again. ($remaining attempts left)');
+        setState(
+          () =>
+              _error = 'Incorrect code. Try again. ($remaining attempts left)',
+        );
       } else {
         // Fallback.
         setState(() => _error = 'Could not verify the code. Please try again.');
@@ -314,10 +361,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     });
 
     try {
-      await SupabaseConfig.client.auth.updateUser(UserAttributes(password: password));
+      await SupabaseConfig.client.auth.updateUser(
+        UserAttributes(password: password),
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password updated. Please sign in again.')),
+        const SnackBar(
+          content: Text('Password updated. Please sign in again.'),
+        ),
       );
       await SupabaseConfig.client.auth.signOut();
       if (!mounted) return;
@@ -351,8 +402,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 step: _step,
                 isBusy: _isBusy,
                 errorText: _error,
-                  resendSecondsRemaining: _resendSecondsRemaining,
-                  verifySecondsRemaining: _verifySecondsRemaining,
+                resendSecondsRemaining: _resendSecondsRemaining,
+                verifySecondsRemaining: _verifySecondsRemaining,
                 emailController: _emailController,
                 codeController: _codeController,
                 passwordController: _passwordController,
@@ -375,7 +426,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           _step = _ResetStep.request;
                         });
                       },
-                onBackToVerify: _isBusy ? null : () => _setStep(_ResetStep.verify),
+                onBackToVerify: _isBusy
+                    ? null
+                    : () => _setStep(_ResetStep.verify),
               ),
             ),
           ),
@@ -443,12 +496,18 @@ class _ResetStepBody extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 12),
         child: Text(
           errorText!,
-          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.error),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.error,
+          ),
         ),
       );
     }
 
-    Widget busyIndicator() => const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2));
+    Widget busyIndicator() => const SizedBox(
+      height: 18,
+      width: 18,
+      child: CircularProgressIndicator(strokeWidth: 2),
+    );
 
     return Column(
       key: ValueKey(step),
@@ -477,16 +536,15 @@ class _ResetStepBody extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'You can request another code in $resendSecondsRemaining seconds.',
-              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
           const SizedBox(height: 12),
           if (onStartOver != null)
-            TextButton(
-              onPressed: onStartOver,
-              child: const Text('Start over'),
-            ),
+            TextButton(onPressed: onStartOver, child: const Text('Start over')),
         ],
         if (step == _ResetStep.verify) ...[
           TextField(
@@ -504,7 +562,9 @@ class _ResetStepBody extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Too many attempts. Try again in $verifySecondsRemaining seconds.',
-              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -515,7 +575,11 @@ class _ResetStepBody extends StatelessWidget {
             children: [
               OutlinedButton(
                 onPressed: (isBusy || resendLocked) ? null : onSendCode,
-                child: Text(resendLocked ? 'Resend in ${resendSecondsRemaining}s' : 'Resend code'),
+                child: Text(
+                  resendLocked
+                      ? 'Resend in ${resendSecondsRemaining}s'
+                      : 'Resend code',
+                ),
               ),
               if (onStartOver != null)
                 TextButton(
