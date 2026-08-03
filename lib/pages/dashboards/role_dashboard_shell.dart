@@ -340,7 +340,7 @@ class _DesktopSidebar extends StatelessWidget {
               Expanded(
                 child: ListView.separated(
                   itemCount: tabs.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  separatorBuilder: (_, _) => const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final tab = tabs[index];
                     final selected = index == currentIndex;
@@ -768,7 +768,7 @@ class _TopTabStrip extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: tabs.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
           final tab = tabs[index];
           final selected = index == currentIndex;
