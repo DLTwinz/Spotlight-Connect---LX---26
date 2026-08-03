@@ -213,7 +213,7 @@ class _CreatorHomeTabState extends State<CreatorHomeTab> {
                 child: _HudKpi(
                   role: _role,
                   label: 'SUPPORT',
-                  value: _graphLoading ? '—' : '${_supportBalance.toStringAsFixed(0)}',
+                  value: _graphLoading ? '—' : _supportBalance.toStringAsFixed(0),
                   icon: Icons.star_outline,
                 ),
               ),

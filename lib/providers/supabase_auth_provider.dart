@@ -60,20 +60,6 @@ class SupabaseAuthProvider extends AppAuthProvider {
     return null;
   }
 
-  String? _mapProfileRoleToLedgerRole(String profileRole) {
-    switch (profileRole.trim().toLowerCase()) {
-      case 'audience':
-        return 'fan';
-      case 'talent':
-        return 'creator';
-      case 'business':
-        return 'brand';
-      case 'admin':
-        return 'admin';
-      default:
-        return null;
-    }
-  }
 
   Future<void> refreshProfile(String uid, String? email) async {
     if (_isLoading) return;

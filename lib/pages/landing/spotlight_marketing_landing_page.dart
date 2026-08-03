@@ -404,7 +404,7 @@ class _HeroVisual extends StatelessWidget {
                   Image.asset(
                     'assets/landing/hero_collage.png',
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(color: _L.surface),
+                    errorBuilder: (_, _, _) => Container(color: _L.surface),
                   ),
                   // Cyan/purple lighting overlays
                   DecoratedBox(
@@ -720,13 +720,13 @@ class _FeatureCards extends StatelessWidget {
         body: 'Partner with authentic creators and drive real results.',
         stats: [('1K+', 'Partner Brands'), ('3K+', 'Campaigns Live'), ('4.7x', 'Average ROI')],
         image: 'assets/landing/card_brands.png',
-        accent: const Color(0xFF3B82F6),
+        accent: Color(0xFF3B82F6),
       ),
       _FeatureData(
         eyebrow: 'THE ECOSYSTEM LOOP',
         title: 'Stronger Together',
         body: 'A connected cycle that powers growth for everyone.',
-        stats: const [],
+        stats: [],
         image: 'assets/landing/card_loop.png',
         accent: _L.magenta,
         isLoop: true,
@@ -808,12 +808,12 @@ class _FeatureCardState extends State<_FeatureCard> {
                 ? Image.asset(
                     d.image,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(color: _L.surface),
+                    errorBuilder: (_, _, _) => Container(color: _L.surface),
                   )
                 : Image.network(
                     d.image,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(color: _L.surface),
+                    errorBuilder: (_, _, _) => Container(color: _L.surface),
                   ),
             DecoratedBox(
               decoration: BoxDecoration(
