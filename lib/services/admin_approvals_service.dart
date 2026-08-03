@@ -92,14 +92,13 @@ class AdminApprovalsService {
       roles.add(newRole);
     }
 
-    await _db.from('profiles').update({
-      'requested_role_pending': null,
-      'application_status_summary': 'approved',
-      'approved': true,
-      'approved_roles': roles,
-      'active_role': newRole.isNotEmpty ? newRole : (existing?['active_role'] ?? 'audience'),
-      'updated_at': DateTime.now().toUtc().toIso8601String(),
-    }).eq('id', item.profileId);
+    // Do not set active_role — DB trigger prevent_active_role_change blocks it.
+    // Role access is granted via approved_roles; active_role is admin-controlled.
+    // Admin write via SECURITY DEFINER RPC (bypasses profiles RLS).
+    await _db.rpc('admin_approve_profile', params: {
+      'p_profile_id': item.profileId,
+      'p_roles': roles,
+    });
 
     await _db.from('approvals').insert({
       'user_id': item.userId,
