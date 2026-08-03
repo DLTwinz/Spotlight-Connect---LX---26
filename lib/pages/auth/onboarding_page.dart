@@ -17,6 +17,19 @@ class _OnboardingPageState extends State<OnboardingPage> {
   final _usernameCtrl = TextEditingController();
   String? _selectedRole; // null = audience, 'talent', 'business'
   bool _busy = false;
+  bool _roleSeeded = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_roleSeeded) return;
+    _roleSeeded = true;
+    final role = GoRouterState.of(context).uri.queryParameters['role'];
+    if (role == 'talent' || role == 'business' || role == 'audience') {
+      // audience is stored as null in this form
+      setState(() => _selectedRole = role == 'audience' ? null : role);
+    }
+  }
 
   Future<void> _submit() async {
     if (_busy) return;

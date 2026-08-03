@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:spotlight_connect/services/graph_event_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:spotlight_connect/providers/app_auth_provider.dart';
 import 'package:spotlight_connect/services/opportunity_service.dart';
@@ -92,6 +94,440 @@ class _TelemetryCard extends StatelessWidget {
 // ==========================================
 // 1. FEED TAB (ACTIVITY ENGINE & LOGS)
 // ==========================================
+
+// ==========================================
+// CREATOR HOME — Operations HUD (graph-aware)
+// Spec: unique per-role dashboard. Talent must not share FeedTab.
+// ==========================================
+class CreatorHomeTab extends StatefulWidget {
+  const CreatorHomeTab({super.key});
+
+  @override
+  State<CreatorHomeTab> createState() => _CreatorHomeTabState();
+}
+
+class _CreatorHomeTabState extends State<CreatorHomeTab> {
+  static const _role = 'talent';
+  int _applyCount = 0;
+  int _eventCount = 0;
+  num _supportBalance = 0;
+  num _supportImpact = 0;
+  num _fandomStrength = 0;
+  bool _graphLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadGraphStats();
+  }
+
+  Future<void> _loadGraphStats() async {
+    final client = Supabase.instance.client;
+    final graph = GraphEventService(client);
+    try {
+      final applies = await graph.countMyEvents(eventType: 'campaign_apply');
+      final all = await graph.countMyEvents();
+      final balance = await graph.mySupportBalance();
+      await graph.recomputeSupportImpact();
+      final impact = await graph.mySupportImpactScore();
+      final fandom = await graph.myTopFandomStrength();
+      if (!mounted) return;
+      setState(() {
+        _applyCount = applies;
+        _eventCount = all;
+        _supportBalance = balance;
+        _supportImpact = impact;
+        _fandomStrength = fandom;
+        _graphLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _graphLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = context.roleAccent(_role);
+    final oppSvc = context.watch<OpportunityService>();
+    final openCount = oppSvc.opportunities.length;
+    final loading = oppSvc.isLoading;
+
+    return Scaffold(
+      backgroundColor: context.roleShellBackground(_role),
+      appBar: AppBar(
+        backgroundColor: context.roleShellBackground(_role),
+        title: Text(
+          'CREATOR OPERATIONS HUD',
+          style: TextStyle(
+            color: context.roleTextPrimary(_role),
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.5,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh, color: accent, size: 20),
+            onPressed: () {
+              oppSvc.fetchActiveOpportunities();
+              setState(() => _graphLoading = true);
+              _loadGraphStats();
+            },
+          ),
+        ],
+      ),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: _HudKpi(
+                  role: _role,
+                  label: 'OPEN OPPORTUNITIES',
+                  value: loading ? '—' : '$openCount',
+                  icon: Icons.work_outline,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _HudKpi(
+                  role: _role,
+                  label: 'APPLICATIONS',
+                  value: _graphLoading ? '—' : '$_applyCount',
+                  icon: Icons.send_outlined,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _HudKpi(
+                  role: _role,
+                  label: 'GRAPH EVENTS',
+                  value: _graphLoading ? '—' : '$_eventCount',
+                  icon: Icons.hub_outlined,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _HudKpi(
+                  role: _role,
+                  label: 'SUPPORT',
+                  value: _graphLoading ? '—' : '${_supportBalance.toStringAsFixed(0)}',
+                  icon: Icons.star_outline,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'ACTION QUEUE',
+            style: TextStyle(
+              color: context.roleTextSubtle(_role),
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.4,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 28),
+            decoration: BoxDecoration(
+              color: context.rolePanelBackground(_role),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: context.rolePanelBorder(_role)),
+            ),
+            child: Column(
+              children: [
+                Icon(Icons.inbox_outlined, color: accent.withValues(alpha: 0.7), size: 32),
+                const SizedBox(height: 12),
+                Text(
+                  _applyCount > 0 ? 'Applications in flight' : 'No actions right now',
+                  style: TextStyle(
+                    color: context.roleTextPrimary(_role),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  _applyCount > 0
+                      ? '$_applyCount apply event${_applyCount == 1 ? '' : 's'} · support impact ${_supportImpact.toStringAsFixed(0)}'
+                      : 'Approvals, mission steps, and contract responses will land here.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: context.roleTextMuted(_role),
+                    fontSize: 12.5,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'OPPORTUNITIES',
+            style: TextStyle(
+              color: context.roleTextSubtle(_role),
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.4,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: context.rolePanelBackground(_role),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: context.rolePanelBorder(_role)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(Icons.work_outline, color: accent, size: 20),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        openCount == 0
+                            ? 'No open opportunities'
+                            : '$openCount open ${openCount == 1 ? 'opportunity' : 'opportunities'}',
+                        style: TextStyle(
+                          color: context.roleTextPrimary(_role),
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        'Browse full list in the Opportunities tab',
+                        style: TextStyle(
+                          color: context.roleTextMuted(_role),
+                          fontSize: 11.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'ECONOMICS',
+            style: TextStyle(
+              color: context.roleTextSubtle(_role),
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.4,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: context.rolePanelBackground(_role),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: context.rolePanelBorder(_role)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(Icons.insights_outlined, color: accent, size: 20),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Creator Operations Engine',
+                        style: TextStyle(
+                          color: context.roleTextPrimary(_role),
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        'Earnings, pipeline, and attribution live in Studio',
+                        style: TextStyle(
+                          color: context.roleTextMuted(_role),
+                          fontSize: 11.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'GATED EXPERIENCE (STUB)',
+            style: TextStyle(
+              color: context.roleTextSubtle(_role),
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.4,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: context.rolePanelBackground(_role),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: context.rolePanelBorder(_role)),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Pilot fan pass',
+                        style: TextStyle(
+                          color: context.roleTextPrimary(_role),
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        _fandomStrength > 0
+                            ? 'Top fandom strength ${_fandomStrength.toStringAsFixed(0)} · claim densifies fan_creator'
+                            : 'Claim densifies fan_creator edge + fandom strength (+5)',
+                        style: TextStyle(
+                          color: context.roleTextMuted(_role),
+                          fontSize: 11.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 32,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: accent,
+                      foregroundColor: context.roleOnAccent(_role),
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    onPressed: () async {
+                      final graph = GraphEventService(Supabase.instance.client);
+                      final id = await graph.claimGatedPass(
+                        passId: '481eccb2-8c3c-4051-bc36-84600b388792',
+                        roleContext: _role,
+                      );
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            id == null
+                                ? 'Gated claim failed'
+                                : 'Gated pass claimed — graph densified',
+                          ),
+                        ),
+                      );
+                      if (id != null) {
+                        setState(() => _graphLoading = true);
+                        _loadGraphStats();
+                      }
+                    },
+                    child: const Text('CLAIM'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class _HudKpi extends StatelessWidget {
+  const _HudKpi({
+    required this.role,
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+  final String role;
+  final String label;
+  final String value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = context.roleAccent(role);
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 14, 12, 14),
+      decoration: BoxDecoration(
+        color: context.rolePanelBackground(role),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: context.rolePanelBorder(role)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: accent.withValues(alpha: 0.85), size: 16),
+          const SizedBox(height: 10),
+          Text(
+            value,
+            style: TextStyle(
+              color: context.roleTextPrimary(role),
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              height: 1.1,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: context.roleTextSubtle(role),
+              fontSize: 9,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.8,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class FeedTab extends StatelessWidget {
   final String? role;
   const FeedTab({super.key, this.role});
@@ -144,15 +580,48 @@ class ReelsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accent = context.roleAccent(role);
     return Scaffold(
       backgroundColor: context.roleShellBackground(role),
-      body: Center(
-        child: Text(
-          'REELS TELEMETRY EMBEDDED',
+      appBar: AppBar(
+        backgroundColor: context.roleShellBackground(role),
+        title: Text(
+          'REELS',
           style: TextStyle(
-            color: context.roleTextSubtle(role),
-            fontSize: 11,
-            letterSpacing: 2,
+            color: context.roleTextPrimary(role),
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.5,
+          ),
+        ),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.smart_display_outlined, color: accent.withValues(alpha: 0.7), size: 40),
+              const SizedBox(height: 14),
+              Text(
+                'No reels yet',
+                style: TextStyle(
+                  color: context.roleTextPrimary(role),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Short-form performance will show up here once you publish.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: context.roleTextMuted(role),
+                  fontSize: 12.5,
+                  height: 1.4,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -169,15 +638,32 @@ class DiscoverTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isTalent = (role ?? 'talent').trim().toLowerCase() == 'talent';
-    final Color accentColor = context.roleAccent(role);
+    final r = (role ?? 'talent').trim().toLowerCase();
+    final accent = context.roleAccent(role);
+    final isTalent = r == 'talent';
+    final isAudience = r == 'audience';
+    final title = isTalent
+        ? 'DISCOVER MISSIONS'
+        : isAudience
+            ? 'DISCOVER'
+            : 'DISCOVER TALENT ECOSYSTEM';
+    final emptyTitle = isTalent
+        ? 'No missions yet'
+        : isAudience
+            ? 'Nothing to discover yet'
+            : 'No talent nodes yet';
+    final emptyBody = isTalent
+        ? 'Campaign missions that match your profile will show up here.'
+        : isAudience
+            ? 'Creators, drops, and experiences will appear as the graph densifies.'
+            : 'Creator matches based on fandom fit will appear here.';
 
     return Scaffold(
       backgroundColor: context.roleShellBackground(role),
       appBar: AppBar(
         backgroundColor: context.roleShellBackground(role),
         title: Text(
-          isTalent ? 'DISCOVER MISSIONS' : 'DISCOVER TALENT ECOSYSTEM',
+          title,
           style: TextStyle(
             color: context.roleTextPrimary(role),
             fontSize: 14,
@@ -186,101 +672,35 @@ class DiscoverTab extends StatelessWidget {
           ),
         ),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: 3,
-        itemBuilder: (context, index) {
-          return Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            decoration: BoxDecoration(
-              color: context.rolePanelBackground(role),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: context.rolePanelBorder(role)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: accentColor.withValues(alpha: 0.05),
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(12),
-                    ),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      isTalent ? Icons.campaign : Icons.token_outlined,
-                      color: accentColor,
-                      size: 40,
-                    ),
-                  ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.explore_outlined, color: accent.withValues(alpha: 0.7), size: 40),
+              const SizedBox(height: 14),
+              Text(
+                emptyTitle,
+                style: TextStyle(
+                  color: context.roleTextPrimary(role),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        isTalent
-                            ? 'SQUADRON AUDIO // IMPACT MISSION'
-                            : 'CREATOR NODE #${4022 + index}',
-                        style: TextStyle(
-                          color: context.roleTextPrimary(role),
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        isTalent
-                            ? 'Requires verified proof of conversions. Vanity metrics ignored.'
-                            : 'Specialized in tech and infrastructure integration. Direct ROI focus.',
-                        style: TextStyle(
-                          color: context.roleTextFaint(role),
-                          fontSize: 11,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            isTalent
-                                ? 'ESCROW BUDGET: \$2,400'
-                                : 'VERIFIED IMPACT: 94.2%',
-                            style: TextStyle(
-                              color: accentColor,
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: accentColor,
-                              foregroundColor: context.roleOnAccent(role),
-                              minimumSize: const Size(80, 32),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              textStyle: const TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            onPressed: () {},
-                            child: Text(isTalent ? 'ENGAGE' : 'INSPECT'),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                emptyBody,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: context.roleTextMuted(role),
+                  fontSize: 12.5,
+                  height: 1.4,
                 ),
-              ],
-            ),
-          );
-        },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -422,8 +842,8 @@ class _StudioTabState extends State<StudioTab> {
       );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    // Scrollable — GridView + signal panel must not use Expanded under tight height.
+    return ListView(
       children: [
         GridView.count(
           crossAxisCount: 2,
@@ -431,7 +851,7 @@ class _StudioTabState extends State<StudioTab> {
           physics: const NeverScrollableScrollPhysics(),
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
-          childAspectRatio: 1.4,
+          childAspectRatio: 1.55,
           children: _isTalent
               ? [
                   _TelemetryCard(
@@ -515,40 +935,39 @@ class _StudioTabState extends State<StudioTab> {
           ),
         ),
         const SizedBox(height: 12),
-        Expanded(
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: context.rolePanelBackground(widget.role),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: context.rolePanelBorder(widget.role)),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.waves,
-                  color: _accentColor.withValues(alpha: 0.4),
-                  size: 36,
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: context.rolePanelBackground(widget.role),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: context.rolePanelBorder(widget.role)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.waves,
+                color: _accentColor.withValues(alpha: 0.4),
+                size: 36,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                _isTalent
+                    ? 'CREATOR ATTRIBUTION SIGNALS LOCKED TO VERIFIED SUMMARY LAYER'
+                    : 'BRAND ATTRIBUTION SIGNALS LOCKED TO VERIFIED SUMMARY LAYER',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: context.roleTextSubtle(widget.role),
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  _isTalent
-                      ? 'CREATOR ATTRIBUTION SIGNALS LOCKED TO VERIFIED SUMMARY LAYER'
-                      : 'BRAND ATTRIBUTION SIGNALS LOCKED TO VERIFIED SUMMARY LAYER',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: context.roleTextSubtle(widget.role),
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
+        const SizedBox(height: 8),
       ],
     );
   }
@@ -600,9 +1019,105 @@ class _StudioTabState extends State<StudioTab> {
 // ==========================================
 // 5. OPPORTUNITIES TAB (ESCROW CONTRACTS)
 // ==========================================
-class OpportunitiesTab extends StatelessWidget {
+class OpportunitiesTab extends StatefulWidget {
   final String? role;
   const OpportunitiesTab({super.key, this.role});
+
+  @override
+  State<OpportunitiesTab> createState() => _OpportunitiesTabState();
+}
+
+class _OpportunitiesTabState extends State<OpportunitiesTab> {
+  String? get role => widget.role;
+  bool get isBusiness => (role ?? '').toLowerCase() == 'business';
+
+  Future<void> _createCampaign() async {
+    final titleCtrl = TextEditingController();
+    final descCtrl = TextEditingController();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        final accent = context.roleAccent(role);
+        return AlertDialog(
+          backgroundColor: context.rolePanelBackground(role),
+          title: Text(
+            'New campaign',
+            style: TextStyle(color: context.roleTextPrimary(role), fontSize: 16),
+          ),
+          content: SizedBox(
+            width: 400,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: titleCtrl,
+                  style: TextStyle(color: context.roleTextPrimary(role)),
+                  decoration: InputDecoration(
+                    labelText: 'Title',
+                    labelStyle: TextStyle(color: context.roleTextMuted(role)),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: descCtrl,
+                  maxLines: 3,
+                  style: TextStyle(color: context.roleTextPrimary(role)),
+                  decoration: InputDecoration(
+                    labelText: 'Description',
+                    labelStyle: TextStyle(color: context.roleTextMuted(role)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text('Cancel', style: TextStyle(color: context.roleTextMuted(role))),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: accent),
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Publish'),
+            ),
+          ],
+        );
+      },
+    );
+    if (ok != true || !mounted) return;
+    final title = titleCtrl.text.trim();
+    if (title.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Title required')),
+      );
+      return;
+    }
+    final auth = context.read<AppAuthProvider>();
+    final uid = auth.currentUser?.userId;
+    if (uid == null || uid.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Not signed in')),
+      );
+      return;
+    }
+    final svc = context.read<OpportunityService>();
+    try {
+      await svc.createCampaign(
+        title: title,
+        description: descCtrl.text.trim(),
+        brandId: uid,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Campaign published')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Create failed: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -610,7 +1125,6 @@ class OpportunitiesTab extends StatelessWidget {
     final svc = Provider.of<OpportunityService>(context);
     final items = svc.opportunities;
     final loading = svc.isLoading;
-    final isBusiness = (role ?? '').toLowerCase() == 'business';
 
     return Scaffold(
       backgroundColor: context.roleShellBackground(role),
@@ -626,131 +1140,511 @@ class OpportunitiesTab extends StatelessWidget {
           ),
         ),
         actions: [
+          if (isBusiness)
+            IconButton(
+              tooltip: 'New campaign',
+              icon: Icon(Icons.add_circle_outline, color: accent, size: 22),
+              onPressed: _createCampaign,
+            ),
           IconButton(
             icon: Icon(Icons.refresh, color: accent, size: 20),
             onPressed: () => svc.fetchActiveOpportunities(),
           ),
         ],
       ),
+      floatingActionButton: isBusiness
+          ? FloatingActionButton.extended(
+              onPressed: _createCampaign,
+              backgroundColor: accent,
+              foregroundColor: context.roleOnAccent(role),
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('New campaign', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
+            )
+          : null,
       body: loading
           ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
           : items.isEmpty
               ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.work_outline, color: context.roleTextSubtle(role), size: 36),
-                      const SizedBox(height: 12),
-                      Text(
-                        isBusiness ? 'No campaigns yet' : 'No open opportunities',
-                        style: TextStyle(color: context.roleTextPrimary(role), fontSize: 14, fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Pull to refresh or check back later',
-                        style: TextStyle(color: context.roleTextMuted(role), fontSize: 12),
-                      ),
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          svc.lastError != null ? Icons.error_outline : Icons.work_outline,
+                          color: context.roleTextSubtle(role),
+                          size: 36,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          svc.lastError != null
+                              ? 'Could not load ${isBusiness ? 'campaigns' : 'opportunities'}'
+                              : (isBusiness ? 'No campaigns yet' : 'No open opportunities'),
+                          style: TextStyle(
+                            color: context.roleTextPrimary(role),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          svc.lastError != null
+                              ? svc.lastError!
+                              : (isBusiness
+                                  ? 'Publish a pilot campaign to start densifying creator applications'
+                                  : 'Pull to refresh or check back later'),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: context.roleTextMuted(role), fontSize: 12),
+                        ),
+                        if (isBusiness && svc.lastError == null) ...[
+                          const SizedBox(height: 16),
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(backgroundColor: accent),
+                            onPressed: _createCampaign,
+                            icon: const Icon(Icons.add, size: 16),
+                            label: const Text('Create campaign'),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 )
-              : RefreshIndicator(
-                  onRefresh: svc.fetchActiveOpportunities,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      final row = items[index];
-                      final title = (row['title'] ?? 'Untitled').toString();
-                      final description = (row['description'] ?? '').toString();
-                      final status = (row['status'] ?? 'open').toString();
-                      final budget = row['budget_cents'];
-                      final budgetLabel = budget is int
-                          ? '\$${(budget / 100).toStringAsFixed(0)}'
-                          : '—';
-                      final profile = row['profiles'];
-                      String poster = '';
-                      if (profile is Map) {
-                        poster = (profile['display_name'] ?? profile['username'] ?? '').toString();
-                      }
-
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: context.rolePanelBackground(role),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: context.rolePanelBorder(role)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    title,
-                                    style: TextStyle(
-                                      color: context.roleTextPrimary(role),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                    ),
+              : ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 88),
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    final row = items[index];
+                    final title = (row['title'] ?? 'Untitled').toString();
+                    final description = (row['description'] ?? '').toString();
+                    final status = (row['status'] ?? 'open').toString();
+                    final category = (row['category'] ?? '').toString();
+                    final compensation = (row['compensation_type'] ?? '').toString();
+                    final budgetLabel = compensation.isNotEmpty
+                        ? compensation
+                        : (category.isNotEmpty ? category : '—');
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: context.rolePanelBackground(role),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: context.rolePanelBorder(role)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  title,
+                                  style: TextStyle(
+                                    color: context.roleTextPrimary(role),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                  decoration: BoxDecoration(
-                                    color: accent.withValues(alpha: 0.12),
-                                    borderRadius: BorderRadius.circular(999),
-                                    border: Border.all(color: accent.withValues(alpha: 0.28)),
-                                  ),
-                                  child: Text(
-                                    status.toUpperCase(),
-                                    style: TextStyle(color: accent, fontSize: 10, fontWeight: FontWeight.w700),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: accent.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(999),
+                                  border: Border.all(color: accent.withValues(alpha: 0.28)),
+                                ),
+                                child: Text(
+                                  status.toUpperCase(),
+                                  style: TextStyle(
+                                    color: accent,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                              ],
-                            ),
-                            if (description.isNotEmpty) ...[
-                              const SizedBox(height: 8),
-                              Text(
-                                description,
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(color: context.roleTextMuted(role), fontSize: 12, height: 1.4),
                               ),
                             ],
-                            const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                Text(
-                                  budgetLabel,
-                                  style: TextStyle(color: context.roleTextPrimary(role), fontSize: 13, fontWeight: FontWeight.w600),
-                                ),
-                                if (poster.isNotEmpty) ...[
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    poster,
-                                    style: TextStyle(color: context.roleTextSubtle(role), fontSize: 11),
-                                  ),
-                                ],
-                              ],
+                          ),
+                          if (description.isNotEmpty) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              description,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: context.roleTextMuted(role),
+                                fontSize: 12,
+                                height: 1.4,
+                              ),
                             ),
                           ],
-                        ),
-                      );
-                    },
-                  ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Text(
+                                budgetLabel,
+                                style: TextStyle(
+                                  color: context.roleTextPrimary(role),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const Spacer(),
+                              if (!isBusiness && status.toLowerCase() == 'open')
+                                SizedBox(
+                                  height: 32,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: accent,
+                                      foregroundColor: context.roleOnAccent(role),
+                                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      textStyle: const TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: 0.4,
+                                      ),
+                                    ),
+                                    onPressed: () async {
+                                      final id = (row['id'] ?? '').toString();
+                                      if (id.isEmpty) return;
+                                      try {
+                                        await svc.applyToOpportunity(
+                                          opportunityId: id,
+                                          roleContext: (role ?? 'talent').toLowerCase(),
+                                        );
+                                        if (!context.mounted) return;
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Application submitted — graph densified',
+                                            ),
+                                          ),
+                                        );
+                                      } catch (e) {
+                                        if (!context.mounted) return;
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('Apply failed: $e')),
+                                        );
+                                      }
+                                    },
+                                    child: const Text('APPLY'),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
     );
   }
 }
 
-// ==========================================
-// 6. PROFILE TAB (IDENTITY DEFI MATRIX)
-// ==========================================
-class ProfileTab extends StatelessWidget {
+
+class GatedPassesTab extends StatefulWidget {
+  final String? role;
+  const GatedPassesTab({super.key, this.role});
+
+  @override
+  State<GatedPassesTab> createState() => _GatedPassesTabState();
+}
+
+class _GatedPassesTabState extends State<GatedPassesTab> {
+  List<Map<String, dynamic>> _passes = [];
+  final Set<String> _claiming = {};
+  bool _loading = true;
+  String? _error;
+
+  String? get role => widget.role;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final rows = await Supabase.instance.client
+          .from('gated_passes')
+          .select('id, title, description, status, max_claims, claim_count, host_user_id, created_at')
+          .eq('status', 'open')
+          .order('created_at', ascending: false)
+          .limit(50);
+      if (!mounted) return;
+      setState(() {
+        _passes = List<Map<String, dynamic>>.from(rows as List);
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.toString();
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _claim(String passId) async {
+    if (_claiming.contains(passId)) return;
+    setState(() => _claiming.add(passId));
+    final graph = GraphEventService(Supabase.instance.client);
+    final id = await graph.claimGatedPass(
+      passId: passId,
+      roleContext: (role ?? 'audience').toLowerCase(),
+    );
+    if (!mounted) return;
+    setState(() => _claiming.remove(passId));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          id == null
+              ? 'Claim failed'
+              : 'Pass claimed — graph densified',
+        ),
+      ),
+    );
+    if (id != null) _load();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = context.roleAccent(role);
+    return Scaffold(
+      backgroundColor: context.roleShellBackground(role),
+      appBar: AppBar(
+        backgroundColor: context.roleShellBackground(role),
+        title: Text(
+          'PASSES',
+          style: TextStyle(
+            color: context.roleTextPrimary(role),
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.5,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh, color: accent, size: 20),
+            onPressed: _load,
+          ),
+        ],
+      ),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
+          : _error != null
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                      'Could not load passes\n$_error',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: context.roleTextMuted(role), fontSize: 13),
+                    ),
+                  ),
+                )
+              : _passes.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.confirmation_number_outlined,
+                              color: context.roleTextSubtle(role), size: 36),
+                          const SizedBox(height: 12),
+                          Text(
+                            'No open passes',
+                            style: TextStyle(
+                              color: context.roleTextPrimary(role),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Gated experiences from creators will appear here',
+                            style: TextStyle(
+                              color: context.roleTextMuted(role),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+                      itemCount: _passes.length,
+                      itemBuilder: (context, index) {
+                        final row = _passes[index];
+                        final id = (row['id'] ?? '').toString();
+                        final title = (row['title'] ?? 'Pass').toString();
+                        final desc = (row['description'] ?? '').toString();
+                        final claimed = row['claim_count'];
+                        final max = row['max_claims'];
+                        final busy = _claiming.contains(id);
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: context.rolePanelBackground(role),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: context.rolePanelBorder(role)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      title,
+                                      style: TextStyle(
+                                        color: context.roleTextPrimary(role),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 3,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: accent.withValues(alpha: 0.12),
+                                      borderRadius: BorderRadius.circular(999),
+                                      border: Border.all(
+                                        color: accent.withValues(alpha: 0.28),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'OPEN',
+                                      style: TextStyle(
+                                        color: accent,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (desc.isNotEmpty) ...[
+                                const SizedBox(height: 8),
+                                Text(
+                                  desc,
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: context.roleTextMuted(role),
+                                    fontSize: 12,
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ],
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Text(
+                                    max == null
+                                        ? '${claimed ?? 0} claimed'
+                                        : '${claimed ?? 0} / $max claimed',
+                                    style: TextStyle(
+                                      color: context.roleTextSubtle(role),
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  SizedBox(
+                                    height: 32,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: accent,
+                                        foregroundColor: context.roleOnAccent(role),
+                                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        textStyle: const TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
+                                      onPressed: (id.isEmpty || busy)
+                                          ? null
+                                          : () => _claim(id),
+                                      child: Text(busy ? '…' : 'CLAIM'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+    );
+  }
+}
+
+class ProfileTab extends StatefulWidget {
   final String? role;
   const ProfileTab({super.key, this.role});
+
+  @override
+  State<ProfileTab> createState() => _ProfileTabState();
+}
+
+class _ProfileTabState extends State<ProfileTab> {
+  num _supportImpact = 0;
+  num _topFandom = 0;
+  List<Map<String, dynamic>> _edges = [];
+  bool _loadingGraph = true;
+
+  String? get role => widget.role;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadGraph();
+  }
+
+  Future<void> _loadGraph() async {
+    final graph = GraphEventService(Supabase.instance.client);
+    try {
+      await graph.recomputeSupportImpact();
+      final impact = await graph.mySupportImpactScore();
+      final fandom = await graph.myTopFandomStrength();
+      final profileId = await graph.currentProfileId();
+      List<Map<String, dynamic>> edges = [];
+      if (profileId != null) {
+        final rows = await Supabase.instance.client
+            .from('graph_relationships')
+            .select(
+              'edge_type, strength_score, supporting_event_count, object_profile_id',
+            )
+            .eq('subject_profile_id', profileId)
+            .order('strength_score', ascending: false)
+            .limit(10);
+        edges = List<Map<String, dynamic>>.from(rows as List);
+      }
+      if (!mounted) return;
+      setState(() {
+        _supportImpact = impact;
+        _topFandom = fandom;
+        _edges = edges;
+        _loadingGraph = false;
+      });
+    } catch (e) {
+      debugPrint('ProfileTab graph load failed: $e');
+      if (mounted) setState(() => _loadingGraph = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Color accentColor = context.roleAccent(role);
@@ -768,69 +1662,209 @@ class ProfileTab extends StatelessWidget {
     return Scaffold(
       backgroundColor: context.roleShellBackground(role),
       body: SafeArea(
-        child: Padding(
+        child: ListView(
           padding: const EdgeInsets.all(24.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              Center(
-                child: CircleAvatar(
-                  radius: 40,
-                  backgroundColor: context.rolePanelBackground(role),
-                  backgroundImage: (photo != null && photo.isNotEmpty)
-                      ? NetworkImage(photo)
-                      : null,
-                  child: (photo == null || photo.isEmpty)
-                      ? Icon(Icons.account_circle_outlined, color: accentColor, size: 50)
-                      : null,
-                ),
+          children: [
+            const SizedBox(height: 12),
+            Center(
+              child: CircleAvatar(
+                radius: 40,
+                backgroundColor: context.rolePanelBackground(role),
+                backgroundImage: (photo != null && photo.isNotEmpty)
+                    ? NetworkImage(photo)
+                    : null,
+                child: (photo == null || photo.isEmpty)
+                    ? Icon(Icons.account_circle_outlined, color: accentColor, size: 50)
+                    : null,
               ),
-              const SizedBox(height: 16),
-              Text(
-                name,
-                style: TextStyle(
-                  color: context.roleTextPrimary(role),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              name,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: context.roleTextPrimary(role),
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
-              const SizedBox(height: 4),
-              Text(email, style: TextStyle(color: context.roleTextMuted(role), fontSize: 12)),
-              const SizedBox(height: 8),
-              Text(
-                'ROLE: ${activeRole.toUpperCase()}',
-                style: TextStyle(
-                  color: accentColor,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.5,
-                ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              email,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: context.roleTextMuted(role), fontSize: 12),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'ROLE: ${activeRole.toUpperCase()}',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: accentColor,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
               ),
-              const SizedBox(height: 32),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: context.rolePanelBackground(role),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: context.rolePanelBorder(role)),
+            ),
+            const SizedBox(height: 28),
+            // ── Graph identity ──────────────────────────────────────────
+            Text(
+              'GRAPH IDENTITY',
+              style: TextStyle(
+                color: context.roleTextSubtle(role),
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.4,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: _GraphStatCard(
+                    role: role,
+                    label: 'SUPPORT IMPACT',
+                    value: _loadingGraph ? '—' : _supportImpact.toStringAsFixed(0),
+                    icon: Icons.star_outline,
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    _buildIdentityRow(context, role, 'User ID', _shortId(user?.userId)),
-                    Divider(color: context.rolePanelBorder(role), height: 24),
-                    _buildIdentityRow(context, role, 'Application Status', status),
-                    Divider(color: context.rolePanelBorder(role), height: 24),
-                    _buildIdentityRow(
-                      context,
-                      role,
-                      'Approved Roles',
-                      roles.isEmpty ? 'audience' : roles.join(', '),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _GraphStatCard(
+                    role: role,
+                    label: 'TOP FANDOM',
+                    value: _loadingGraph ? '—' : _topFandom.toStringAsFixed(0),
+                    icon: Icons.favorite_outline,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: context.rolePanelBackground(role),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: context.rolePanelBorder(role)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'RELATIONSHIPS',
+                    style: TextStyle(
+                      color: context.roleTextSubtle(role),
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.2,
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 12),
+                  if (_loadingGraph)
+                    Text('Loading…', style: TextStyle(color: context.roleTextMuted(role), fontSize: 12))
+                  else if (_edges.isEmpty)
+                    Text(
+                      'No edges yet — apply or claim to densify the graph.',
+                      style: TextStyle(color: context.roleTextMuted(role), fontSize: 12, height: 1.4),
+                    )
+                  else
+                    ..._edges.map((e) {
+                      final type = (e['edge_type'] ?? 'edge').toString();
+                      final strength = e['strength_score'];
+                      final n = e['supporting_event_count'];
+                      final obj = (e['object_profile_id'] ?? '').toString();
+                      final shortObj = obj.length > 12
+                          ? '${obj.substring(0, 6)}…${obj.substring(obj.length - 4)}'
+                          : obj;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Row(
+                          children: [
+                            Icon(Icons.hub_outlined, size: 16, color: accentColor),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    type,
+                                    style: TextStyle(
+                                      color: context.roleTextPrimary(role),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Text(
+                                    '→ $shortObj',
+                                    style: TextStyle(
+                                      color: context.roleTextMuted(role),
+                                      fontSize: 11,
+                                      fontFamily: 'monospace',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              '${strength ?? 0}',
+                              style: TextStyle(
+                                color: accentColor,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            if (n != null) ...[
+                              const SizedBox(width: 6),
+                              Text(
+                                '($n)',
+                                style: TextStyle(
+                                  color: context.roleTextSubtle(role),
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      );
+                    }),
+                ],
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 28),
+            // ── Account identity ────────────────────────────────────────
+            Text(
+              'ACCOUNT',
+              style: TextStyle(
+                color: context.roleTextSubtle(role),
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.4,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: context.rolePanelBackground(role),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: context.rolePanelBorder(role)),
+              ),
+              child: Column(
+                children: [
+                  _buildIdentityRow(context, role, 'User ID', _shortId(user?.userId)),
+                  Divider(color: context.rolePanelBorder(role), height: 24),
+                  _buildIdentityRow(context, role, 'Application Status', status),
+                  Divider(color: context.rolePanelBorder(role), height: 24),
+                  _buildIdentityRow(
+                    context,
+                    role,
+                    'Approved Roles',
+                    roles.isEmpty ? 'audience' : roles.join(', '),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -855,16 +1889,70 @@ class ProfileTab extends StatelessWidget {
           label,
           style: TextStyle(color: context.roleTextFaint(role), fontSize: 12),
         ),
-        Text(
-          status,
-          style: TextStyle(
-            color: context.roleTextPrimary(role),
-            fontSize: 12,
-            fontFamily: 'monospace',
-            fontWeight: FontWeight.bold,
+        Flexible(
+          child: Text(
+            status,
+            textAlign: TextAlign.right,
+            style: TextStyle(
+              color: context.roleTextPrimary(role),
+              fontSize: 12,
+              fontFamily: 'monospace',
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ],
+    );
+  }
+}
+
+class _GraphStatCard extends StatelessWidget {
+  const _GraphStatCard({
+    required this.role,
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+  final String? role;
+  final String label;
+  final String value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = context.roleAccent(role);
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+      decoration: BoxDecoration(
+        color: context.rolePanelBackground(role),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: context.rolePanelBorder(role)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: accent.withValues(alpha: 0.9), size: 16),
+          const SizedBox(height: 10),
+          Text(
+            value,
+            style: TextStyle(
+              color: context.roleTextPrimary(role),
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: context.roleTextSubtle(role),
+              fontSize: 9,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.8,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

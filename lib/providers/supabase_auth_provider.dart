@@ -219,40 +219,16 @@ class SupabaseAuthProvider extends AppAuthProvider {
     if (session == null) {
       throw Exception('No active session.');
     }
-
     final selectedRole = (requestedRole ?? '').trim().toLowerCase();
     final pendingRole = _pendingRoleValue(selectedRole);
-    final approvedRoles = <String>['audience'];
-
-    await Supabase.instance.client.from('profiles').upsert({
-      'user_id': session.user.id,
-      'display_name': _currentUser?.displayName.isNotEmpty == true
-          ? _currentUser!.displayName
-          : 'User',
-      'username': (username ?? '').trim().isEmpty
-          ? null
-          : (username ?? '').trim(),
-      'approved': false,
-      'approved_roles': approvedRoles,
-      'requested_role_pending': pendingRole,
-      'onboarding_complete': true,
-      'application_status_summary': pendingRole == null
-          ? 'approved'
-          : 'pending',
-      'is_admin': _currentUser?.isAdminFlag ?? false,
-      'admin_role_edit_enabled': _currentUser?.adminRoleEditEnabled ?? false,
-    }, onConflict: 'user_id');
-
-    final ledgerRole = _mapProfileRoleToLedgerRole(pendingRole ?? 'audience');
-
-    if (ledgerRole != null) {
-      await Supabase.instance.client.from('user_roles').upsert({
-        'user_id': session.user.id,
-        'role_key': ledgerRole,
-        'is_active': pendingRole == null,
-      }, onConflict: 'user_id,role_key');
-    }
-
+    // SECURITY DEFINER RPC — bypasses profiles RLS for own onboarding write
+    await Supabase.instance.client.rpc(
+      'complete_onboarding',
+      params: {
+        'p_username': (username ?? '').trim(),
+        'p_requested_role': pendingRole,
+      },
+    );
     await refreshCurrentUser();
   }
 

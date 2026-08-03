@@ -333,9 +333,7 @@ class AppRouter {
 
         final currentUser = user!;
         final caps = RoleCapabilities(currentUser);
-        final canAccessAdmin = currentUser.isAdmin;
-
-        // Logged in but hasn't completed onboarding
+              // Logged in but hasn't completed onboarding
         // Admin redirect
         if (currentUser.activeRole == "admin") {
           if (location.startsWith("/admin")) return null;
@@ -356,8 +354,13 @@ class AppRouter {
             logRedirect(AppRoutes.admin);
             return AppRoutes.admin;
           }
-          logRedirect(AppRoutes.onboarding);
-          return AppRoutes.onboarding;
+          // Preserve role (and any other query) from login/landing CTAs
+          final role = state.uri.queryParameters['role'];
+          final onboardingTarget = (role != null && role.isNotEmpty)
+              ? Uri(path: AppRoutes.onboarding, queryParameters: {'role': role}).toString()
+              : AppRoutes.onboarding;
+          logRedirect(onboardingTarget);
+          return onboardingTarget;
         }
 
         // Post-onboarding gating states must never silently fall through into a
@@ -365,9 +368,27 @@ class AppRouter {
         // - pending review -> waiting approval
         // - rejected/restricted/suspended -> permission denied
         if (currentUser.isPendingReview) {
+          // Pending talent/business can still use Audience surfaces.
+          // Only hard-gate waiting-approval when they hit a gated role route.
           if (isWaitingApprovalRoute || isAccessDeniedRoute) return null;
-          logRedirect(AppRoutes.waitingApproval);
-          return AppRoutes.waitingApproval;
+          if (location == AppRoutes.audience ||
+              location.startsWith('${AppRoutes.audience}/')) {
+            return null;
+          }
+          if (location == AppRoutes.talent ||
+              location == AppRoutes.business ||
+              location.startsWith('/talent') ||
+              location.startsWith('/business') ||
+              location.startsWith('/admin')) {
+            logRedirect(AppRoutes.waitingApproval);
+            return AppRoutes.waitingApproval;
+          }
+          // Default home while pending: audience (not a hard trap on waiting page)
+          if (location == AppRoutes.root || location == '/') {
+            logRedirect(AppRoutes.audience);
+            return AppRoutes.audience;
+          }
+          return null;
         }
         if (currentUser.isRejected ||
             currentUser.isRestricted ||
@@ -461,9 +482,9 @@ class AppRouter {
           return target;
         }
 
-        // If the user is already on a role dashboard but the active role changed,
-        // keep navigation deterministic by always routing to the resolved
-        // dashboard for the current profile.
+        // Role dashboards: allow any path the user is approved for.
+        // Do not force active_role-only — talent/business approved users must
+        // reach /talent or /business even when active_role is still audience.
         final roleDashPaths = <String>{
           AppRoutes.audience,
           AppRoutes.talent,
@@ -471,6 +492,9 @@ class AppRouter {
           AppRoutes.admin,
         };
         if (roleDashPaths.contains(location)) {
+          if (caps.canAccessRoute(location)) {
+            return null;
+          }
           final target = defaultDashboardRouteFor(currentUser);
           if (target != location) {
             logRedirect(target);

@@ -9,6 +9,7 @@ import 'package:spotlight_connect/pages/dashboards/role_dashboard_shell.dart';
 import 'package:spotlight_connect/pages/dashboards/tabs/dashboard_tabs.dart';
 import 'package:spotlight_connect/providers/app_auth_provider.dart';
 import 'package:spotlight_connect/services/admin_approvals_service.dart';
+import 'package:spotlight_connect/services/admin_moderation_service.dart';
 
 /// Admin entry — Figma Admin Console structure inside [RoleDashboardShell].
 class AdminDashboard extends StatefulWidget {
@@ -19,13 +20,27 @@ class AdminDashboard extends StatefulWidget {
 
 class _AdminDashboardState extends State<AdminDashboard> {
   int _pendingCount = 0;
-  int _flaggedCount = 4;
+  int _flaggedCount = 0;
   final _approvalsService = AdminApprovalsService();
+  final _moderationService = AdminModerationService();
 
   @override
   void initState() {
     super.initState();
     _refreshPendingCount();
+    _refreshFlaggedCount();
+  }
+
+  Future<void> _refreshFlaggedCount() async {
+    try {
+      final list = await _moderationService.fetchOpen();
+      if (!mounted) return;
+      setState(() => _flaggedCount = list.length.clamp(0, 999));
+    } catch (_) {}
+  }
+
+  void _setFlaggedCount(int count) {
+    setState(() => _flaggedCount = count.clamp(0, 999));
   }
 
   Future<void> _refreshPendingCount() async {
@@ -60,6 +75,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             onPendingChanged: _onPendingChanged,
             onPendingCountSet: _setPendingCount,
             onFlaggedChanged: _onFlaggedChanged,
+            onFlaggedCountSet: _setFlaggedCount,
           ),
         ),
         DashboardTabSpec(
@@ -77,7 +93,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           label: 'Moderation',
           icon: Icons.shield_outlined,
           badge: _flaggedCount > 0 ? _flaggedCount : null,
-          builder: () => _AdminModerationTab(onFlaggedChanged: _onFlaggedChanged),
+          builder: () => _AdminModerationTab(onFlaggedChanged: _onFlaggedChanged, onFlaggedCountSet: _setFlaggedCount),
         ),
         DashboardTabSpec(
           label: 'Controls',
@@ -120,10 +136,12 @@ class _AdminOverviewTab extends StatelessWidget {
     required this.onPendingChanged,
     required this.onFlaggedChanged,
     this.onPendingCountSet,
+    this.onFlaggedCountSet,
   });
   final ValueChanged<int> onPendingChanged;
   final ValueChanged<int> onFlaggedChanged;
   final ValueChanged<int>? onPendingCountSet;
+  final ValueChanged<int>? onFlaggedCountSet;
 
   @override
   Widget build(BuildContext context) {
@@ -200,7 +218,7 @@ class _AdminOverviewTab extends StatelessWidget {
             const SizedBox(height: 18),
 
             // Flagged Content preview
-            _FlaggedContentPreview(onChanged: onFlaggedChanged),
+            _FlaggedContentPreview(onChanged: onFlaggedChanged, onCountSet: onFlaggedCountSet),
           ],
         );
       },
@@ -463,7 +481,7 @@ class _LegendDot extends StatelessWidget {
 }
 
 class _QuickActionsCard extends StatelessWidget {
-  _QuickActionsCard();
+  const _QuickActionsCard();
 
   final _actions = const [
     _QaItem('Review Approvals', Icons.verified_outlined, '5 pending', _AdminUi.cyan),
@@ -869,37 +887,78 @@ class _ApprovalRowWidget extends StatelessWidget {
 }
 
 class _FlaggedContentPreview extends StatefulWidget {
-  const _FlaggedContentPreview({this.onChanged});
+  const _FlaggedContentPreview({this.onChanged, this.onCountSet});
   final ValueChanged<int>? onChanged;
+  final ValueChanged<int>? onCountSet;
   @override
   State<_FlaggedContentPreview> createState() => _FlaggedContentPreviewState();
 }
 
 class _FlaggedContentPreviewState extends State<_FlaggedContentPreview> {
-  late List<(String, String, String, String, String, String)> _items;
+  final _service = AdminModerationService();
+  List<ContentReport> _items = [];
+  bool _loading = true;
+  String? _error;
 
   @override
   void initState() {
     super.initState();
-    _items = [
-      ('Spam / Promo', 'high', '3 reports', 'Unsolicited affiliate links in comments', 'user_1029', 'Mar 22'),
-      ('Misinfo', 'medium', '2 reports', 'Unverified health claim in reel caption', 'user_824', 'Mar 21'),
-      ('Harassment', 'high', '5 reports', 'Targeted comments on creator livestream', 'user_344', 'Mar 20'),
-    ];
+    _load();
   }
 
-  void _remove(int index) {
-    final item = _items[index];
-    setState(() => _items.removeAt(index));
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final list = await _service.fetchOpen();
+      if (!mounted) return;
+      setState(() {
+        _items = list;
+        _loading = false;
+      });
+      widget.onCountSet?.call(list.length);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.toString();
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _remove(ContentReport item) async {
+    setState(() => _items.remove(item));
     widget.onChanged?.call(-1);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Removed: ${item.$1}'),
+        content: Text('Removed: ${item.typeLabel}'),
         backgroundColor: _AdminUi.rose.withValues(alpha: 0.9),
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
       ),
     );
+    try {
+      final resolverId = Supabase.instance.client.auth.currentUser?.id ?? '';
+      await _service.removeReport(item: item, resolverUserId: resolverId);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _items.insert(0, item));
+      widget.onChanged?.call(1);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed: $e'),
+          backgroundColor: _AdminUi.rose.withValues(alpha: 0.9),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  String _fmtDate(DateTime d) {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return '${months[d.month - 1]} ${d.day}';
   }
 
   @override
@@ -920,24 +979,69 @@ class _FlaggedContentPreviewState extends State<_FlaggedContentPreview> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Flagged Content', style: TextStyle(color: _AdminUi.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
+                    const Text(
+                      'Flagged Content',
+                      style: TextStyle(
+                        color: _AdminUi.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(height: 2),
                     Text(
-                      _items.isEmpty ? 'Queue clear' : 'Reported items requiring action',
+                      _loading
+                          ? 'Loading…'
+                          : (_items.isEmpty
+                              ? 'Queue clear'
+                              : 'Reported items requiring action'),
                       style: const TextStyle(color: _AdminUi.textMuted, fontSize: 12),
                     ),
                   ],
                 ),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: _loading ? null : _load,
                 style: TextButton.styleFrom(foregroundColor: _AdminUi.cyan),
-                child: const Text('View all', style: TextStyle(fontSize: 12.5)),
+                child: const Text('Refresh', style: TextStyle(fontSize: 12.5)),
               ),
             ],
           ),
           const SizedBox(height: 10),
-          if (_items.isEmpty)
+          if (_loading)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 32),
+              child: Center(
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            )
+          else if (_error != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Center(
+                child: Column(
+                  children: [
+                    const Icon(Icons.error_outline, color: _AdminUi.rose, size: 28),
+                    const SizedBox(height: 10),
+                    Text(
+                      _error!,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: _AdminUi.rose, fontSize: 12),
+                    ),
+                    const SizedBox(height: 12),
+                    TextButton(
+                      onPressed: _load,
+                      style: TextButton.styleFrom(foregroundColor: _AdminUi.cyan),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else if (_items.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 36),
               child: Center(
@@ -953,23 +1057,33 @@ class _FlaggedContentPreviewState extends State<_FlaggedContentPreview> {
                       child: const Icon(Icons.shield_outlined, color: _AdminUi.green, size: 24),
                     ),
                     const SizedBox(height: 14),
-                    const Text('Queue clear', style: TextStyle(color: _AdminUi.textPrimary, fontSize: 15, fontWeight: FontWeight.w600)),
+                    const Text(
+                      'Queue clear',
+                      style: TextStyle(
+                        color: _AdminUi.textPrimary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(height: 4),
-                    const Text('No flagged content requiring action', style: TextStyle(color: _AdminUi.textDim, fontSize: 12.5)),
+                    const Text(
+                      'No flagged content requiring action',
+                      style: TextStyle(color: _AdminUi.textDim, fontSize: 12.5),
+                    ),
                   ],
                 ),
               ),
             )
           else
-            for (var i = 0; i < _items.length; i++) ...[
+            for (final item in _items) ...[
               _FlaggedRow(
-                type: _items[i].$1,
-                severity: _items[i].$2,
-                reports: _items[i].$3,
-                content: _items[i].$4,
-                creator: _items[i].$5,
-                date: _items[i].$6,
-                onRemove: () => _remove(i),
+                type: item.typeLabel,
+                severity: item.severity,
+                reports: '1 report',
+                content: item.body?.isNotEmpty == true ? item.body! : item.reason,
+                creator: item.targetUserId ?? 'unknown',
+                date: _fmtDate(item.createdAt),
+                onRemove: () => _remove(item),
               ),
               const SizedBox(height: 8),
             ],
@@ -1145,8 +1259,9 @@ class _AdminUsersTab extends StatelessWidget {
 
 // ─── Moderation tab ──────────────────────────────────────────────────────────
 class _AdminModerationTab extends StatelessWidget {
-  const _AdminModerationTab({this.onFlaggedChanged});
+  const _AdminModerationTab({this.onFlaggedChanged, this.onFlaggedCountSet});
   final ValueChanged<int>? onFlaggedChanged;
+  final ValueChanged<int>? onFlaggedCountSet;
 
   @override
   Widget build(BuildContext context) {
@@ -1157,7 +1272,7 @@ class _AdminModerationTab extends StatelessWidget {
         const SizedBox(height: 4),
         const Text('Review flagged content, manage reports, and enforce platform policies', style: TextStyle(color: _AdminUi.textMuted, fontSize: 13)),
         const SizedBox(height: 18),
-        _FlaggedContentPreview(onChanged: onFlaggedChanged),
+        _FlaggedContentPreview(onChanged: onFlaggedChanged, onCountSet: onFlaggedCountSet),
       ],
     );
   }

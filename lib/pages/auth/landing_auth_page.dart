@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:spotlight_connect/core/routing/app_routes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../theme.dart';
@@ -28,11 +29,26 @@ class _LandingAuthPageState extends State<LandingAuthPage> {
   bool _isSignUpMode = false;
   bool _isLoading = false;
   bool _obscurePassword = true;
+  /// audience | talent | business — drives post-signup onboarding
+  String _intendedRole = 'audience';
+  bool _roleSeeded = false;
 
   @override
   void initState() {
     super.initState();
     _emailController = TextEditingController(text: widget.initialEmail ?? '');
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_roleSeeded) return;
+    _roleSeeded = true;
+    final role = GoRouterState.of(context).uri.queryParameters['role'];
+    if (role == 'talent' || role == 'business' || role == 'audience') {
+      _intendedRole = role!;
+      _isSignUpMode = true;
+    }
   }
 
   @override
@@ -51,12 +67,22 @@ class _LandingAuthPageState extends State<LandingAuthPage> {
       final supabase = Supabase.instance.client;
 
       if (_isSignUpMode) {
-        await supabase.auth.signUp(
+        final result = await supabase.auth.signUp(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
 
-        if (mounted) {
+        if (!mounted) return;
+
+        // Session present (email confirm off) → onboarding with intended role.
+        // Otherwise ask user to verify email, then sign in.
+        if (result.session != null) {
+          final role = _intendedRole;
+          final target = (role == 'audience')
+              ? AppRoutes.onboarding
+              : '${AppRoutes.onboarding}?role=$role';
+          context.go(target);
+        } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Verification link sent! Check your email.'),
@@ -167,9 +193,10 @@ class _LandingAuthPageState extends State<LandingAuthPage> {
                     }
                   },
                   onJoinTap: () {
-                    if (!_isSignUpMode) {
-                      setState(() => _isSignUpMode = true);
-                    }
+                    setState(() {
+                      _isSignUpMode = true;
+                      _intendedRole = 'audience';
+                    });
                   },
                 ),
                 Expanded(
@@ -196,14 +223,16 @@ class _LandingAuthPageState extends State<LandingAuthPage> {
                                         _LandingHeroSection(
                                           isSignUpMode: _isSignUpMode,
                                           onCreatorTap: () {
-                                            setState(
-                                              () => _isSignUpMode = true,
-                                            );
+                                            setState(() {
+                                              _isSignUpMode = true;
+                                              _intendedRole = 'talent';
+                                            });
                                           },
                                           onBrandTap: () {
-                                            setState(
-                                              () => _isSignUpMode = false,
-                                            );
+                                            setState(() {
+                                              _isSignUpMode = true;
+                                              _intendedRole = 'business';
+                                            });
                                           },
                                         ),
                                         const SizedBox(height: 20),
@@ -258,10 +287,16 @@ class _LandingAuthPageState extends State<LandingAuthPage> {
                                   _LandingHeroSection(
                                     isSignUpMode: _isSignUpMode,
                                     onCreatorTap: () {
-                                      setState(() => _isSignUpMode = true);
+                                      setState(() {
+                                        _isSignUpMode = true;
+                                        _intendedRole = 'talent';
+                                      });
                                     },
                                     onBrandTap: () {
-                                      setState(() => _isSignUpMode = false);
+                                      setState(() {
+                                        _isSignUpMode = true;
+                                        _intendedRole = 'business';
+                                      });
                                     },
                                   ),
                                   const SizedBox(height: 16),
