@@ -16,7 +16,7 @@ class TalentDashboard extends StatelessWidget {
         DashboardTabSpec(
           label: 'Dashboard',
           icon: Icons.auto_awesome,
-          builder: () => FeedTab(role: 'talent'),
+          builder: () => const CreatorHomeTab(),
         ),
         DashboardTabSpec(
           label: 'Reels',

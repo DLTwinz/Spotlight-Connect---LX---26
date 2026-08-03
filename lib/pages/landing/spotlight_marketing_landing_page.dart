@@ -44,10 +44,6 @@ class _L {
   static const border = SpotlightTokens.borderSubtle;
 }
 
-ImageProvider _img(String asset, String network) {
-  // Prefer local asset when present; fall back to network.
-  return AssetImage(asset);
-}
 
 // ── NAV ──────────────────────────────────────────────────────────────────────
 class _NavBar extends StatefulWidget {
@@ -273,7 +269,7 @@ class _HeroCopy extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 26),
-        // CTAs
+        // CTAs — match DESIRED.WELCOME.PAGE.png (2 hero CTAs)
         Wrap(
           spacing: 12,
           runSpacing: 10,
@@ -281,12 +277,12 @@ class _HeroCopy extends StatelessWidget {
             _CyanCta(
               label: 'Join as a Creator',
               trailing: Icons.arrow_forward_rounded,
-              onTap: () => context.go(AppRoutes.login),
+              onTap: () => context.go('${AppRoutes.login}?role=talent'),
             ),
             _OutlineCta(
               label: 'Partner with Brands',
               trailing: Icons.arrow_forward_rounded,
-              onTap: () => context.go(AppRoutes.login),
+              onTap: () => context.go('${AppRoutes.login}?role=business'),
             ),
           ],
         ),
@@ -393,7 +389,8 @@ class _HeroVisual extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 1.35,
+      // Closer to hero_collage.png native ratio (~2.3) and DESIRED frame
+      aspectRatio: 2.15,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -706,7 +703,7 @@ class _FeatureCards extends StatelessWidget {
         title: 'Discover. Connect.\nSupport.',
         body: 'Find creators you love, engage with their content, and support their journey.',
         stats: [('1M+', 'Active Fans'), ('15K+', 'Communities'), ('2.5M+', 'Interactions Daily')],
-        image: 'https://images.unsplash.com/photo-1459749411175-047fc749d9b0?w=800&h=500&fit=crop&auto=format&q=80',
+        image: 'assets/landing/card_fans.png',
         accent: _L.cyan,
       ),
       _FeatureData(
@@ -823,11 +820,18 @@ class _FeatureCardState extends State<_FeatureCard> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    const Color(0x99050508),
-                    const Color(0xE6050508),
-                    const Color(0xF2050508),
-                  ],
+                  // Fans asset has title text baked in — heavier top wash hides it.
+                  colors: d.image.contains('card_fans')
+                      ? const [
+                          Color(0xF2050508),
+                          Color(0xF2050508),
+                          Color(0xF2050508),
+                        ]
+                      : const [
+                          Color(0x99050508),
+                          Color(0xE6050508),
+                          Color(0xF2050508),
+                        ],
                 ),
               ),
             ),
@@ -942,109 +946,62 @@ class _EcosystemLoop extends StatelessWidget {
 // ── TRUST STRIP ──────────────────────────────────────────────────────────────
 class _TrustStrip extends StatelessWidget {
   const _TrustStrip();
-
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
-    final brands = ['Nike', 'Red Bull', 'SAMSUNG', 'SONY', "L'ORÉAL", 'Adobe'];
     return Container(
       margin: EdgeInsets.symmetric(horizontal: w >= 1000 ? 40 : 16),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         color: const Color(0xFF0A0D14),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: _L.border),
       ),
-      child: Wrap(
-        crossAxisAlignment: WrapCrossAlignment.center,
-        alignment: WrapAlignment.spaceBetween,
-        spacing: 24,
-        runSpacing: 16,
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'TRUSTED BY LEADING BRANDS',
-                style: TextStyle(
-                  color: _L.dim,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2,
-                ),
-              ),
-              const SizedBox(width: 18),
-              for (final b in brands)
-                Padding(
-                  padding: const EdgeInsets.only(right: 18),
-                  child: Text(
-                    b,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.asset(
+          'assets/landing/trust_strip.png',
+          width: double.infinity,
+          fit: BoxFit.fitWidth,
+          alignment: Alignment.center,
+          errorBuilder: (context, error, stack) {
+            final brands = ['Nike', 'Red Bull', 'SAMSUNG', 'SONY', "L'ORÉAL", 'Adobe'];
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 18,
+                runSpacing: 8,
+                children: [
+                  const Text(
+                    'TRUSTED BY LEADING BRANDS',
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.28),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.4,
+                      color: _L.dim,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.2,
                     ),
                   ),
-                ),
-            ],
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: 72,
-                height: 28,
-                child: Stack(
-                  children: [
-                    for (var i = 0; i < 3; i++)
-                      Positioned(
-                        left: i * 18.0,
-                        child: Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: _L.bg, width: 2),
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                [
-                                  'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=48&h=48&fit=crop&auto=format',
-                                  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=48&h=48&fit=crop&auto=format',
-                                  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=48&h=48&fit=crop&auto=format',
-                                ][i],
-                              ),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
+                  for (final b in brands)
+                    Text(
+                      b,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.28),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.4,
                       ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 10),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'JOIN A GLOBAL COMMUNITY',
-                    style: TextStyle(color: _L.cyan, fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: 1.0),
-                  ),
-                  Text(
-                    '5M+ members worldwide',
-                    style: TextStyle(color: _L.text, fontSize: 13, fontWeight: FontWeight.w700),
-                  ),
+                    ),
                 ],
               ),
-            ],
-          ),
-        ],
+            );
+          },
+        ),
       ),
     );
   }
 }
 
-// ── BUTTONS ──────────────────────────────────────────────────────────────────
 class _CyanCta extends StatefulWidget {
   const _CyanCta({
     required this.label,

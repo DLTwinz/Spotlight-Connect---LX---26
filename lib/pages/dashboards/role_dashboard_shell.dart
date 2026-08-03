@@ -1,5 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:spotlight_connect/core/routing/app_routes.dart';
+import 'package:spotlight_connect/providers/app_auth_provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:spotlight_connect/models/dashboard_tab_spec.dart';
 import 'package:spotlight_connect/theme.dart';
 
@@ -396,30 +400,43 @@ class _DesktopSidebar extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.white.withValues(alpha: 0.03),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.05),
+              // Sign out — required on every role shell
+              InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: () async {
+                  final auth = context.read<AppAuthProvider>();
+                  try {
+                    await auth.logout();
+                  } catch (_) {}
+                  if (context.mounted) {
+                    context.go(AppRoutes.login);
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white.withValues(alpha: 0.03),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.05),
+                    ),
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.security_rounded, color: accentColor, size: 18),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'Live shell routing active',
-                        style: TextStyle(
-                          color: subtleText,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout_rounded, color: accentColor, size: 18),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Sign out',
+                          style: TextStyle(
+                            color: subtleText,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],
