@@ -26,15 +26,17 @@ create index if not exists idx_profiles_active_role on public.profiles(active_ro
 -- === user_roles (normalized role grants, separate from profiles.approved_roles) ===
 create table if not exists public.user_roles (
   id uuid primary key default gen_random_uuid(),
-  profile_id uuid not null references public.profiles(id) on delete cascade,
-  role text not null check (role in ('audience','talent','business','admin')),
-  status text not null default 'pending' check (status in ('pending','approved','revoked')),
-  requested_at timestamptz not null default now(),
-  approved_at timestamptz,
-  unique (profile_id, role)
+  user_id uuid not null references auth.users(id) on delete cascade,
+  role_key text not null,
+  is_active boolean not null default true,
+  granted_at timestamptz not null default now(),
+  granted_by uuid,
+  unique (user_id, role_key)
 );
 
-create index if not exists idx_user_roles_profile_id on public.user_roles(profile_id);
+create index if not exists idx_user_roles_user_id on public.user_roles(user_id);
+create index if not exists idx_user_roles_role_key on public.user_roles(role_key);
+create index if not exists idx_user_roles_is_active on public.user_roles(is_active);
 
 -- === brand_memberships ===
 create table if not exists public.brand_memberships (
@@ -109,7 +111,7 @@ drop policy if exists "user_roles_select_own_or_admin" on public.user_roles;
 create policy "user_roles_select_own_or_admin"
 on public.user_roles for select
 using (
-  exists (select 1 from public.profiles p where p.id = profile_id and p.user_id = auth.uid())
+  auth.uid() = user_id
   or exists (select 1 from public.profiles p where p.user_id = auth.uid() and p.is_admin = true)
 );
 
@@ -117,13 +119,16 @@ drop policy if exists "user_roles_insert_own" on public.user_roles;
 create policy "user_roles_insert_own"
 on public.user_roles for insert
 with check (
-  exists (select 1 from public.profiles p where p.id = profile_id and p.user_id = auth.uid())
+  auth.uid() = user_id
+  or exists (select 1 from public.profiles p where p.user_id = auth.uid() and p.is_admin = true)
 );
 
 drop policy if exists "user_roles_admin_manage" on public.user_roles;
 create policy "user_roles_admin_manage"
 on public.user_roles for update
-using (exists (select 1 from public.profiles p where p.user_id = auth.uid() and p.is_admin = true));
+using (
+  exists (select 1 from public.profiles p where p.user_id = auth.uid() and p.is_admin = true)
+);
 
 -- === brand_memberships policies ===
 drop policy if exists "brand_memberships_select_own_or_admin" on public.brand_memberships;

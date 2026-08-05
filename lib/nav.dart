@@ -482,9 +482,8 @@ class AppRouter {
           return target;
         }
 
-        // Role dashboards: allow any path the user is approved for.
-        // Do not force active_role-only — talent/business approved users must
-        // reach /talent or /business even when active_role is still audience.
+        // Role dashboards: route each user into their correct operating shell.
+        // Audience is only the default shell for audience-only users.
         final roleDashPaths = <String>{
           AppRoutes.audience,
           AppRoutes.talent,
@@ -493,6 +492,14 @@ class AppRouter {
         };
         if (roleDashPaths.contains(location)) {
           if (caps.canAccessRoute(location)) {
+            if (location == AppRoutes.audience &&
+                (caps.hasTalentApproval || caps.hasBusinessApproval)) {
+              final target = defaultDashboardRouteFor(currentUser);
+              if (target != location) {
+                logRedirect(target);
+                return target;
+              }
+            }
             return null;
           }
           final target = defaultDashboardRouteFor(currentUser);

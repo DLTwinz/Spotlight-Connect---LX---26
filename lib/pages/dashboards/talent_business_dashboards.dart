@@ -64,7 +64,7 @@ class BusinessDashboard extends StatelessWidget {
         DashboardTabSpec(
           label: 'Dashboard',
           icon: Icons.auto_awesome,
-          builder: () => FeedTab(role: 'business'),
+          builder: () => const BusinessHomeTab(),
         ),
         DashboardTabSpec(
           label: 'Reels',

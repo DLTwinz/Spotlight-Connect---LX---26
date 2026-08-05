@@ -49,17 +49,23 @@ class RoleCapabilities {
           return AppRoutes.admin;
       }
     }
-
+    // approved_roles is source of truth after admin approve.
+    // active_role may stay audience (trigger blocks client writes).
     switch (user.parsedActiveRole) {
       case UserRole.talent:
-        return hasTalentApproval ? AppRoutes.talent : AppRoutes.audience;
+        if (hasTalentApproval) return AppRoutes.talent;
+        break;
       case UserRole.business:
-        return hasBusinessApproval ? AppRoutes.business : AppRoutes.audience;
+        if (hasBusinessApproval) return AppRoutes.business;
+        break;
       case UserRole.audience:
       case UserRole.admin:
       case UserRole.unknown:
-        return AppRoutes.audience;
+        break;
     }
+    if (hasTalentApproval) return AppRoutes.talent;
+    if (hasBusinessApproval) return AppRoutes.business;
+    return AppRoutes.audience;
   }
 
   bool canAccessRoute(String location) {
@@ -73,6 +79,8 @@ class RoleCapabilities {
       case AppRoutes.business:
         return hasBusinessApproval;
       case AppRoutes.audience:
+        if (user.isAdmin) return false;
+        if (hasTalentApproval || hasBusinessApproval) return false;
         return hasAudienceApproval;
       default:
         return true;
