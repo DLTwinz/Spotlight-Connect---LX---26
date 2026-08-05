@@ -2,8 +2,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseConfig {
   static const String _defaultUrl = 'https://mdwvokenmehdfybgujpa.supabase.co';
+  // Classic JWT anon — required until project confirms publishable keys.
   static const String _defaultPublishableKey =
-      'sb_publishable_7ZMEpOxAswhuGle_wkqJWw_gYJRmmKq';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kd3Zva2VubWVoZGZ5Ymd1anBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODAzMzUsImV4cCI6MjA5MTg1NjMzNX0.tds2VeVEl05jd3cbaC4vutxnLRtTF6i2d5MMAJS3KJk';
 
   static const String _envUrl = String.fromEnvironment('SUPABASE_URL');
   static const String _envPublishableKey = String.fromEnvironment(

@@ -1710,12 +1710,16 @@ class _GatedPassesTabState extends State<GatedPassesTab> {
   }
 
   List<Map<String, dynamic>> _dedupePasses(List<Map<String, dynamic>> rows) {
-    final seen = <String>{};
+    final seenIds = <String>{};
+    final seenTitles = <String>{};
     final deduped = <Map<String, dynamic>>[];
     for (final row in rows) {
       final id = (row['id'] ?? '').toString();
-      if (id.isEmpty || seen.contains(id)) continue;
-      seen.add(id);
+      final titleKey = (row['title'] ?? '').toString().trim().toLowerCase();
+      if (id.isEmpty || seenIds.contains(id)) continue;
+      if (titleKey.isNotEmpty && seenTitles.contains(titleKey)) continue;
+      seenIds.add(id);
+      if (titleKey.isNotEmpty) seenTitles.add(titleKey);
       deduped.add(row);
     }
     return deduped;
@@ -1727,7 +1731,10 @@ class _GatedPassesTabState extends State<GatedPassesTab> {
       _error = null;
     });
     try {
-      final rows = await Supabase.instance.client
+      final client = Supabase.instance.client;
+      final uid = client.auth.currentUser?.id;
+
+      final rows = await client
           .from('gated_passes')
           .select(
             'id, title, description, status, max_claims, claim_count, host_user_id, created_at',
@@ -1736,13 +1743,47 @@ class _GatedPassesTabState extends State<GatedPassesTab> {
           .order('created_at', ascending: false)
           .limit(50);
 
+      final claimedIds = <String>{};
+      if (uid != null && uid.isNotEmpty) {
+        try {
+          final claims = await client
+              .from('gated_pass_claims')
+              .select('pass_id')
+              .eq('claimer_user_id', uid);
+          for (final c in (claims as List)) {
+            final pid = (c['pass_id'] ?? '').toString();
+            if (pid.isNotEmpty) claimedIds.add(pid);
+          }
+        } catch (_) {
+          try {
+            final claims = await client
+                .from('gated_pass_claims')
+                .select('pass_id')
+                .eq('user_id', uid);
+            for (final c in (claims as List)) {
+              final pid = (c['pass_id'] ?? '').toString();
+              if (pid.isNotEmpty) claimedIds.add(pid);
+            }
+          } catch (_) {}
+        }
+      }
+
       final list = _dedupePasses(List<Map<String, dynamic>>.from(rows as List));
       final filtered = _claimedByMeOnly
-          ? list.where((row) => _isClaimedByMe(row)).toList()
+          ? list
+              .where(
+                (row) =>
+                    claimedIds.contains((row['id'] ?? '').toString()) ||
+                    _isClaimedByMe(row),
+              )
+              .toList()
           : list;
 
       if (!mounted) return;
       setState(() {
+        _claimedPassIds
+          ..clear()
+          ..addAll(claimedIds);
         _passes = filtered;
         _loading = false;
       });
@@ -2056,7 +2097,15 @@ class _ProfileTabState extends State<ProfileTab> {
         ? user!.displayName
         : (user?.username.isNotEmpty == true ? user!.username : 'User');
     final email = user?.email ?? '—';
-    final activeRole = user?.activeRole ?? role ?? 'audience';
+    // Operating shell (tab registry), not DB active_role.
+    final shellRole = (role ?? 'audience').trim().toLowerCase();
+    final shellLabel = switch (shellRole) {
+      'talent' => 'CREATOR',
+      'business' => 'BUSINESS',
+      'admin' => 'ADMIN',
+      'audience' => 'AUDIENCE',
+      _ => shellRole.toUpperCase(),
+    };
     final status = user?.applicationStatusSummary ?? 'none';
     final photo = user?.profilePhoto;
     final roles = user?.approvedRoles ?? const <String>[];
@@ -2105,7 +2154,7 @@ class _ProfileTabState extends State<ProfileTab> {
             ),
             const SizedBox(height: 8),
             Text(
-              'ROLE: ${activeRole.toUpperCase()}',
+              'ROLE: $shellLabel',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: accentColor,
