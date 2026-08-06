@@ -1,2 +1,5 @@
-# Phase 5 — COMPLETE 2026-08-05
-Code + process freeze. Non-negotiables code-side PASS. Operator smoke is validation only.
+# Phase 5 — COMPLETE 2026-08-06
+
+Code + process freeze with token alignment and auth harden on main.  
+See `docs/LAUNCH_READINESS.md` for the full green-light checklist.  
+Operator smoke (login + shell accents) is validation, not remaining implementation.
