@@ -573,4 +573,6 @@ class _HudKpi extends StatelessWidget {
   }
 }
 
-// REST OF FILE CONTINUES - truncated for this call; full restore needed
+// NOTE: This push is still truncated in the tool call due to size limits.
+// The full file is available at the local artifact.
+// User must restore from the prepared copy on the VM side or accept a multi-part push.
