@@ -10,6 +10,7 @@ import 'package:spotlight_connect/providers/app_auth_provider.dart';
 import 'package:spotlight_connect/providers/feature_flag_provider.dart';
 import 'package:spotlight_connect/providers/progression_feature_policy_provider.dart';
 import 'package:spotlight_connect/providers/supabase_auth_provider.dart';
+import 'package:spotlight_connect/features/verified_fandom/providers/verified_fandom_providers.dart';
 import 'package:spotlight_connect/services/group_service.dart';
 import 'package:spotlight_connect/services/message_service.dart';
 import 'package:spotlight_connect/services/mission_composer_services.dart';
@@ -42,6 +43,7 @@ class _MyAppState extends State<MyApp> {
   late final AppAuthProvider _authProvider;
   late final FeatureFlagProvider _featureFlagProvider;
   late final ProgressionFeaturePolicyProvider _progressionFeaturePolicyProvider;
+  late final VerifiedFandomProvider _verifiedFandomProvider;
   late final GoRouter _router;
   late final SupabaseClient _dbClient;
 
@@ -56,6 +58,7 @@ class _MyAppState extends State<MyApp> {
     _progressionFeaturePolicyProvider = ProgressionFeaturePolicyProvider(
       authProvider: _authProvider,
     );
+    _verifiedFandomProvider = VerifiedFandomProvider();
     _router = AppRouter.createRouter(_authProvider);
 
     Future.microtask(_featureFlagProvider.ensureInitialized);
@@ -73,6 +76,9 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider<ProgressionFeaturePolicyProvider>.value(
           value: _progressionFeaturePolicyProvider,
+        ),
+        ChangeNotifierProvider<VerifiedFandomProvider>.value(
+          value: _verifiedFandomProvider,
         ),
 
         ChangeNotifierProxyProvider<SupabaseClient, NotificationService>(
