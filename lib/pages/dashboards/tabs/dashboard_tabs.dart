@@ -715,7 +715,12 @@ class _BusinessHomeTabState extends State<BusinessHomeTab> {
             ),
           ),
           const SizedBox(height: 10),
-          Container(
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () => _go('Campaigns'),
+              child: Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 28),
             decoration: BoxDecoration(
@@ -756,6 +761,8 @@ class _BusinessHomeTabState extends State<BusinessHomeTab> {
               ],
             ),
           ),
+            ),
+          ),
           const SizedBox(height: 20),
           Text(
             'BRAND CONTROL',
@@ -767,7 +774,12 @@ class _BusinessHomeTabState extends State<BusinessHomeTab> {
             ),
           ),
           const SizedBox(height: 10),
-          Container(
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () => _go('Suite'),
+              child: Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -810,7 +822,10 @@ class _BusinessHomeTabState extends State<BusinessHomeTab> {
                     ],
                   ),
                 ),
+                Icon(Icons.chevron_right, color: accent.withValues(alpha: 0.6), size: 20),
               ],
+            ),
+          ),
             ),
           ),
           const SizedBox(height: 20),
@@ -824,7 +839,12 @@ class _BusinessHomeTabState extends State<BusinessHomeTab> {
             ),
           ),
           const SizedBox(height: 10),
-          Container(
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () => _go('Campaigns'),
+              child: Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -869,7 +889,10 @@ class _BusinessHomeTabState extends State<BusinessHomeTab> {
                     ],
                   ),
                 ),
+                Icon(Icons.chevron_right, color: accent.withValues(alpha: 0.6), size: 20),
               ],
+            ),
+          ),
             ),
           ),
         ],
