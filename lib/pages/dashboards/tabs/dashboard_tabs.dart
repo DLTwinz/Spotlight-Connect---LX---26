@@ -619,6 +619,17 @@ class _BusinessHomeTabState extends State<BusinessHomeTab> {
     }
   }
 
+  void _go(String tabLabel) {
+    final nav = RoleShellNav.maybeOf(context);
+    if (nav != null) {
+      nav.goToLabel(tabLabel);
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Open $tabLabel from the sidebar')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final accent = context.roleAccent(_role);

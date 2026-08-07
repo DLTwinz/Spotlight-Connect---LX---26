@@ -187,7 +187,17 @@ class _AdminOverviewTab extends StatelessWidget {
                   border: const Color(0x40F59E0B),
                 ),
                 const SizedBox(width: 8),
-                _GhostButton(label: 'System Status', onTap: () {}),
+                _GhostButton(
+                  label: 'System Status',
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('All systems operational · launch gate ENABLED'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
             const SizedBox(height: 22),
@@ -484,10 +494,10 @@ class _QuickActionsCard extends StatelessWidget {
   const _QuickActionsCard();
 
   final _actions = const [
-    _QaItem('Review Approvals', Icons.verified_outlined, '5 pending', _AdminUi.cyan),
-    _QaItem('Moderation Queue', Icons.shield_outlined, '4 pending', _AdminUi.rose),
-    _QaItem('User Lookup', Icons.search_rounded, null, _AdminUi.blue),
-    _QaItem('Audit Log', Icons.receipt_long_outlined, null, _AdminUi.purple),
+    _QaItem('Review Approvals', Icons.verified_outlined, '5 pending', _AdminUi.cyan, tab: 'Approvals'),
+    _QaItem('Moderation Queue', Icons.shield_outlined, '4 pending', _AdminUi.rose, tab: 'Moderation'),
+    _QaItem('User Lookup', Icons.search_rounded, null, _AdminUi.blue, tab: 'Users'),
+    _QaItem('Audit Log', Icons.receipt_long_outlined, null, _AdminUi.purple, tab: 'Command'),
   ];
 
   @override
@@ -528,7 +538,22 @@ class _QuickActionsCard extends StatelessWidget {
                 color: const Color(0xFF0A0F1A),
                 borderRadius: BorderRadius.circular(12),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    final tab = a.tab;
+                    if (tab != null) {
+                      final nav = RoleShellNav.maybeOf(context);
+                      if (nav != null) {
+                        nav.goToLabel(tab);
+                        return;
+                      }
+                    }
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(tab != null ? 'Open $tab from the sidebar' : a.label),
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  },
                   borderRadius: BorderRadius.circular(12),
                   hoverColor: Colors.white.withValues(alpha: 0.03),
                   child: Container(
@@ -586,11 +611,12 @@ class _QuickActionsCard extends StatelessWidget {
 }
 
 class _QaItem {
-  const _QaItem(this.label, this.icon, this.sub, this.color);
+  const _QaItem(this.label, this.icon, this.sub, this.color, {this.tab});
   final String label;
   final IconData icon;
   final String? sub;
   final Color color;
+  final String? tab;
 }
 
 class _PendingApprovalsPreview extends StatefulWidget {
@@ -1156,7 +1182,19 @@ class _FlaggedRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          _GhostButton(label: 'Review', onTap: () {}),
+          _GhostButton(
+            label: 'Review',
+            onTap: () {
+              final nav = RoleShellNav.maybeOf(context);
+              if (nav != null) {
+                nav.goToLabel('Moderation');
+                return;
+              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Open Moderation from the sidebar')),
+              );
+            },
+          ),
           const SizedBox(width: 6),
           _DangerSm(label: 'Remove', onTap: onRemove),
         ],
