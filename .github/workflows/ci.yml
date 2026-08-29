@@ -80,7 +80,4 @@ jobs:
         run: flutter pub get
 
       - name: Build web (release)
-        run: |
-          flutter build web --release \
-            --dart-define=SUPABASE_URL=https://example.supabase.co \
-            --dart-define=SUPABASE_ANON_KEY=public-anon-key-placeholder
+        run: flutter build web --release
