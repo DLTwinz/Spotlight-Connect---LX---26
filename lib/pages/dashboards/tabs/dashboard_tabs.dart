@@ -148,16 +148,15 @@ class _CreatorHomeTabState extends State<CreatorHomeTab> {
     }
   }
 
-
   void _go(String tabLabel) {
     final nav = RoleShellNav.maybeOf(context);
     if (nav != null) {
       nav.goToLabel(tabLabel);
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Open $tabLabel from the sidebar')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Open $tabLabel from the sidebar')));
   }
 
   @override
@@ -252,46 +251,49 @@ class _CreatorHomeTabState extends State<CreatorHomeTab> {
               borderRadius: BorderRadius.circular(12),
               onTap: () => _go('Opportunities'),
               child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 28),
-            decoration: BoxDecoration(
-              color: context.rolePanelBackground(_role),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: context.rolePanelBorder(_role)),
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.inbox_outlined,
-                  color: accent.withValues(alpha: 0.7),
-                  size: 32,
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 28,
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  _applyCount > 0
-                      ? 'Applications in flight'
-                      : 'No actions right now',
-                  style: TextStyle(
-                    color: context.roleTextPrimary(_role),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
+                decoration: BoxDecoration(
+                  color: context.rolePanelBackground(_role),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: context.rolePanelBorder(_role)),
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  _applyCount > 0
-                      ? '$_applyCount apply event${_applyCount == 1 ? '' : 's'} · support impact ${_supportImpact.toStringAsFixed(0)}'
-                      : 'Approvals, mission steps, and contract responses will land here.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: context.roleTextMuted(_role),
-                    fontSize: 12.5,
-                    height: 1.4,
-                  ),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.inbox_outlined,
+                      color: accent.withValues(alpha: 0.7),
+                      size: 32,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      _applyCount > 0
+                          ? 'Applications in flight'
+                          : 'No actions right now',
+                      style: TextStyle(
+                        color: context.roleTextPrimary(_role),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      _applyCount > 0
+                          ? '$_applyCount apply event${_applyCount == 1 ? '' : 's'} · support impact ${_supportImpact.toStringAsFixed(0)}'
+                          : 'Approvals, mission steps, and contract responses will land here.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: context.roleTextMuted(_role),
+                        fontSize: 12.5,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
             ),
           ),
           const SizedBox(height: 20),
@@ -311,53 +313,53 @@ class _CreatorHomeTabState extends State<CreatorHomeTab> {
               borderRadius: BorderRadius.circular(12),
               onTap: () => _go('Opportunities'),
               child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: context.rolePanelBackground(_role),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: context.rolePanelBorder(_role)),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: accent.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(Icons.work_outline, color: accent, size: 20),
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: context.rolePanelBackground(_role),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: context.rolePanelBorder(_role)),
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        openCount == 0
-                            ? 'No open opportunities'
-                            : '$openCount open ${openCount == 1 ? 'opportunity' : 'opportunities'}',
-                        style: TextStyle(
-                          color: context.roleTextPrimary(_role),
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w600,
-                        ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: accent.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      const SizedBox(height: 3),
-                      Text(
-                        'Browse full list in the Opportunities tab',
-                        style: TextStyle(
-                          color: context.roleTextMuted(_role),
-                          fontSize: 11.5,
-                        ),
+                      child: Icon(Icons.work_outline, color: accent, size: 20),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            openCount == 0
+                                ? 'No open opportunities'
+                                : '$openCount open ${openCount == 1 ? 'opportunity' : 'opportunities'}',
+                            style: TextStyle(
+                              color: context.roleTextPrimary(_role),
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            'Browse full list in the Opportunities tab',
+                            style: TextStyle(
+                              color: context.roleTextMuted(_role),
+                              fontSize: 11.5,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
             ),
           ),
 
@@ -378,51 +380,55 @@ class _CreatorHomeTabState extends State<CreatorHomeTab> {
               borderRadius: BorderRadius.circular(12),
               onTap: () => _go('Studio'),
               child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: context.rolePanelBackground(_role),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: context.rolePanelBorder(_role)),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: accent.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(Icons.insights_outlined, color: accent, size: 20),
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: context.rolePanelBackground(_role),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: context.rolePanelBorder(_role)),
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Creator Operations Engine',
-                        style: TextStyle(
-                          color: context.roleTextPrimary(_role),
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w600,
-                        ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: accent.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      const SizedBox(height: 3),
-                      Text(
-                        'Earnings, pipeline, and attribution live in Studio',
-                        style: TextStyle(
-                          color: context.roleTextMuted(_role),
-                          fontSize: 11.5,
-                        ),
+                      child: Icon(
+                        Icons.insights_outlined,
+                        color: accent,
+                        size: 20,
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Creator Operations Engine',
+                            style: TextStyle(
+                              color: context.roleTextPrimary(_role),
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            'Earnings, pipeline, and attribution live in Studio',
+                            style: TextStyle(
+                              color: context.roleTextMuted(_role),
+                              fontSize: 11.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
             ),
           ),
           const SizedBox(height: 20),
@@ -490,15 +496,18 @@ class _CreatorHomeTabState extends State<CreatorHomeTab> {
                         ? null
                         : () async {
                             setState(() => _claiming = true);
-                            final graph =
-                                GraphEventService(Supabase.instance.client);
+                            final graph = GraphEventService(
+                              Supabase.instance.client,
+                            );
                             final id = await graph.claimGatedPass(
-                              passId:
-                                  '481eccb2-8c3c-4051-bc36-84600b388792',
+                              passId: '481eccb2-8c3c-4051-bc36-84600b388792',
                               roleContext: _role,
                             );
                             if (!mounted) return;
                             setState(() => _claiming = false);
+
+                            if (!context.mounted) return;
+
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
@@ -625,9 +634,9 @@ class _BusinessHomeTabState extends State<BusinessHomeTab> {
       nav.goToLabel(tabLabel);
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Open $tabLabel from the sidebar')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Open $tabLabel from the sidebar')));
   }
 
   @override
@@ -721,46 +730,49 @@ class _BusinessHomeTabState extends State<BusinessHomeTab> {
               borderRadius: BorderRadius.circular(12),
               onTap: () => _go('Campaigns'),
               child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 28),
-            decoration: BoxDecoration(
-              color: context.rolePanelBackground(_role),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: context.rolePanelBorder(_role)),
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.campaign_outlined,
-                  color: accent.withValues(alpha: 0.7),
-                  size: 32,
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 28,
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  openCount > 0
-                      ? 'Campaigns in market'
-                      : 'No campaigns right now',
-                  style: TextStyle(
-                    color: context.roleTextPrimary(_role),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
+                decoration: BoxDecoration(
+                  color: context.rolePanelBackground(_role),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: context.rolePanelBorder(_role)),
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  openCount > 0
-                      ? '$openCount open campaign${openCount == 1 ? '' : 's'} · impact ${_supportImpact.toStringAsFixed(0)}'
-                      : 'Publish a campaign to start creator applications and attribution.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: context.roleTextMuted(_role),
-                    fontSize: 12.5,
-                    height: 1.4,
-                  ),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.campaign_outlined,
+                      color: accent.withValues(alpha: 0.7),
+                      size: 32,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      openCount > 0
+                          ? 'Campaigns in market'
+                          : 'No campaigns right now',
+                      style: TextStyle(
+                        color: context.roleTextPrimary(_role),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      openCount > 0
+                          ? '$openCount open campaign${openCount == 1 ? '' : 's'} · impact ${_supportImpact.toStringAsFixed(0)}'
+                          : 'Publish a campaign to start creator applications and attribution.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: context.roleTextMuted(_role),
+                        fontSize: 12.5,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
             ),
           ),
           const SizedBox(height: 20),
@@ -780,52 +792,60 @@ class _BusinessHomeTabState extends State<BusinessHomeTab> {
               borderRadius: BorderRadius.circular(12),
               onTap: () => _go('Suite'),
               child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: context.rolePanelBackground(_role),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: context.rolePanelBorder(_role)),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: accent.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(Icons.business_outlined, color: accent, size: 20),
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: context.rolePanelBackground(_role),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: context.rolePanelBorder(_role)),
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Brand Impact Engine',
-                        style: TextStyle(
-                          color: context.roleTextPrimary(_role),
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w600,
-                        ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: accent.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      const SizedBox(height: 3),
-                      Text(
-                        'Spend, deal value, and attribution live in Suite',
-                        style: TextStyle(
-                          color: context.roleTextMuted(_role),
-                          fontSize: 11.5,
-                        ),
+                      child: Icon(
+                        Icons.business_outlined,
+                        color: accent,
+                        size: 20,
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Brand Impact Engine',
+                            style: TextStyle(
+                              color: context.roleTextPrimary(_role),
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            'Spend, deal value, and attribution live in Suite',
+                            style: TextStyle(
+                              color: context.roleTextMuted(_role),
+                              fontSize: 11.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right,
+                      color: accent.withValues(alpha: 0.6),
+                      size: 20,
+                    ),
+                  ],
                 ),
-                Icon(Icons.chevron_right, color: accent.withValues(alpha: 0.6), size: 20),
-              ],
-            ),
-          ),
+              ),
             ),
           ),
           const SizedBox(height: 20),
@@ -845,54 +865,62 @@ class _BusinessHomeTabState extends State<BusinessHomeTab> {
               borderRadius: BorderRadius.circular(12),
               onTap: () => _go('Campaigns'),
               child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: context.rolePanelBackground(_role),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: context.rolePanelBorder(_role)),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: accent.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(Icons.campaign_outlined, color: accent, size: 20),
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: context.rolePanelBackground(_role),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: context.rolePanelBorder(_role)),
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        openCount == 0
-                            ? 'No open campaigns'
-                            : '$openCount open ${openCount == 1 ? 'campaign' : 'campaigns'}',
-                        style: TextStyle(
-                          color: context.roleTextPrimary(_role),
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w600,
-                        ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: accent.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      const SizedBox(height: 3),
-                      Text(
-                        'Manage full list in the Campaigns tab',
-                        style: TextStyle(
-                          color: context.roleTextMuted(_role),
-                          fontSize: 11.5,
-                        ),
+                      child: Icon(
+                        Icons.campaign_outlined,
+                        color: accent,
+                        size: 20,
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            openCount == 0
+                                ? 'No open campaigns'
+                                : '$openCount open ${openCount == 1 ? 'campaign' : 'campaigns'}',
+                            style: TextStyle(
+                              color: context.roleTextPrimary(_role),
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            'Manage full list in the Campaigns tab',
+                            style: TextStyle(
+                              color: context.roleTextMuted(_role),
+                              fontSize: 11.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right,
+                      color: accent.withValues(alpha: 0.6),
+                      size: 20,
+                    ),
+                  ],
                 ),
-                Icon(Icons.chevron_right, color: accent.withValues(alpha: 0.6), size: 20),
-              ],
-            ),
-          ),
+              ),
             ),
           ),
         ],
@@ -1704,7 +1732,9 @@ class _OpportunitiesTabState extends State<OpportunitiesTab> {
                                   return ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: accent,
-                                      foregroundColor: context.roleOnAccent(role),
+                                      foregroundColor: context.roleOnAccent(
+                                        role,
+                                      ),
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 14,
                                       ),
@@ -1728,8 +1758,9 @@ class _OpportunitiesTabState extends State<OpportunitiesTab> {
                                                     .toLowerCase(),
                                               );
                                               if (!context.mounted) return;
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
                                                 const SnackBar(
                                                   content: Text(
                                                     'Application submitted — graph densified',
@@ -1738,10 +1769,13 @@ class _OpportunitiesTabState extends State<OpportunitiesTab> {
                                               );
                                             } catch (e) {
                                               if (!context.mounted) return;
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
                                                 SnackBar(
-                                                  content: Text('Apply failed: $e'),
+                                                  content: Text(
+                                                    'Apply failed: $e',
+                                                  ),
                                                 ),
                                               );
                                             } finally {
@@ -1863,12 +1897,12 @@ class _GatedPassesTabState extends State<GatedPassesTab> {
       final list = _dedupePasses(List<Map<String, dynamic>>.from(rows as List));
       final filtered = _claimedByMeOnly
           ? list
-              .where(
-                (row) =>
-                    claimedIds.contains((row['id'] ?? '').toString()) ||
-                    _isClaimedByMe(row),
-              )
-              .toList()
+                .where(
+                  (row) =>
+                      claimedIds.contains((row['id'] ?? '').toString()) ||
+                      _isClaimedByMe(row),
+                )
+                .toList()
           : list;
 
       if (!mounted) return;
