@@ -499,6 +499,9 @@ class _CreatorHomeTabState extends State<CreatorHomeTab> {
                             );
                             if (!mounted) return;
                             setState(() => _claiming = false);
+
+                            if (!context.mounted) return;
+
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(

@@ -2,6 +2,12 @@ include: package:flutter_lints/flutter.yaml
 
 analyzer:
   exclude:
+    - "build/**"
+    - ".dart_tool/**"
+    - "linux/flutter/ephemeral/**"
+    - "windows/flutter/ephemeral/**"
+    - "macos/Flutter/ephemeral/**"
+    - ".tmp_local_backups/**"
     - "spotlight_backup/**"
 
 linter:
