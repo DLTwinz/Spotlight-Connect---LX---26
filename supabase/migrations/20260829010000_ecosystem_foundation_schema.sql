@@ -1,1 +1,4 @@
-PLACEHOLDER_WILL_FAIL
+-- Intentionally reserved.
+-- This migration contained an invalid placeholder and deliberately performs no DDL.
+-- The additive eco_* foundation schema will be delivered in a separately reviewed,
+-- timestamped migration after local and Supabase development-branch validation.
