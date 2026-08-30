@@ -79,5 +79,27 @@ jobs:
       - name: Pub get
         run: flutter pub get
 
+      - name: Verify public Supabase build configuration
+        shell: bash
+        env:
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          test -n "$SUPABASE_PUBLISHABLE_KEY" || {
+            echo "SUPABASE_PUBLISHABLE_KEY is required for release web builds."
+            exit 1
+          }
+
+          case "$SUPABASE_PUBLISHABLE_KEY" in
+            sb_secret_*|*service_role*)
+              echo "Refusing to use a Supabase secret/service-role key in a client build."
+              exit 1
+              ;;
+          esac
+
       - name: Build web (release)
-        run: flutter build web --release
+        env:
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          flutter build web --release \
+            --dart-define=SUPABASE_URL=https://mdwvokenmehdfybgujpa.supabase.co \
+            --dart-define=SUPABASE_PUBLISHABLE_KEY="$SUPABASE_PUBLISHABLE_KEY"
