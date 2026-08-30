@@ -9,19 +9,31 @@ class SupabaseConfig {
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kd3Zva2VubWVoZGZ5Ymd1anBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODAzMzUsImV4cCI6MjA5MTg1NjMzNX0.tds2VeVEl05jd3cbaC4vutxnLRtTF6i2d5MMAJS3KJk';
 
   static const String _envUrl = String.fromEnvironment('SUPABASE_URL');
+
+  /// Preferred public client credential for new deployments and CI builds.
+  static const String _envPublishableKey = String.fromEnvironment(
+    'SUPABASE_PUBLISHABLE_KEY',
+  );
+
+  /// Legacy compatibility only. New build/deployment paths should provide
+  /// SUPABASE_PUBLISHABLE_KEY instead.
   static const String _envAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
 
   static String get url => _envUrl.isNotEmpty ? _envUrl : _defaultUrl;
 
-  /// Public client key only (anon / publishable). Never service_role.
-  static String get anonKey {
-    final fromEnv = _envAnonKey.trim();
-    if (fromEnv.isEmpty) return _defaultAnonKey;
-    return fromEnv;
+  /// Public client key only. Never service_role or sb_secret.
+  static String get publishableKey {
+    final publishable = _envPublishableKey.trim();
+    if (publishable.isNotEmpty) return publishable;
+
+    final legacyAnon = _envAnonKey.trim();
+    if (legacyAnon.isNotEmpty) return legacyAnon;
+
+    return _defaultAnonKey;
   }
 
-  /// Alias for older call sites / docs.
-  static String get publishableKey => anonKey;
+  /// Alias retained for older call sites.
+  static String get anonKey => publishableKey;
 
   static const String authRedirectOrigin =
       'io.supabase.spotlight://login-callback';
@@ -92,10 +104,7 @@ class SupabaseConfig {
       debugPrint('SupabaseConfig: url=$url keyPrefix=$prefix…');
     }
 
-    await Supabase.initialize(
-      url: url,
-      publishableKey: key,
-    );
+    await Supabase.initialize(url: url, publishableKey: key);
   }
 
   static SupabaseClient get client => Supabase.instance.client;
