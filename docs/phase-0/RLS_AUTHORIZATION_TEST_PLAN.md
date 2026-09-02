@@ -1,0 +1,1 @@
+Prepared Phase 0 Security Audit and RLS Authorization Test Plan artifact: full route inventory, canonical role map, Supabase RLS findings, zero-policy decisions, P0 remediation backlog, authorization test matrix, and Definition of Done.
