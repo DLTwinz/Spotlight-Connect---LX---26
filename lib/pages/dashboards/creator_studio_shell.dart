@@ -58,8 +58,10 @@ class _CreatorStudioShellState extends State<CreatorStudioShell> {
           ? null
           : NavigationBar(
               selectedIndex: _selectedIndex > 4 ? 4 : _selectedIndex,
-              onDestinationSelected: (index) =>
-                  setState(() => _selectedIndex = index),
+              onDestinationSelected: (index) {
+                const mobileIndexes = [0, 1, 2, 3, 9];
+                setState(() => _selectedIndex = mobileIndexes[index]);
+              },
               destinations: const [
                 NavigationDestination(
                   icon: Icon(Icons.home_outlined),
