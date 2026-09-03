@@ -483,58 +483,68 @@ class _RelationshipPreview extends StatelessWidget {
         children: [
           const _PanelHeader(
             title: 'Relationship Gravity Map',
-            action: 'Preview',
+            action: 'Open map',
           ),
           const SizedBox(height: 12),
-          Container(
-            height: 170,
-            decoration: BoxDecoration(
+          Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+            child: InkWell(
+              onTap:
+                  onOpenGravityMap ??
+                  () => _showMessage(context, 'Opening Gravity Map next.'),
               borderRadius: BorderRadius.circular(16),
-              gradient: RadialGradient(
-                colors: [
-                  SpotlightTokens.cyan.withValues(alpha: 0.20),
-                  SpotlightTokens.purple.withValues(alpha: 0.11),
-                  SpotlightTokens.bgElevated,
-                ],
+              child: Ink(
+                height: 170,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: RadialGradient(
+                    colors: [
+                      SpotlightTokens.cyan.withValues(alpha: 0.20),
+                      SpotlightTokens.purple.withValues(alpha: 0.11),
+                      SpotlightTokens.bgElevated,
+                    ],
+                  ),
+                  border: Border.all(color: SpotlightTokens.border),
+                ),
+                child: const Stack(
+                  children: [
+                    Positioned(
+                      left: 24,
+                      top: 26,
+                      child: _OrbitAvatar(
+                        initials: 'L',
+                        color: SpotlightTokens.cyan,
+                      ),
+                    ),
+                    Positioned(
+                      right: 32,
+                      top: 22,
+                      child: _OrbitAvatar(
+                        initials: 'M',
+                        color: SpotlightTokens.magenta,
+                      ),
+                    ),
+                    Positioned(
+                      left: 42,
+                      bottom: 22,
+                      child: _OrbitAvatar(
+                        initials: 'K',
+                        color: SpotlightTokens.purple,
+                      ),
+                    ),
+                    Positioned(
+                      right: 54,
+                      bottom: 24,
+                      child: _OrbitAvatar(
+                        initials: 'R',
+                        color: SpotlightTokens.cyanSoft,
+                      ),
+                    ),
+                    Center(child: _IdentityNode()),
+                  ],
+                ),
               ),
-              border: Border.all(color: SpotlightTokens.border),
-            ),
-            child: const Stack(
-              children: [
-                Positioned(
-                  left: 24,
-                  top: 26,
-                  child: _OrbitAvatar(
-                    initials: 'L',
-                    color: SpotlightTokens.cyan,
-                  ),
-                ),
-                Positioned(
-                  right: 32,
-                  top: 22,
-                  child: _OrbitAvatar(
-                    initials: 'M',
-                    color: SpotlightTokens.magenta,
-                  ),
-                ),
-                Positioned(
-                  left: 42,
-                  bottom: 22,
-                  child: _OrbitAvatar(
-                    initials: 'K',
-                    color: SpotlightTokens.purple,
-                  ),
-                ),
-                Positioned(
-                  right: 54,
-                  bottom: 24,
-                  child: _OrbitAvatar(
-                    initials: 'R',
-                    color: SpotlightTokens.cyanSoft,
-                  ),
-                ),
-                Center(child: _IdentityNode()),
-              ],
             ),
           ),
           const SizedBox(height: 12),
