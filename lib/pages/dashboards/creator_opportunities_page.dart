@@ -49,6 +49,165 @@ class _CreatorOpportunitiesPageState extends State<CreatorOpportunitiesPage> {
     }
   }
 
+  Future<void> _showOpportunityDetails(
+    OpportunityService service,
+    Map<String, dynamic> opportunity,
+  ) async {
+    final id = (opportunity['id'] ?? '').toString();
+    final title = (opportunity['title'] ?? 'Untitled opportunity').toString();
+    final description = (opportunity['description'] ?? '').toString();
+    final category = (opportunity['category'] ?? '').toString();
+    final location = (opportunity['location_type'] ?? '').toString();
+    final compensation = (opportunity['compensation_type'] ?? '').toString();
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return SafeArea(
+          top: false,
+          child: Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.88,
+            ),
+            padding: const EdgeInsets.fromLTRB(22, 14, 22, 26),
+            decoration: const BoxDecoration(
+              color: SpotlightTokens.bgSurface,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Align(
+                  child: Container(
+                    width: 38,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: SpotlightTokens.border,
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: SpotlightTokens.textPrimary,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    height: 1.15,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    if (category.trim().isNotEmpty)
+                      _OpportunityDetailTag(
+                        icon: Icons.category_outlined,
+                        label: category,
+                      ),
+                    if (location.trim().isNotEmpty)
+                      _OpportunityDetailTag(
+                        icon: Icons.location_on_outlined,
+                        label: location,
+                      ),
+                    if (compensation.trim().isNotEmpty)
+                      _OpportunityDetailTag(
+                        icon: Icons.payments_outlined,
+                        label: compensation,
+                      ),
+                    if (opportunity['approval_required'] == true)
+                      const _OpportunityDetailTag(
+                        icon: Icons.verified_user_outlined,
+                        label: 'Approval required',
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'BRIEF',
+                  style: TextStyle(
+                    color: SpotlightTokens.purple,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.1,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Text(
+                      description.isEmpty
+                          ? 'The business has not added a detailed brief yet.'
+                          : description,
+                      style: const TextStyle(
+                        color: SpotlightTokens.textSecondary,
+                        fontSize: 15,
+                        height: 1.5,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: id.isEmpty || _applyingIds.contains(id)
+                        ? null
+                        : () async {
+                            final confirmed = await showDialog<bool>(
+                              context: sheetContext,
+                              builder: (dialogContext) => AlertDialog(
+                                title: const Text('Submit application?'),
+                                content: Text(
+                                  'Your application will be sent to the business for "$title".',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(dialogContext, false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  FilledButton(
+                                    onPressed: () =>
+                                        Navigator.pop(dialogContext, true),
+                                    child: const Text('Apply now'),
+                                  ),
+                                ],
+                              ),
+                            );
+
+                            if (confirmed != true ||
+                                !mounted ||
+                                !sheetContext.mounted) {
+                              return;
+                            }
+                            Navigator.pop(sheetContext);
+                            await _apply(service, opportunity);
+                          },
+                    icon: _applyingIds.contains(id)
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.send_rounded, size: 17),
+                    label: Text(
+                      _applyingIds.contains(id) ? 'Applying' : 'Apply now',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final service = context.watch<OpportunityService>();
@@ -117,7 +276,8 @@ class _CreatorOpportunitiesPageState extends State<CreatorOpportunitiesPage> {
                 applying: _applyingIds.contains(
                   (opportunity['id'] ?? '').toString(),
                 ),
-                onApply: () => _apply(service, opportunity),
+                onViewDetails: () =>
+                    _showOpportunityDetails(service, opportunity),
               ),
               const SizedBox(height: 12),
             ],
@@ -179,7 +339,7 @@ class _Hero extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           const Text(
-            'Open briefs from verified businesses appear here. Apply directly when the fit is right.',
+            'Open briefs from verified businesses appear here. Review the brief before you apply.',
             style: TextStyle(
               color: SpotlightTokens.textSecondary,
               height: 1.45,
@@ -292,12 +452,12 @@ class _OpportunityCard extends StatelessWidget {
   const _OpportunityCard({
     required this.opportunity,
     required this.applying,
-    required this.onApply,
+    required this.onViewDetails,
   });
 
   final Map<String, dynamic> opportunity;
   final bool applying;
-  final VoidCallback onApply;
+  final VoidCallback onViewDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -399,15 +559,43 @@ class _OpportunityCard extends StatelessWidget {
           Align(
             alignment: Alignment.centerRight,
             child: FilledButton.icon(
-              onPressed: applying ? null : onApply,
-              icon: applying
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.send_rounded, size: 17),
-              label: Text(applying ? 'Applying' : 'Apply'),
+              onPressed: applying ? null : onViewDetails,
+              icon: const Icon(Icons.arrow_forward_rounded, size: 17),
+              label: const Text('View details'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OpportunityDetailTag extends StatelessWidget {
+  const _OpportunityDetailTag({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: SpotlightTokens.bgElevated,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: SpotlightTokens.border),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 15, color: SpotlightTokens.purple),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: const TextStyle(
+              color: SpotlightTokens.textPrimary,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],
