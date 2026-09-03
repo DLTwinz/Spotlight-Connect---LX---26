@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spotlight_connect/pages/dashboards/creator_overview_page.dart';
 import 'package:spotlight_connect/theme/spotlight_tokens.dart';
+import 'package:spotlight_connect/pages/dashboards/creator_opportunities_page.dart';
 
 class CreatorStudioShell extends StatefulWidget {
   const CreatorStudioShell({super.key});
@@ -111,6 +112,8 @@ class _CreatorCanvas extends StatelessWidget {
           Expanded(
             child: selectedIndex == 0
                 ? const CreatorOverviewPage()
+                : selectedIndex == 3
+                ? const CreatorOpportunitiesPage()
                 : _WorkspacePlaceholder(title: title),
           ),
         ],
