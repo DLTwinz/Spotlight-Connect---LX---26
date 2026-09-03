@@ -47,6 +47,8 @@ class _CreatorStudioShellState extends State<CreatorStudioShell> {
                     child: _CreatorCanvas(
                       selectedIndex: _selectedIndex,
                       title: selected.label,
+                      onSelectWorkspace: (index) =>
+                          setState(() => _selectedIndex = index),
                     ),
                   ),
                 ],
@@ -54,6 +56,8 @@ class _CreatorStudioShellState extends State<CreatorStudioShell> {
             : _CreatorCanvas(
                 selectedIndex: _selectedIndex,
                 title: selected.label,
+                onSelectWorkspace: (index) =>
+                    setState(() => _selectedIndex = index),
               ),
       ),
       bottomNavigationBar: isDesktop
@@ -97,10 +101,15 @@ class _CreatorStudioShellState extends State<CreatorStudioShell> {
 }
 
 class _CreatorCanvas extends StatelessWidget {
-  const _CreatorCanvas({required this.selectedIndex, required this.title});
+  const _CreatorCanvas({
+    required this.selectedIndex,
+    required this.title,
+    required this.onSelectWorkspace,
+  });
 
   final int selectedIndex;
   final String title;
+  final ValueChanged<int> onSelectWorkspace;
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +121,10 @@ class _CreatorCanvas extends StatelessWidget {
           const SizedBox(height: 18),
           Expanded(
             child: selectedIndex == 0
-                ? const CreatorOverviewPage()
+                ? CreatorOverviewPage(
+                    onOpenOpportunities: () => onSelectWorkspace(3),
+                    onOpenGravityMap: () => onSelectWorkspace(6),
+                  )
                 : selectedIndex == 3
                 ? const CreatorOpportunitiesPage()
                 : selectedIndex == 6

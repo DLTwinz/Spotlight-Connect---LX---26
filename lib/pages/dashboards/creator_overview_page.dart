@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:spotlight_connect/theme/spotlight_tokens.dart';
 
 class CreatorOverviewPage extends StatelessWidget {
-  const CreatorOverviewPage({super.key});
+  const CreatorOverviewPage({
+    super.key,
+    this.onOpenOpportunities,
+    this.onOpenGravityMap,
+  });
+
+  final VoidCallback? onOpenOpportunities;
+  final VoidCallback? onOpenGravityMap;
 
   @override
   Widget build(BuildContext context) {
@@ -34,24 +41,34 @@ class CreatorOverviewPage extends StatelessWidget {
             ),
           const SizedBox(height: 16),
           if (isDesktop)
-            const Row(
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(flex: 5, child: _OpportunityPipeline()),
-                SizedBox(width: 16),
-                Expanded(flex: 5, child: _StudioWorkflow()),
-                SizedBox(width: 16),
-                Expanded(flex: 6, child: _RelationshipPreview()),
+                Expanded(
+                  flex: 5,
+                  child: _OpportunityPipeline(
+                    onOpenOpportunities: onOpenOpportunities,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                const Expanded(flex: 5, child: _StudioWorkflow()),
+                const SizedBox(width: 16),
+                Expanded(
+                  flex: 6,
+                  child: _RelationshipPreview(
+                    onOpenGravityMap: onOpenGravityMap,
+                  ),
+                ),
               ],
             )
           else
-            const Column(
+            Column(
               children: [
-                _OpportunityPipeline(),
-                SizedBox(height: 16),
-                _StudioWorkflow(),
-                SizedBox(height: 16),
-                _RelationshipPreview(),
+                _OpportunityPipeline(onOpenOpportunities: onOpenOpportunities),
+                const SizedBox(height: 16),
+                const _StudioWorkflow(),
+                const SizedBox(height: 16),
+                _RelationshipPreview(onOpenGravityMap: onOpenGravityMap),
               ],
             ),
           const SizedBox(height: 16),
@@ -371,7 +388,9 @@ class _ActiveMission extends StatelessWidget {
 }
 
 class _OpportunityPipeline extends StatelessWidget {
-  const _OpportunityPipeline();
+  const _OpportunityPipeline({this.onOpenOpportunities});
+
+  final VoidCallback? onOpenOpportunities;
 
   @override
   Widget build(BuildContext context) {
@@ -411,8 +430,9 @@ class _OpportunityPipeline extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: FilledButton(
-              onPressed: () =>
-                  _showMessage(context, 'Opening Opportunities next.'),
+              onPressed:
+                  onOpenOpportunities ??
+                  () => _showMessage(context, 'Opening Opportunities next.'),
               child: const Text('Open opportunities'),
             ),
           ),
@@ -451,7 +471,9 @@ class _StudioWorkflow extends StatelessWidget {
 }
 
 class _RelationshipPreview extends StatelessWidget {
-  const _RelationshipPreview();
+  const _RelationshipPreview({this.onOpenGravityMap});
+
+  final VoidCallback? onOpenGravityMap;
 
   @override
   Widget build(BuildContext context) {
@@ -529,8 +551,9 @@ class _RelationshipPreview extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
-              onPressed: () =>
-                  _showMessage(context, 'Opening Gravity Map next.'),
+              onPressed:
+                  onOpenGravityMap ??
+                  () => _showMessage(context, 'Opening Gravity Map next.'),
               child: const Text('Explore relationships'),
             ),
           ),
