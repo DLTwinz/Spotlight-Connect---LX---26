@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:spotlight_connect/pages/dashboards/creator_overview_page.dart';
 import 'package:spotlight_connect/theme/spotlight_tokens.dart';
 import 'package:spotlight_connect/pages/dashboards/creator_opportunities_page.dart';
+import 'package:spotlight_connect/pages/dashboards/creator_gravity_map_page.dart';
 
 class CreatorStudioShell extends StatefulWidget {
   const CreatorStudioShell({super.key});
@@ -114,6 +115,8 @@ class _CreatorCanvas extends StatelessWidget {
                 ? const CreatorOverviewPage()
                 : selectedIndex == 3
                 ? const CreatorOpportunitiesPage()
+                : selectedIndex == 6
+                ? const CreatorGravityMapPage()
                 : _WorkspacePlaceholder(title: title),
           ),
         ],
