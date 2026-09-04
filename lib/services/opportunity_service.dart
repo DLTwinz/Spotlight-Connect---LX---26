@@ -11,8 +11,8 @@ class OpportunityService extends ChangeNotifier {
   OpportunityService({
     required SupabaseClient client,
     required dynamic localCache,
-  })  : _client = client,
-        _localCache = localCache {
+  }) : _client = client,
+       _localCache = localCache {
     fetchActiveOpportunities();
   }
 
@@ -33,6 +33,7 @@ class OpportunityService extends ChangeNotifier {
             'category, compensation_type, location_type, '
             'published_at, created_at, updated_at, approval_required',
           )
+          .eq('status', 'open')
           .order('created_at', ascending: false)
           .timeout(const Duration(seconds: 8));
       _opportunities = List<Map<String, dynamic>>.from(data);
@@ -51,10 +52,10 @@ class OpportunityService extends ChangeNotifier {
     String? pitch,
     String roleContext = 'talent',
   }) async {
-    await _client.rpc('apply_to_opportunity', params: {
-      'p_opportunity_id': opportunityId,
-      'p_pitch': pitch,
-    });
+    await _client.rpc(
+      'apply_to_opportunity',
+      params: {'p_opportunity_id': opportunityId, 'p_pitch': pitch},
+    );
   }
 
   Future<void> createCampaign({

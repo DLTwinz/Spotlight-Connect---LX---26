@@ -9,6 +9,11 @@ analyzer:
     - "macos/Flutter/ephemeral/**"
     - ".tmp_local_backups/**"
     - "spotlight_backup/**"
+    - android/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
 
 linter:
   rules:

@@ -71,28 +71,33 @@ class LightModeColors {
 }
 
 class DarkModeColors {
-  static const darkPrimary = Color(0xFFB7FF2A);
-  static const darkOnPrimary = Color(0xFF07110A);
-  static const darkPrimaryContainer = Color(0xFF1E3514);
-  static const darkOnPrimaryContainer = Color(0xFFDFFFC0);
-  static const darkSecondary = Color(0xFFBCC7D6);
-  static const darkOnSecondary = Color(0xFF2E3842);
-  static const darkTertiary = Color(0xFFB8C8D8);
-  static const darkOnTertiary = Color(0xFF344451);
+  static const darkPrimary = SpotlightTokens.cyan;
+  static const darkOnPrimary = SpotlightTokens.textOnAccent;
+  static const darkPrimaryContainer = Color(0xFF00363D);
+  static const darkOnPrimaryContainer = Color(0xFF9CF3FF);
+
+  static const darkSecondary = Color(0xFFC0CAD7);
+  static const darkOnSecondary = Color(0xFF29323D);
+
+  static const darkTertiary = SpotlightTokens.magenta;
+  static const darkOnTertiary = SpotlightTokens.textOnAccent;
+
   static const darkError = Color(0xFFFFB4AB);
   static const darkOnError = Color(0xFF690005);
   static const darkErrorContainer = Color(0xFF93000A);
   static const darkOnErrorContainer = Color(0xFFFFDAD6);
-  static const darkSurface = Color(0xFF121212);
-  static const darkOnSurface = Color(0xFFF8FAFC);
-  static const darkSurfaceVariant = Color(0xFF1E1E1E);
-  static const darkOnSurfaceVariant = Color(0xFFC4C7CF);
-  static const darkBackground = Color(0xFF000105);
-  static const darkOutline = Color(0xFF333333);
+
+  static const darkSurface = SpotlightTokens.bgSurface;
+  static const darkOnSurface = SpotlightTokens.textPrimary;
+  static const darkSurfaceVariant = SpotlightTokens.bgElevated;
+  static const darkOnSurfaceVariant = SpotlightTokens.textSecondary;
+  static const darkBackground = SpotlightTokens.bgPrimary;
+  static const darkOutline = SpotlightTokens.border;
   static const darkShadow = Color(0xFF000000);
-  static const darkInversePrimary = Color(0xFF5B7C99);
+  static const darkInversePrimary = SpotlightTokens.cyanSoft;
+
   static const darkGold = Color(0xFFD4AF37);
-  static const darkOnGold = Color(0xFF000000);
+  static const darkOnGold = Color(0xFF16120A);
 }
 
 class SpotlightColors {
@@ -317,26 +322,182 @@ ThemeData get darkTheme => ThemeData(
       ),
     ),
   ),
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: SpotlightTokens.cyan,
+      foregroundColor: SpotlightTokens.textOnAccent,
+      minimumSize: const Size(0, 48),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(SpotlightTokens.radiusMd),
+      ),
+      textStyle: GoogleFonts.inter(
+        fontSize: FontSizes.labelLarge,
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+  ),
+  filledButtonTheme: FilledButtonThemeData(
+    style: FilledButton.styleFrom(
+      backgroundColor: SpotlightTokens.cyan,
+      foregroundColor: SpotlightTokens.textOnAccent,
+      minimumSize: const Size(0, 48),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(SpotlightTokens.radiusMd),
+      ),
+      textStyle: GoogleFonts.inter(
+        fontSize: FontSizes.labelLarge,
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+  ),
+  outlinedButtonTheme: OutlinedButtonThemeData(
+    style: OutlinedButton.styleFrom(
+      foregroundColor: SpotlightTokens.textPrimary,
+      minimumSize: const Size(0, 48),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      side: const BorderSide(color: SpotlightTokens.border),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(SpotlightTokens.radiusMd),
+      ),
+      textStyle: GoogleFonts.inter(
+        fontSize: FontSizes.labelLarge,
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+  ),
+  textButtonTheme: TextButtonThemeData(
+    style: TextButton.styleFrom(
+      foregroundColor: SpotlightTokens.cyan,
+      minimumSize: const Size(0, 44),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      textStyle: GoogleFonts.inter(
+        fontSize: FontSizes.labelLarge,
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+  ),
+  inputDecorationTheme: InputDecorationTheme(
+    filled: true,
+    fillColor: SpotlightTokens.bgElevated,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    hintStyle: const TextStyle(color: SpotlightTokens.textMuted),
+    labelStyle: const TextStyle(color: SpotlightTokens.textSecondary),
+    helperStyle: const TextStyle(color: SpotlightTokens.textMuted),
+    errorStyle: const TextStyle(color: SpotlightTokens.rose),
+    prefixIconColor: SpotlightTokens.textSecondary,
+    suffixIconColor: SpotlightTokens.textSecondary,
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(SpotlightTokens.radiusMd),
+      borderSide: const BorderSide(color: SpotlightTokens.border),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(SpotlightTokens.radiusMd),
+      borderSide: const BorderSide(color: SpotlightTokens.cyan, width: 1.5),
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(SpotlightTokens.radiusMd),
+      borderSide: const BorderSide(color: SpotlightTokens.rose),
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(SpotlightTokens.radiusMd),
+      borderSide: const BorderSide(color: SpotlightTokens.rose, width: 1.5),
+    ),
+  ),
+  dividerTheme: const DividerThemeData(
+    color: SpotlightTokens.border,
+    thickness: 1,
+    space: 24,
+  ),
+  floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    backgroundColor: SpotlightTokens.cyan,
+    foregroundColor: SpotlightTokens.textOnAccent,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(SpotlightTokens.radiusLg)),
+    ),
+  ),
+  bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+    backgroundColor: SpotlightTokens.bgSurface,
+    selectedItemColor: SpotlightTokens.cyan,
+    unselectedItemColor: SpotlightTokens.textMuted,
+    showUnselectedLabels: true,
+    type: BottomNavigationBarType.fixed,
+    elevation: 0,
+  ),
   textTheme: _buildTextTheme(Brightness.dark),
 );
 
 TextTheme _buildTextTheme(Brightness brightness) {
   return TextTheme(
-    displayLarge: GoogleFonts.inter(fontSize: FontSizes.displayLarge, fontWeight: FontWeight.w400, letterSpacing: -0.25),
-    displayMedium: GoogleFonts.inter(fontSize: FontSizes.displayMedium, fontWeight: FontWeight.w400),
-    displaySmall: GoogleFonts.inter(fontSize: FontSizes.displaySmall, fontWeight: FontWeight.w400),
-    headlineLarge: GoogleFonts.inter(fontSize: FontSizes.headlineLarge, fontWeight: FontWeight.w600, letterSpacing: -0.5),
-    headlineMedium: GoogleFonts.inter(fontSize: FontSizes.headlineMedium, fontWeight: FontWeight.w600),
-    headlineSmall: GoogleFonts.inter(fontSize: FontSizes.headlineSmall, fontWeight: FontWeight.w600),
-    titleLarge: GoogleFonts.inter(fontSize: FontSizes.titleLarge, fontWeight: FontWeight.w600),
-    titleMedium: GoogleFonts.inter(fontSize: FontSizes.titleMedium, fontWeight: FontWeight.w500),
-    titleSmall: GoogleFonts.inter(fontSize: FontSizes.titleSmall, fontWeight: FontWeight.w500),
-    labelLarge: GoogleFonts.inter(fontSize: FontSizes.labelLarge, fontWeight: FontWeight.w500, letterSpacing: 0.1),
-    labelMedium: GoogleFonts.inter(fontSize: FontSizes.labelMedium, fontWeight: FontWeight.w500, letterSpacing: 0.5),
-    labelSmall: GoogleFonts.inter(fontSize: FontSizes.labelSmall, fontWeight: FontWeight.w500, letterSpacing: 0.5),
-    bodyLarge: GoogleFonts.inter(fontSize: FontSizes.bodyLarge, fontWeight: FontWeight.w400, letterSpacing: 0.15),
-    bodyMedium: GoogleFonts.inter(fontSize: FontSizes.bodyMedium, fontWeight: FontWeight.w400, letterSpacing: 0.25),
-    bodySmall: GoogleFonts.inter(fontSize: FontSizes.bodySmall, fontWeight: FontWeight.w400, letterSpacing: 0.4),
+    displayLarge: GoogleFonts.inter(
+      fontSize: FontSizes.displayLarge,
+      fontWeight: FontWeight.w400,
+      letterSpacing: -0.25,
+    ),
+    displayMedium: GoogleFonts.inter(
+      fontSize: FontSizes.displayMedium,
+      fontWeight: FontWeight.w400,
+    ),
+    displaySmall: GoogleFonts.inter(
+      fontSize: FontSizes.displaySmall,
+      fontWeight: FontWeight.w400,
+    ),
+    headlineLarge: GoogleFonts.inter(
+      fontSize: FontSizes.headlineLarge,
+      fontWeight: FontWeight.w600,
+      letterSpacing: -0.5,
+    ),
+    headlineMedium: GoogleFonts.inter(
+      fontSize: FontSizes.headlineMedium,
+      fontWeight: FontWeight.w600,
+    ),
+    headlineSmall: GoogleFonts.inter(
+      fontSize: FontSizes.headlineSmall,
+      fontWeight: FontWeight.w600,
+    ),
+    titleLarge: GoogleFonts.inter(
+      fontSize: FontSizes.titleLarge,
+      fontWeight: FontWeight.w600,
+    ),
+    titleMedium: GoogleFonts.inter(
+      fontSize: FontSizes.titleMedium,
+      fontWeight: FontWeight.w500,
+    ),
+    titleSmall: GoogleFonts.inter(
+      fontSize: FontSizes.titleSmall,
+      fontWeight: FontWeight.w500,
+    ),
+    labelLarge: GoogleFonts.inter(
+      fontSize: FontSizes.labelLarge,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.1,
+    ),
+    labelMedium: GoogleFonts.inter(
+      fontSize: FontSizes.labelMedium,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.5,
+    ),
+    labelSmall: GoogleFonts.inter(
+      fontSize: FontSizes.labelSmall,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.5,
+    ),
+    bodyLarge: GoogleFonts.inter(
+      fontSize: FontSizes.bodyLarge,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.15,
+    ),
+    bodyMedium: GoogleFonts.inter(
+      fontSize: FontSizes.bodyMedium,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.25,
+    ),
+    bodySmall: GoogleFonts.inter(
+      fontSize: FontSizes.bodySmall,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.4,
+    ),
   );
 }
 
