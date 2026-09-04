@@ -283,7 +283,10 @@ class CreatorWorkspacePage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _WorkspaceHero(content: content),
+          _WorkspaceHero(
+            content: content,
+            onPlan: () => _openPlanningSheet(context, content),
+          ),
           const SizedBox(height: 16),
           if (isWide)
             Row(
@@ -312,9 +315,10 @@ class CreatorWorkspacePage extends StatelessWidget {
 }
 
 class _WorkspaceHero extends StatelessWidget {
-  const _WorkspaceHero({required this.content});
+  const _WorkspaceHero({required this.content, required this.onPlan});
 
   final _WorkspaceContent content;
+  final VoidCallback onPlan;
 
   @override
   Widget build(BuildContext context) {
@@ -368,15 +372,7 @@ class _WorkspaceHero extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           FilledButton.icon(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    '${content.action} is planned for a later build.',
-                  ),
-                ),
-              );
-            },
+            onPressed: onPlan,
             icon: Icon(content.actionIcon, size: 18),
             label: Text(content.action),
           ),
@@ -590,4 +586,144 @@ class _WorkspaceCardData {
   final String value;
   final String detail;
   final IconData icon;
+}
+
+Future<void> _openPlanningSheet(
+  BuildContext context,
+  _WorkspaceContent content,
+) async {
+  await showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (sheetContext) {
+      final completed = <bool>[false, false, false];
+
+      return StatefulBuilder(
+        builder: (context, setSheetState) {
+          final completedCount = completed.where((value) => value).length;
+          final progress = completedCount / completed.length;
+
+          return SafeArea(
+            top: false,
+            child: Container(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.88,
+              ),
+              padding: const EdgeInsets.fromLTRB(22, 14, 22, 26),
+              decoration: const BoxDecoration(
+                color: SpotlightTokens.bgSurface,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Align(
+                    child: Container(
+                      width: 38,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: SpotlightTokens.border,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Text(
+                    'PLANNING SESSION',
+                    style: TextStyle(
+                      color: content.accent,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.1,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    content.title,
+                    style: const TextStyle(
+                      color: SpotlightTokens.textPrimary,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      height: 1.16,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Use this checklist to focus your next actions. This planning state is not saved yet.',
+                    style: TextStyle(
+                      color: SpotlightTokens.textSecondary,
+                      height: 1.45,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(99),
+                          child: LinearProgressIndicator(
+                            value: progress,
+                            minHeight: 8,
+                            color: content.accent,
+                            backgroundColor: SpotlightTokens.bgElevated,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        '$completedCount/${completed.length}',
+                        style: const TextStyle(
+                          color: SpotlightTokens.textPrimary,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+                  Expanded(
+                    child: ListView.separated(
+                      itemCount: content.nextSteps.length,
+                      separatorBuilder: (_, _) => const Divider(),
+                      itemBuilder: (context, index) {
+                        return CheckboxListTile(
+                          value: completed[index],
+                          onChanged: (value) {
+                            setSheetState(
+                              () => completed[index] = value ?? false,
+                            );
+                          },
+                          activeColor: content.accent,
+                          controlAffinity: ListTileControlAffinity.leading,
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            content.nextSteps[index],
+                            style: TextStyle(
+                              color: SpotlightTokens.textPrimary,
+                              height: 1.35,
+                              decoration: completed[index]
+                                  ? TextDecoration.lineThrough
+                                  : TextDecoration.none,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: () => Navigator.pop(sheetContext),
+                      child: const Text('Done for now'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
 }
