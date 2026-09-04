@@ -3,6 +3,7 @@ import 'package:spotlight_connect/pages/dashboards/creator_overview_page.dart';
 import 'package:spotlight_connect/theme/spotlight_tokens.dart';
 import 'package:spotlight_connect/pages/dashboards/creator_opportunities_page.dart';
 import 'package:spotlight_connect/pages/dashboards/creator_gravity_map_page.dart';
+import 'package:spotlight_connect/pages/dashboards/creator_workspace_pages.dart';
 
 class CreatorStudioShell extends StatefulWidget {
   const CreatorStudioShell({super.key});
@@ -120,16 +121,36 @@ class _CreatorCanvas extends StatelessWidget {
           _CreatorTopBar(title: title),
           const SizedBox(height: 18),
           Expanded(
-            child: selectedIndex == 0
-                ? CreatorOverviewPage(
-                    onOpenOpportunities: () => onSelectWorkspace(3),
-                    onOpenGravityMap: () => onSelectWorkspace(6),
-                  )
-                : selectedIndex == 3
-                ? const CreatorOpportunitiesPage()
-                : selectedIndex == 6
-                ? const CreatorGravityMapPage()
-                : _WorkspacePlaceholder(title: title),
+            child: switch (selectedIndex) {
+              0 => CreatorOverviewPage(
+                onOpenOpportunities: () => onSelectWorkspace(3),
+                onOpenGravityMap: () => onSelectWorkspace(6),
+              ),
+              1 => const CreatorWorkspacePage(
+                kind: CreatorWorkspaceKind.momentum,
+              ),
+              2 => const CreatorWorkspacePage(
+                kind: CreatorWorkspaceKind.workflow,
+              ),
+              3 => const CreatorOpportunitiesPage(),
+              4 => const CreatorWorkspacePage(
+                kind: CreatorWorkspaceKind.portfolio,
+              ),
+              5 => const CreatorWorkspacePage(
+                kind: CreatorWorkspaceKind.community,
+              ),
+              6 => const CreatorGravityMapPage(),
+              7 => const CreatorWorkspacePage(
+                kind: CreatorWorkspaceKind.programs,
+              ),
+              8 => const CreatorWorkspacePage(
+                kind: CreatorWorkspaceKind.analytics,
+              ),
+              9 => const CreatorWorkspacePage(
+                kind: CreatorWorkspaceKind.profile,
+              ),
+              _ => _WorkspacePlaceholder(title: title),
+            },
           ),
         ],
       ),
