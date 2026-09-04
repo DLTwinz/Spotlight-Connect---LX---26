@@ -4,6 +4,7 @@ import 'package:spotlight_connect/theme/spotlight_tokens.dart';
 import 'package:spotlight_connect/pages/dashboards/creator_opportunities_page.dart';
 import 'package:spotlight_connect/pages/dashboards/creator_gravity_map_page.dart';
 import 'package:spotlight_connect/pages/dashboards/creator_workspace_pages.dart';
+import 'package:spotlight_connect/pages/dashboards/creator_portfolio_proof_page.dart';
 
 class CreatorStudioShell extends StatefulWidget {
   const CreatorStudioShell({super.key});
@@ -133,9 +134,7 @@ class _CreatorCanvas extends StatelessWidget {
                 kind: CreatorWorkspaceKind.workflow,
               ),
               3 => const CreatorOpportunitiesPage(),
-              4 => const CreatorWorkspacePage(
-                kind: CreatorWorkspaceKind.portfolio,
-              ),
+              4 => const CreatorPortfolioProofPage(),
               5 => const CreatorWorkspacePage(
                 kind: CreatorWorkspaceKind.community,
               ),
