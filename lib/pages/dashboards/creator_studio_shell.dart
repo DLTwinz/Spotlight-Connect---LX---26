@@ -5,6 +5,7 @@ import 'package:spotlight_connect/pages/dashboards/creator_opportunities_page.da
 import 'package:spotlight_connect/pages/dashboards/creator_gravity_map_page.dart';
 import 'package:spotlight_connect/pages/dashboards/creator_workspace_pages.dart';
 import 'package:spotlight_connect/pages/dashboards/creator_portfolio_proof_page.dart';
+import 'package:spotlight_connect/pages/dashboards/creator_analytics_economics_page.dart';
 
 class CreatorStudioShell extends StatefulWidget {
   const CreatorStudioShell({super.key});
@@ -142,9 +143,7 @@ class _CreatorCanvas extends StatelessWidget {
               7 => const CreatorWorkspacePage(
                 kind: CreatorWorkspaceKind.programs,
               ),
-              8 => const CreatorWorkspacePage(
-                kind: CreatorWorkspaceKind.analytics,
-              ),
+              8 => const CreatorAnalyticsEconomicsPage(),
               9 => const CreatorWorkspacePage(
                 kind: CreatorWorkspaceKind.profile,
               ),
