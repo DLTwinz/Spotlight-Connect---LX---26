@@ -20,6 +20,11 @@ class StudioRouteContract {
     'state',
   ];
 
+  static const List<String> knownStudioChildren = <String>[
+    AppRoutes.studioAnalytics,
+    AppRoutes.studioIdentity,
+  ];
+
   static Map<String, String> safeQuery(Map<String, String> raw) {
     final cleaned = Map<String, String>.from(raw);
     for (final key in authQueryKeys) {
@@ -39,6 +44,6 @@ class StudioRouteContract {
   static bool isUnknownStudioChild(String location) {
     return AppRoutes.isStudioLocation(location) &&
         location != AppRoutes.studio &&
-        location != AppRoutes.studioAnalytics;
+        !knownStudioChildren.contains(location);
   }
 }
