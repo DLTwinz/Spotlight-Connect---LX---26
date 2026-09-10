@@ -28,9 +28,8 @@ void main() {
     expect(find.text('Daily'), findsOneWidget);
     expect(find.text('Weekly'), findsOneWidget);
     expect(find.text('Cumulative'), findsOneWidget);
-    expect(find.textContaining('live financial'), findsNothing);
-    expect(find.textContaining('payout'), findsNothing);
-    expect(find.textContaining('settlement'), findsNothing);
+    expect(find.textContaining('connected payout source'), findsNothing);
+    expect(find.textContaining('net of platform fees'), findsNothing);
   });
 
   testWidgets('pulse range chips are interactive locally', (tester) async {
