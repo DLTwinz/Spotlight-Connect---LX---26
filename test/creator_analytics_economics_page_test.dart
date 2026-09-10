@@ -4,14 +4,20 @@ import 'package:spotlight_connect/pages/dashboards/creator_analytics_economics_p
 import 'package:spotlight_connect/pages/dashboards/fixtures/analytics_fixtures.dart';
 
 void main() {
-  Future<void> pumpPage(WidgetTester tester) async {
-    tester.view.physicalSize = const Size(1280, 800);
+  Future<void> pumpPage(
+    WidgetTester tester, {
+    Size size = const Size(1280, 800),
+  }) async {
+    tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(
-      const MaterialApp(home: CreatorAnalyticsEconomicsPage()),
+      const MaterialApp(
+        home: Scaffold(body: CreatorAnalyticsEconomicsPage()),
+      ),
     );
+    await tester.pump();
   }
 
   testWidgets('renders Mira analytics fixture contract copy', (tester) async {
@@ -37,5 +43,33 @@ void main() {
     await tester.tap(find.text('Weekly'));
     await tester.pump();
     expect(find.text('Weekly'), findsOneWidget);
+  });
+
+  testWidgets('constrained 800px width does not overflow and keeps controls', (
+    tester,
+  ) async {
+    final FlutterExceptionHandler? original = FlutterError.onError;
+    final overflows = <String>[];
+    FlutterError.onError = (details) {
+      final message = details.exceptionAsString();
+      if (message.contains('overflowed')) {
+        overflows.add(message);
+      } else {
+        original?.call(details);
+      }
+    };
+    addTearDown(() => FlutterError.onError = original);
+
+    await pumpPage(tester, size: const Size(800, 900));
+
+    expect(overflows, isEmpty);
+    expect(find.text('Creator Analytics & Economics'), findsOneWidget);
+    expect(find.text('Daily'), findsOneWidget);
+    expect(find.text('Weekly'), findsOneWidget);
+    expect(find.text('Cumulative'), findsOneWidget);
+    expect(find.text(AnalyticsFixtures.disclosure), findsOneWidget);
+    await tester.tap(find.text('Cumulative'));
+    await tester.pump();
+    expect(find.text('Cumulative'), findsOneWidget);
   });
 }
