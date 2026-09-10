@@ -141,7 +141,7 @@ class _KpiRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      final compact = constraints.maxWidth < 680;
+      final compact = constraints.maxWidth < 900;
       final cards = AnalyticsFixtures.kpis.map((kpi) => _KpiCard(kpi: kpi)).toList();
       if (compact) {
         return Column(children: [for (var i = 0; i < cards.length; i++) ...[if (i > 0) const SizedBox(height: 10), cards[i]]]);
@@ -156,12 +156,16 @@ class _KpiCard extends StatelessWidget {
   final AnalyticsKpiFixture kpi;
   @override
   Widget build(BuildContext context) {
-    return _Panel(padding: const EdgeInsets.all(16), child: SizedBox(height: 128, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [Text(kpi.label, style: const TextStyle(color: SpotlightTokens.textMuted, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 0.7)), const Spacer(), _StateChip(state: kpi.state)]),
+    return _Panel(padding: const EdgeInsets.all(16), child: SizedBox(height: 136, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Row(children: [
+        Expanded(child: Text(kpi.label, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: SpotlightTokens.textMuted, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 0.7))),
+        const SizedBox(width: 8),
+        _StateChip(state: kpi.state),
+      ]),
       const Spacer(),
       Text(kpi.value, style: const TextStyle(color: SpotlightTokens.textPrimary, fontSize: 28, fontWeight: FontWeight.w800, height: 1)),
       const SizedBox(height: 6),
-      Text(kpi.detail, style: const TextStyle(color: SpotlightTokens.textSecondary, fontSize: 11)),
+      Text(kpi.detail, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: SpotlightTokens.textSecondary, fontSize: 11)),
     ])));
   }
 }
@@ -174,13 +178,14 @@ class _PulsePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _Panel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [
-        const Expanded(child: _SectionTitle(title: 'Economic Pulse', subtitle: 'Fixture activity and pipeline sample')),
-        _RangeChip(label: 'Daily', selected: range == _PulseRange.daily, onTap: () => onRange(_PulseRange.daily)),
-        const SizedBox(width: 6),
-        _RangeChip(label: 'Weekly', selected: range == _PulseRange.weekly, onTap: () => onRange(_PulseRange.weekly)),
-        const SizedBox(width: 6),
-        _RangeChip(label: 'Cumulative', selected: range == _PulseRange.cumulative, onTap: () => onRange(_PulseRange.cumulative)),
+      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const _SectionTitle(title: 'Economic Pulse', subtitle: 'Fixture activity and pipeline sample'),
+        const SizedBox(height: 10),
+        Wrap(spacing: 6, runSpacing: 6, children: [
+          _RangeChip(label: 'Daily', selected: range == _PulseRange.daily, onTap: () => onRange(_PulseRange.daily)),
+          _RangeChip(label: 'Weekly', selected: range == _PulseRange.weekly, onTap: () => onRange(_PulseRange.weekly)),
+          _RangeChip(label: 'Cumulative', selected: range == _PulseRange.cumulative, onTap: () => onRange(_PulseRange.cumulative)),
+        ]),
       ]),
       const SizedBox(height: 16),
       SizedBox(height: 220, child: Semantics(label: 'Economic pulse chart, fixture sample', child: CustomPaint(painter: _PulsePainter(points: points), child: const SizedBox.expand()))),
@@ -240,9 +245,9 @@ class _SourceMix extends StatelessWidget {
       const _SectionTitle(title: 'Where it came from', subtitle: 'Fixture source mix'),
       const SizedBox(height: 14),
       ...AnalyticsFixtures.sources.map((source) => Padding(padding: const EdgeInsets.symmetric(vertical: 7), child: Row(children: [
-        Expanded(child: Text(source.label, style: const TextStyle(color: SpotlightTokens.textPrimary, fontSize: 13, fontWeight: FontWeight.w600))),
+        Expanded(child: Text(source.label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: SpotlightTokens.textPrimary, fontSize: 13, fontWeight: FontWeight.w600))),
         _StateChip(state: source.state), const SizedBox(width: 10),
-        SizedBox(width: 160, child: ClipRRect(borderRadius: BorderRadius.circular(99), child: LinearProgressIndicator(value: source.share, minHeight: 7, backgroundColor: SpotlightTokens.bgElevated, valueColor: const AlwaysStoppedAnimation<Color>(SpotlightTokens.cyan)))),
+        Flexible(child: SizedBox(width: 160, child: ClipRRect(borderRadius: BorderRadius.circular(99), child: LinearProgressIndicator(value: source.share, minHeight: 7, backgroundColor: SpotlightTokens.bgElevated, valueColor: const AlwaysStoppedAnimation<Color>(SpotlightTokens.cyan))))),
       ]))),
     ]));
   }
