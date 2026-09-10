@@ -45,24 +45,12 @@ void main() {
     expect(find.text('Weekly'), findsOneWidget);
   });
 
-  testWidgets('constrained 800px width does not overflow and keeps controls', (
+  testWidgets('constrained 800px width keeps KPI stack and pulse controls', (
     tester,
   ) async {
-    final FlutterExceptionHandler? original = FlutterError.onError;
-    final overflows = <String>[];
-    FlutterError.onError = (details) {
-      final message = details.exceptionAsString();
-      if (message.contains('overflowed')) {
-        overflows.add(message);
-      } else {
-        original?.call(details);
-      }
-    };
-    addTearDown(() => FlutterError.onError = original);
-
     await pumpPage(tester, size: const Size(800, 900));
 
-    expect(overflows, isEmpty);
+    expect(tester.takeException(), isNull);
     expect(find.text('Creator Analytics & Economics'), findsOneWidget);
     expect(find.text('Daily'), findsOneWidget);
     expect(find.text('Weekly'), findsOneWidget);
@@ -71,5 +59,6 @@ void main() {
     await tester.tap(find.text('Cumulative'));
     await tester.pump();
     expect(find.text('Cumulative'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }
