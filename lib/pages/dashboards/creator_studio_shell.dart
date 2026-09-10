@@ -32,7 +32,8 @@ class CreatorStudioShell extends StatelessWidget {
     CreatorStudioDest(
       label: 'Identity',
       icon: Icons.person_outline_rounded,
-      route: null,
+      route: AppRoutes.studioIdentity,
+      enabled: true,
     ),
     CreatorStudioDest(
       label: 'Community',
@@ -88,6 +89,9 @@ class CreatorStudioShell extends StatelessWidget {
   static String _titleFor(String location) {
     if (location == AppRoutes.studioAnalytics || location == AppRoutes.studio) {
       return 'Analytics';
+    }
+    if (location == AppRoutes.studioIdentity) {
+      return 'Identity';
     }
     return 'Creator Studio';
   }
