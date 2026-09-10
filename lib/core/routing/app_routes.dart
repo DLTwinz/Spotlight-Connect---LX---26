@@ -18,6 +18,7 @@ class AppRoutes {
   static const String businessDashboard = '/business/dashboard';
   static const String studio = '/studio';
   static const String studioAnalytics = '/studio/analytics';
+  static const String studioIdentity = '/studio/identity';
   static const String livekit = '/livekit';
   static const String missions = '/missions';
   static const String rewards = '/rewards';
