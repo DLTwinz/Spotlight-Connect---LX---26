@@ -13,9 +13,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(
-      const MaterialApp(
-        home: Scaffold(body: CreatorAnalyticsEconomicsPage()),
-      ),
+      const MaterialApp(home: Scaffold(body: CreatorAnalyticsEconomicsPage())),
     );
     await tester.pump();
   }
@@ -40,9 +38,16 @@ void main() {
 
   testWidgets('pulse range chips are interactive locally', (tester) async {
     await pumpPage(tester);
-    await tester.tap(find.text('Weekly'));
-    await tester.pump();
-    expect(find.text('Weekly'), findsOneWidget);
+
+    final cumulative = find.text('Cumulative');
+    expect(cumulative, findsOneWidget);
+
+    await tester.ensureVisible(cumulative);
+    await tester.pumpAndSettle();
+    await tester.tap(cumulative);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Cumulative'), findsOneWidget);
   });
 
   testWidgets('constrained 800px width keeps KPI stack and pulse controls', (
