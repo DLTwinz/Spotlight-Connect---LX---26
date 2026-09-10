@@ -39,7 +39,7 @@ class RoleCapabilities {
     if (user.isAdmin) {
       switch (user.parsedActiveRole) {
         case UserRole.talent:
-          return AppRoutes.talent;
+          return AppRoutes.studio;
         case UserRole.business:
           return AppRoutes.business;
         case UserRole.audience:
@@ -53,7 +53,7 @@ class RoleCapabilities {
     // active_role may stay audience (trigger blocks client writes).
     switch (user.parsedActiveRole) {
       case UserRole.talent:
-        if (hasTalentApproval) return AppRoutes.talent;
+        if (hasTalentApproval) return AppRoutes.studio;
         break;
       case UserRole.business:
         if (hasBusinessApproval) return AppRoutes.business;
@@ -63,12 +63,16 @@ class RoleCapabilities {
       case UserRole.unknown:
         break;
     }
-    if (hasTalentApproval) return AppRoutes.talent;
+    if (hasTalentApproval) return AppRoutes.studio;
     if (hasBusinessApproval) return AppRoutes.business;
     return AppRoutes.audience;
   }
 
   bool canAccessRoute(String location) {
+    if (AppRoutes.isStudioLocation(location) ||
+        AppRoutes.isLegacyTalentLocation(location)) {
+      return hasTalentApproval;
+    }
     switch (location) {
       case AppRoutes.admin:
       case AppRoutes.adminMissions:
