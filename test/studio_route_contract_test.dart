@@ -17,14 +17,18 @@ void main() {
     expect(target.contains('type='), isFalse);
   });
 
-  test('does not treat analytics as an unknown studio child', () {
+  test('does not treat analytics or identity as unknown studio children', () {
     expect(StudioRouteContract.isUnknownStudioChild(AppRoutes.studio), isFalse);
     expect(
       StudioRouteContract.isUnknownStudioChild(AppRoutes.studioAnalytics),
       isFalse,
     );
     expect(
-      StudioRouteContract.isUnknownStudioChild('${AppRoutes.studio}/identity'),
+      StudioRouteContract.isUnknownStudioChild(AppRoutes.studioIdentity),
+      isFalse,
+    );
+    expect(
+      StudioRouteContract.isUnknownStudioChild('${AppRoutes.studio}/unknown'),
       isTrue,
     );
   });
@@ -34,5 +38,6 @@ void main() {
     expect(AppRoutes.isLegacyTalentLocation(AppRoutes.talentDashboard), isTrue);
     expect(AppRoutes.isLegacyTalentLocation(AppRoutes.studio), isFalse);
     expect(AppRoutes.isStudioLocation(AppRoutes.studioAnalytics), isTrue);
+    expect(AppRoutes.isStudioLocation(AppRoutes.studioIdentity), isTrue);
   });
 }
