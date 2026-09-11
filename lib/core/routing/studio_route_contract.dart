@@ -23,6 +23,7 @@ class StudioRouteContract {
   static const List<String> knownStudioChildren = <String>[
     AppRoutes.studioAnalytics,
     AppRoutes.studioIdentity,
+    AppRoutes.studioCommunity,
   ];
 
   static Map<String, String> safeQuery(Map<String, String> raw) {

@@ -17,21 +17,31 @@ void main() {
     expect(target.contains('type='), isFalse);
   });
 
-  test('does not treat analytics or identity as unknown studio children', () {
-    expect(StudioRouteContract.isUnknownStudioChild(AppRoutes.studio), isFalse);
-    expect(
-      StudioRouteContract.isUnknownStudioChild(AppRoutes.studioAnalytics),
-      isFalse,
-    );
-    expect(
-      StudioRouteContract.isUnknownStudioChild(AppRoutes.studioIdentity),
-      isFalse,
-    );
-    expect(
-      StudioRouteContract.isUnknownStudioChild('${AppRoutes.studio}/unknown'),
-      isTrue,
-    );
-  });
+  test(
+    'does not treat analytics identity or community as unknown studio children',
+    () {
+      expect(
+        StudioRouteContract.isUnknownStudioChild(AppRoutes.studio),
+        isFalse,
+      );
+      expect(
+        StudioRouteContract.isUnknownStudioChild(AppRoutes.studioAnalytics),
+        isFalse,
+      );
+      expect(
+        StudioRouteContract.isUnknownStudioChild(AppRoutes.studioIdentity),
+        isFalse,
+      );
+      expect(
+        StudioRouteContract.isUnknownStudioChild(AppRoutes.studioCommunity),
+        isFalse,
+      );
+      expect(
+        StudioRouteContract.isUnknownStudioChild('${AppRoutes.studio}/unknown'),
+        isTrue,
+      );
+    },
+  );
 
   test('legacy talent paths are distinct from studio analytics', () {
     expect(AppRoutes.isLegacyTalentLocation(AppRoutes.talent), isTrue);
@@ -39,5 +49,6 @@ void main() {
     expect(AppRoutes.isLegacyTalentLocation(AppRoutes.studio), isFalse);
     expect(AppRoutes.isStudioLocation(AppRoutes.studioAnalytics), isTrue);
     expect(AppRoutes.isStudioLocation(AppRoutes.studioIdentity), isTrue);
+    expect(AppRoutes.isStudioLocation(AppRoutes.studioCommunity), isTrue);
   });
 }

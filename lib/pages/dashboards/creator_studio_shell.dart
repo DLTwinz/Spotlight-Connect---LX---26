@@ -38,7 +38,8 @@ class CreatorStudioShell extends StatelessWidget {
     CreatorStudioDest(
       label: 'Community',
       icon: Icons.groups_outlined,
-      route: null,
+      route: AppRoutes.studioCommunity,
+      enabled: true,
     ),
     CreatorStudioDest(
       label: 'Gravity Map',
@@ -93,6 +94,9 @@ class CreatorStudioShell extends StatelessWidget {
     if (location == AppRoutes.studioIdentity) {
       return 'Identity';
     }
+    if (location == AppRoutes.studioCommunity) {
+      return 'Community';
+    }
     return 'Creator Studio';
   }
 }
@@ -127,8 +131,7 @@ class _Rail extends StatelessWidget {
                 separatorBuilder: (_, _) => const SizedBox(height: 4),
                 itemBuilder: (context, index) {
                   final dest = CreatorStudioShell.destinations[index];
-                  final selected =
-                      dest.route != null && location == dest.route;
+                  final selected = dest.route != null && location == dest.route;
                   return _RailItem(
                     dest: dest,
                     selected: selected,

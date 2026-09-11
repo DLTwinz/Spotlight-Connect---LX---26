@@ -33,6 +33,7 @@ import 'pages/dashboards/talent_business_dashboards.dart';
 import 'pages/dashboards/creator_studio_shell.dart';
 import 'pages/dashboards/creator_analytics_economics_page.dart';
 import 'pages/dashboards/creator_identity_control_page.dart';
+import 'pages/dashboards/creator_community_page.dart';
 import 'pages/debug/qa_harness_page.dart';
 import 'pages/progression/admin/admin_campaigns_page.dart';
 import 'pages/progression/admin/admin_missions_page.dart';
@@ -418,6 +419,7 @@ class AppRouter {
           AppRoutes.studio,
           AppRoutes.studioAnalytics,
           AppRoutes.studioIdentity,
+          AppRoutes.studioCommunity,
           AppRoutes.business,
           AppRoutes.admin,
         };
@@ -456,6 +458,7 @@ class AppRouter {
           AppRoutes.studio,
           AppRoutes.studioAnalytics,
           AppRoutes.studioIdentity,
+          AppRoutes.studioCommunity,
           AppRoutes.business,
           AppRoutes.admin,
           AppRoutes.audienceDashboard,
@@ -697,6 +700,13 @@ class AppRouter {
           path: AppRoutes.studioIdentity,
           pageBuilder: (context, state) => _fadeSlidePage(
             const CreatorStudioShell(child: CreatorIdentityControlPage()),
+            state,
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.studioCommunity,
+          pageBuilder: (context, state) => _fadeSlidePage(
+            const CreatorStudioShell(child: CreatorCommunityPage()),
             state,
           ),
         ),

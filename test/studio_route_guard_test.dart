@@ -36,6 +36,7 @@ void main() {
     expect(caps.canAccessRoute(AppRoutes.studio), isTrue);
     expect(caps.canAccessRoute(AppRoutes.studioAnalytics), isTrue);
     expect(caps.canAccessRoute(AppRoutes.studioIdentity), isTrue);
+    expect(caps.canAccessRoute(AppRoutes.studioCommunity), isTrue);
     expect(caps.canAccessRoute(AppRoutes.talent), isTrue);
     expect(caps.canAccessRoute(AppRoutes.talentDashboard), isTrue);
     expect(caps.defaultDashboardRoute, AppRoutes.studio);
@@ -48,6 +49,7 @@ void main() {
     expect(caps.canAccessRoute(AppRoutes.studio), isFalse);
     expect(caps.canAccessRoute(AppRoutes.studioAnalytics), isFalse);
     expect(caps.canAccessRoute(AppRoutes.studioIdentity), isFalse);
+    expect(caps.canAccessRoute(AppRoutes.studioCommunity), isFalse);
     expect(caps.defaultDashboardRoute, AppRoutes.audience);
   });
 
@@ -57,6 +59,7 @@ void main() {
     );
     expect(caps.canAccessRoute(AppRoutes.studio), isFalse);
     expect(caps.canAccessRoute(AppRoutes.studioIdentity), isFalse);
+    expect(caps.canAccessRoute(AppRoutes.studioCommunity), isFalse);
     expect(caps.defaultDashboardRoute, AppRoutes.business);
   });
 
@@ -64,6 +67,7 @@ void main() {
     expect(AppRoutes.isStudioLocation('/studio'), isTrue);
     expect(AppRoutes.isStudioLocation('/studio/analytics'), isTrue);
     expect(AppRoutes.isStudioLocation('/studio/identity'), isTrue);
+    expect(AppRoutes.isStudioLocation('/studio/community'), isTrue);
     expect(AppRoutes.isStudioLocation('/talent'), isFalse);
     expect(AppRoutes.isLegacyTalentLocation('/talent'), isTrue);
     expect(AppRoutes.isLegacyTalentLocation('/talent/dashboard'), isTrue);
