@@ -16,6 +16,10 @@ class AppRoutes {
   static const String audienceDashboard = '/audience/dashboard';
   static const String talentDashboard = '/talent/dashboard';
   static const String businessDashboard = '/business/dashboard';
+  static const String studio = '/studio';
+  static const String studioAnalytics = '/studio/analytics';
+  static const String studioIdentity = '/studio/identity';
+  static const String studioCommunity = '/studio/community';
   static const String livekit = '/livekit';
   static const String missions = '/missions';
   static const String rewards = '/rewards';
@@ -25,4 +29,14 @@ class AppRoutes {
   static const String adminCampaigns = '/admin/campaigns';
   static const String featureDisabled = '/feature-disabled';
   static const String qa = '/__qa';
+
+  static bool isStudioLocation(String location) {
+    return location == studio || location.startsWith('$studio/');
+  }
+
+  static bool isLegacyTalentLocation(String location) {
+    return location == talent ||
+        location == talentDashboard ||
+        location.startsWith('$talent/');
+  }
 }

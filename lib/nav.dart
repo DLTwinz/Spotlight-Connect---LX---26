@@ -9,6 +9,7 @@ import 'package:spotlight_connect/providers/progression_feature_policy_provider.
 import 'package:spotlight_connect/models/user_model.dart';
 import 'package:spotlight_connect/core/access/role_capabilities.dart';
 import 'package:spotlight_connect/core/routing/app_routes.dart';
+import 'package:spotlight_connect/core/routing/studio_route_contract.dart';
 import 'package:spotlight_connect/models/studio_session_model.dart';
 // ... Add any other necessary project-specific imports here ...
 import 'package:provider/provider.dart';
@@ -29,6 +30,10 @@ import 'pages/auth/waiting_approval_page.dart';
 import 'pages/dashboards/admin_dashboard.dart';
 import 'pages/dashboards/audience_dashboard.dart';
 import 'pages/dashboards/talent_business_dashboards.dart';
+import 'pages/dashboards/creator_studio_shell.dart';
+import 'pages/dashboards/creator_analytics_economics_page.dart';
+import 'pages/dashboards/creator_identity_control_page.dart';
+import 'pages/dashboards/creator_community_page.dart';
 import 'pages/debug/qa_harness_page.dart';
 import 'pages/progression/admin/admin_campaigns_page.dart';
 import 'pages/progression/admin/admin_missions_page.dart';
@@ -40,6 +45,7 @@ import 'pages/progression/progress_page.dart';
 import 'pages/progression/rewards_page.dart';
 import 'pages/shared/feature_disabled_page.dart';
 import 'pages/studio/livekit_room_page.dart';
+
 // ... Add any other necessary project-specific imports here ...
 
 class EnvConfig {
@@ -64,16 +70,9 @@ class AppRouter {
     final finalInitialLocation = initial; // Set to 'initial' to revert
 
     return GoRouter(
-      // During beta: start on Early Access gate. When launch is enabled, logged-out users can access /login.
       initialLocation: finalInitialLocation,
       refreshListenable: authProvider,
       errorPageBuilder: (context, state) {
-        // If a user enters an unknown URL (common with token-style links),
-        // ensure we can always recover.
-        //
-        // IMPORTANT: Some Supabase email-link flows can land on an opaque URL
-        // (or a host that drops the route match) while keeping auth params in
-        // query/fragment. If we always bounce to '/', we can lose the params.
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!context.mounted) return;
           try {
@@ -124,9 +123,6 @@ class AppRouter {
         final isLoggedIn = authProvider.isLoggedIn;
         final user = authProvider.currentUser;
         final isAuthLoading = authProvider.isLoading;
-
-        // On web, `matchedLocation` can be surprising when using NoTransitionPage.
-        // Use the resolved URI path to make redirects deterministic.
         final location = state.uri.path;
         final isAuthRoute = location == AppRoutes.login;
         final isWelcomeRoute = location == AppRoutes.welcome;
@@ -153,16 +149,10 @@ class AppRouter {
         }
 
         bool liveKitConfigured() {
-          // Feature flags are not a security boundary, but we use them to avoid
-          // routing users into incomplete experiences.
           try {
             final flags = context.read<FeatureFlagProvider>();
             if (!flags.isEnabled(AppFeature.streams)) return false;
-          } catch (_) {
-            // If flags provider isn't ready, default to allowing the route and
-            // let the page show a config error.
-          }
-
+          } catch (_) {}
           const liveKitUrl = String.fromEnvironment('SPOTLIGHT_LIVEKIT_URL');
           return liveKitUrl.trim().isNotEmpty;
         }
@@ -174,13 +164,6 @@ class AppRouter {
           );
         }
 
-        // Supabase recovery / magic-link params can arrive on *any* route depending
-        // on hosting and browser behavior (often even on /login). If we see them,
-        // immediately funnel into /auth/callback so the app can consume the
-        // fragment tokens or PKCE `code`.
-        // IMPORTANT (web): some email clients / hosts keep Supabase tokens in the
-        // URL fragment (/#access_token=...). GoRouter's `state.uri` does not
-        // always preserve the fragment consistently, but `Uri.base` does.
         final baseUri = Uri.base;
         final fragRaw = baseUri.fragment.isNotEmpty
             ? baseUri.fragment
@@ -193,8 +176,6 @@ class AppRouter {
             fragRaw.contains('access_token=') ||
             fragRaw.contains('refresh_token=') ||
             fragRaw.contains('type=recovery');
-        // Supabase uses `#error=...&error_code=...&error_description=...` for certain link failures.
-        // We must funnel these into /auth/callback too, otherwise users see a cryptic hash URL.
         final hasSupabaseError =
             fragRaw.contains('error=') ||
             qp.containsKey('error') ||
@@ -209,11 +190,6 @@ class AppRouter {
             hasSupabaseRecoveryType ||
             hasSupabaseError;
 
-        if (kDebugMode && location == AppRoutes.login) {
-          debugPrint(
-            'Router at /login: stateUri=${state.uri} basePath=${baseUri.path} baseQueryKeys=${baseUri.queryParameters.keys.toList()} fragmentLen=${baseUri.fragment.length} hasSupabaseAuthParams=$hasSupabaseAuthParams',
-          );
-        }
         if (hasSupabaseAuthParams &&
             !isAuthCallbackRoute &&
             !isResetPasswordRoute) {
@@ -226,18 +202,8 @@ class AppRouter {
           return target;
         }
 
-        // While auth/profile is bootstrapping, avoid redirect loops.
-        // NOTE: we handle Supabase email-link params above before returning.
         if (isAuthLoading) return null;
-
-        // Supabase email links enter via /auth/callback and must never be
-        // redirected away before the page can consume tokens / PKCE codes.
         if (isAuthCallbackRoute) return null;
-
-        // Password recovery must be allowed even if a session is established but
-        // the user profile hasn't loaded yet (common on web after
-        // `getSessionFromUrl`). If we redirect away, users can never set a new
-        // password.
         if (isResetPasswordRoute) return null;
 
         String accessDenied({required String missing, String? requiredRole}) {
@@ -265,15 +231,12 @@ class AppRouter {
           ).toString();
         }
 
-        // QA harness gating (admin OR feature flag) in non-release builds.
         if (location == AppRoutes.qa) {
           if (kReleaseMode) {
             logRedirect(AppRoutes.login);
             return AppRoutes.login;
           }
           if (canAccessQaHarness()) return null;
-
-          // Non-admin / flag-disabled access is blocked.
           if (isLoggedIn) {
             final target = Uri(
               path: AppRoutes.accessDenied,
@@ -290,12 +253,7 @@ class AppRouter {
           return AppRoutes.login;
         }
 
-        // If we have a valid auth session but the profile hasn't loaded yet,
-        // keep the user on a neutral splash route until it resolves.
         if (isLoggedIn && user == null) {
-          // If the user is on /login, don't bounce them to /. A profile fetch
-          // failure (e.g., RLS recursion) can otherwise result in a blank screen
-          // on web/iPhone Safari.
           if (isAuthRoute) return null;
           if (location == AppRoutes.root) return null;
           logRedirect(AppRoutes.root);
@@ -303,24 +261,16 @@ class AppRouter {
         }
 
         if (!isLoggedIn) {
-          // Beta gate: keep users in /early-access, but allow visiting /login to sign in.
           if (!launchEnabled) {
             if (isEarlyAccessRoute) return null;
             if (isAuthRoute) return null;
             logRedirect(AppRoutes.earlyAccess);
             return AppRoutes.earlyAccess;
           }
-
-          // Launch enabled: logged-out users can access /login.
-          // IMPORTANT: never land logged-out users on protected routes.
-          // Allow only explicitly-public auth routes.
-          // NOTE: /early-access is a beta-only surface; when launch is enabled,
-          // it should not be reachable.
           if (isEarlyAccessRoute) {
             logRedirect(AppRoutes.welcome);
             return AppRoutes.welcome;
           }
-
           if (isWelcomeRoute ||
               isAuthRoute ||
               isResetPasswordRoute ||
@@ -333,43 +283,35 @@ class AppRouter {
 
         final currentUser = user!;
         final caps = RoleCapabilities(currentUser);
-              // Logged in but hasn't completed onboarding
-        // Admin redirect
         if (currentUser.activeRole == "admin") {
           if (location.startsWith("/admin")) return null;
           logRedirect(AppRoutes.admin);
           return AppRoutes.admin;
         }
         if (!currentUser.onboardingComplete) {
-          // Admin redirect
           if (currentUser.activeRole == "admin") {
             if (location.startsWith("/admin")) return null;
             logRedirect(AppRoutes.admin);
             return AppRoutes.admin;
           }
           if (isOnboardingRoute) return null;
-          // Admin redirect
           if (currentUser.activeRole == "admin") {
             if (location.startsWith("/admin")) return null;
             logRedirect(AppRoutes.admin);
             return AppRoutes.admin;
           }
-          // Preserve role (and any other query) from login/landing CTAs
           final role = state.uri.queryParameters['role'];
           final onboardingTarget = (role != null && role.isNotEmpty)
-              ? Uri(path: AppRoutes.onboarding, queryParameters: {'role': role}).toString()
+              ? Uri(
+                  path: AppRoutes.onboarding,
+                  queryParameters: {'role': role},
+                ).toString()
               : AppRoutes.onboarding;
           logRedirect(onboardingTarget);
           return onboardingTarget;
         }
 
-        // Post-onboarding gating states must never silently fall through into a
-        // normal dashboard.
-        // - pending review -> waiting approval
-        // - rejected/restricted/suspended -> permission denied
         if (currentUser.isPendingReview) {
-          // Pending talent/business can still use Audience surfaces.
-          // Only hard-gate waiting-approval when they hit a gated role route.
           if (isWaitingApprovalRoute || isAccessDeniedRoute) return null;
           if (location == AppRoutes.audience ||
               location.startsWith('${AppRoutes.audience}/')) {
@@ -377,13 +319,13 @@ class AppRouter {
           }
           if (location == AppRoutes.talent ||
               location == AppRoutes.business ||
+              AppRoutes.isStudioLocation(location) ||
               location.startsWith('/talent') ||
               location.startsWith('/business') ||
               location.startsWith('/admin')) {
             logRedirect(AppRoutes.waitingApproval);
             return AppRoutes.waitingApproval;
           }
-          // Default home while pending: audience (not a hard trap on waiting page)
           if (location == AppRoutes.root || location == '/') {
             logRedirect(AppRoutes.audience);
             return AppRoutes.audience;
@@ -403,7 +345,6 @@ class AppRouter {
           return target;
         }
 
-        // LiveKit route guard: avoid deep-linking into a misconfigured build.
         if (isLiveKitRoute && !liveKitConfigured()) {
           if (isAccessDeniedRoute) return null;
           final target = accessDenied(missing: 'livekit');
@@ -411,18 +352,13 @@ class AppRouter {
           return target;
         }
 
-        // Launch-grade invariants: if the profile is malformed or role state is
-        // unresolved, we must not silently route the user into Audience.
         if (!caps.hasValidProfile) {
-          // Allow staying on /access to view the message, otherwise route there.
           if (isAccessDeniedRoute) return null;
           final target = accessDenied(missing: 'profile');
           logRedirect(target);
           return target;
         }
 
-        // If the user is trying to operate as a gated role but is not approved,
-        // this is a resolved denial state and must go to the blocked screen.
         if (currentUser.parsedActiveRole == UserRole.talent &&
             !caps.activeRoleApproved) {
           if (isAccessDeniedRoute) return null;
@@ -448,10 +384,6 @@ class AppRouter {
           return RoleCapabilities(u).defaultDashboardRoute;
         }
 
-        // Onboarding complete, should not be on login or onboarding.
-        // IMPORTANT: do NOT auto-redirect away from /reset-password.
-        // Supabase recovery links establish a session, and users must stay on
-        // the reset password screen long enough to set a new password.
         if (isEarlyAccessRoute || isWelcomeRoute) {
           final target = defaultDashboardRouteFor(currentUser);
           logRedirect(target);
@@ -475,18 +407,19 @@ class AppRouter {
           return target;
         }
 
-        // At root, redirect to active role dashboard
         if (location == AppRoutes.root) {
           final target = defaultDashboardRouteFor(currentUser);
           logRedirect(target);
           return target;
         }
 
-        // Role dashboards: route each user into their correct operating shell.
-        // Audience is only the default shell for audience-only users.
         final roleDashPaths = <String>{
           AppRoutes.audience,
           AppRoutes.talent,
+          AppRoutes.studio,
+          AppRoutes.studioAnalytics,
+          AppRoutes.studioIdentity,
+          AppRoutes.studioCommunity,
           AppRoutes.business,
           AppRoutes.admin,
         };
@@ -509,9 +442,6 @@ class AppRouter {
           }
         }
 
-        // If the app is entered via an opaque top-level path (some email link
-        // flows / hosts), ensure we don't strand the user on an unknown route.
-        // Once authenticated + onboarded, always funnel to the proper dashboard.
         final knownPaths = <String>{
           AppRoutes.root,
           AppRoutes.welcome,
@@ -525,6 +455,10 @@ class AppRouter {
           AppRoutes.permissionDenied,
           AppRoutes.audience,
           AppRoutes.talent,
+          AppRoutes.studio,
+          AppRoutes.studioAnalytics,
+          AppRoutes.studioIdentity,
+          AppRoutes.studioCommunity,
           AppRoutes.business,
           AppRoutes.admin,
           AppRoutes.audienceDashboard,
@@ -543,6 +477,7 @@ class AppRouter {
         final knownPrefixes = <String>{
           '${AppRoutes.missions}/',
           '${AppRoutes.campaigns}/',
+          '${AppRoutes.studio}/',
         };
         final isKnownByPrefix = knownPrefixes.any(
           (p) => location.startsWith(p),
@@ -552,9 +487,27 @@ class AppRouter {
           logRedirect(target);
           return target;
         }
-        // Role guards
-        if (location == AppRoutes.talent && !caps.canAccessRoute(location)) {
+        if ((location == AppRoutes.talent ||
+                AppRoutes.isStudioLocation(location) ||
+                AppRoutes.isLegacyTalentLocation(location)) &&
+            !caps.canAccessRoute(location)) {
           final target = accessDenied(missing: 'role', requiredRole: 'talent');
+          logRedirect(target);
+          return target;
+        }
+        if (AppRoutes.isLegacyTalentLocation(location)) {
+          final target = StudioRouteContract.talentCompatibilityTarget(
+            state.uri.queryParameters,
+          );
+          logRedirect(target);
+          return target;
+        }
+        if (location == AppRoutes.studio) {
+          logRedirect(AppRoutes.studioAnalytics);
+          return AppRoutes.studioAnalytics;
+        }
+        if (StudioRouteContract.isUnknownStudioChild(location)) {
+          final target = accessDenied(missing: 'route', requiredRole: 'talent');
           logRedirect(target);
           return target;
         }
@@ -572,7 +525,6 @@ class AppRouter {
           return target;
         }
 
-        // Admin tooling guards
         final isAdminTooling =
             location == AppRoutes.adminMissions ||
             location == AppRoutes.adminCampaigns;
@@ -582,8 +534,6 @@ class AppRouter {
           return target;
         }
 
-        // Progression route guards (server-authoritative feature policy).
-        // Prevent deep links / refreshes into disabled modules.
         final isProgressionRoute =
             location == AppRoutes.missions ||
             location.startsWith('${AppRoutes.missions}/') ||
@@ -633,7 +583,6 @@ class AppRouter {
                   message = 'Rewards are currently unavailable.';
                 }
               } else if (location == AppRoutes.progress) {
-                // Progress is a read surface; guard only when progression is disabled.
                 if (!policy.progressionEnabled) {
                   blocked = true;
                   feature = 'progress';
@@ -662,11 +611,8 @@ class AppRouter {
       routes: [
         GoRoute(
           path: AppRoutes.root,
-          builder: (context, state) => const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ), // Splash / loading
-          ),
+          builder: (context, state) =>
+              const Scaffold(body: Center(child: CircularProgressIndicator())),
         ),
         GoRoute(
           path: AppRoutes.authCallback,
@@ -735,13 +681,42 @@ class AppRouter {
           redirect: (context, state) => AppRoutes.audience,
         ),
         GoRoute(
+          path: AppRoutes.studio,
+          redirect: (context, state) {
+            if (state.uri.path == AppRoutes.studio) {
+              return AppRoutes.studioAnalytics;
+            }
+            return null;
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.studioAnalytics,
+          pageBuilder: (context, state) => _fadeSlidePage(
+            const CreatorStudioShell(child: CreatorAnalyticsEconomicsPage()),
+            state,
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.studioIdentity,
+          pageBuilder: (context, state) => _fadeSlidePage(
+            const CreatorStudioShell(child: CreatorIdentityControlPage()),
+            state,
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.studioCommunity,
+          pageBuilder: (context, state) => _fadeSlidePage(
+            const CreatorStudioShell(child: CreatorCommunityPage()),
+            state,
+          ),
+        ),
+        GoRoute(
           path: AppRoutes.talent,
-          pageBuilder: (context, state) =>
-              _fadeSlidePage(const TalentDashboard(), state),
+          redirect: (context, state) => AppRoutes.studio,
         ),
         GoRoute(
           path: AppRoutes.talentDashboard,
-          redirect: (context, state) => AppRoutes.talent,
+          redirect: (context, state) => AppRoutes.studio,
         ),
         GoRoute(
           path: AppRoutes.business,
@@ -757,7 +732,6 @@ class AppRouter {
           pageBuilder: (context, state) =>
               _fadeSlidePage(const AdminDashboard(), state),
         ),
-
         GoRoute(
           path: AppRoutes.featureDisabled,
           pageBuilder: (context, state) {
@@ -782,8 +756,6 @@ class AppRouter {
             );
           },
         ),
-
-        // Progression system routes
         GoRoute(
           path: AppRoutes.missions,
           pageBuilder: (context, state) =>
@@ -825,8 +797,6 @@ class AppRouter {
           pageBuilder: (context, state) =>
               _fadeSlidePage(const ProgressPage(), state),
         ),
-
-        // Admin progression tooling
         GoRoute(
           path: AppRoutes.adminMissions,
           pageBuilder: (context, state) =>
@@ -837,7 +807,6 @@ class AppRouter {
           pageBuilder: (context, state) =>
               _fadeSlidePage(const AdminCampaignsPage(), state),
         ),
-
         GoRoute(
           path: AppRoutes.livekit,
           pageBuilder: (context, state) {
@@ -860,31 +829,15 @@ class AppRouter {
             );
           },
         ),
-
-        // Debug-only QA harness route.
-        // IMPORTANT: This must be declared *before* the opaque fallback routes,
-        // otherwise '/:opaque' will capture '/__qa' and the harness becomes
-        // unreachable during development.
         if (!kReleaseMode)
           GoRoute(
             path: AppRoutes.qa,
             pageBuilder: (context, state) =>
                 _fadeSlidePage(const QAHarnessPage(), state),
           ),
-
-        // Fallback routes: some hosts land on opaque token-like paths.
-        // GoRouter must have a concrete route match, otherwise it throws
-        // "no routes for location" *before* our redirect can recover.
-        //
-        // 1) Single segment token: /<opaque>
         GoRoute(
           path: '/:opaque',
           redirect: (context, state) {
-            // IMPORTANT: Some Supabase email links arrive as an opaque top-level
-            // path (e.g. /VTSOCzrI5tVtgHJItw2z) with auth params in the fragment
-            // or query. If we naively redirect to '/', we lose those params.
-            //
-            // Preserve auth params and funnel into /auth/callback.
             try {
               final baseUri = Uri.base;
               final fragRaw = baseUri.fragment.isNotEmpty
@@ -926,8 +879,6 @@ class AppRouter {
             return AppRoutes.root;
           },
         ),
-
-        // 2) Any deeper unknown path.
         GoRoute(
           path: '/:opaque/:rest(.*)',
           redirect: (context, state) {
@@ -977,22 +928,12 @@ class AppRouter {
   }
 
   static String _computeInitialLocation({required String fallback}) {
-    // If the browser loads a deep link (e.g. /reset-password), we must respect it.
-    // When using hash URL strategies, some hosts put the route in the fragment.
-    // Supabase also uses the fragment for tokens, so we only treat the fragment
-    // as a route when it starts with '/'.
     try {
       final uri = Uri.base;
       final path = uri.path;
       if (path.isNotEmpty && path != '/' && path.startsWith('/')) {
         return _pathWithQuery(path: path, queryParameters: uri.queryParameters);
       }
-
-      // Supabase can open the app at the root URL with auth params in the fragment,
-      // e.g. `https://host/#access_token=...&type=recovery`.
-      // In that case, the router would otherwise fall back to /login and never
-      // consume the session. Boot into /auth/callback so AuthCallbackPage can
-      // parse and exchange the tokens/code.
       final fragRaw = uri.fragment;
       final hasSupabaseFragmentTokens =
           fragRaw.contains('access_token=') ||
@@ -1013,14 +954,12 @@ class AppRouter {
         );
         return AppRoutes.authCallback;
       }
-
       final frag = uri.fragment;
       if (frag.startsWith('/')) {
         final parts = frag.split('?');
         final routeOnly = parts.first;
         if (routeOnly.isEmpty) return fallback;
         if (parts.length == 1) return routeOnly;
-        // Preserve deep-link query params encoded into the fragment route.
         return '$routeOnly?${parts.sublist(1).join('?')}';
       }
     } catch (e) {

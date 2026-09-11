@@ -1,0 +1,54 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:spotlight_connect/core/routing/app_routes.dart';
+import 'package:spotlight_connect/core/routing/studio_route_contract.dart';
+
+void main() {
+  test('strips auth material from talent compatibility redirects', () {
+    final target = StudioRouteContract.talentCompatibilityTarget({
+      'ref': 'campaign',
+      'code': 'pkce-code',
+      'access_token': 'secret',
+      'type': 'recovery',
+    });
+    expect(target.startsWith(AppRoutes.studio), isTrue);
+    expect(target.contains('ref=campaign'), isTrue);
+    expect(target.contains('code='), isFalse);
+    expect(target.contains('access_token='), isFalse);
+    expect(target.contains('type='), isFalse);
+  });
+
+  test(
+    'does not treat analytics identity or community as unknown studio children',
+    () {
+      expect(
+        StudioRouteContract.isUnknownStudioChild(AppRoutes.studio),
+        isFalse,
+      );
+      expect(
+        StudioRouteContract.isUnknownStudioChild(AppRoutes.studioAnalytics),
+        isFalse,
+      );
+      expect(
+        StudioRouteContract.isUnknownStudioChild(AppRoutes.studioIdentity),
+        isFalse,
+      );
+      expect(
+        StudioRouteContract.isUnknownStudioChild(AppRoutes.studioCommunity),
+        isFalse,
+      );
+      expect(
+        StudioRouteContract.isUnknownStudioChild('${AppRoutes.studio}/unknown'),
+        isTrue,
+      );
+    },
+  );
+
+  test('legacy talent paths are distinct from studio analytics', () {
+    expect(AppRoutes.isLegacyTalentLocation(AppRoutes.talent), isTrue);
+    expect(AppRoutes.isLegacyTalentLocation(AppRoutes.talentDashboard), isTrue);
+    expect(AppRoutes.isLegacyTalentLocation(AppRoutes.studio), isFalse);
+    expect(AppRoutes.isStudioLocation(AppRoutes.studioAnalytics), isTrue);
+    expect(AppRoutes.isStudioLocation(AppRoutes.studioIdentity), isTrue);
+    expect(AppRoutes.isStudioLocation(AppRoutes.studioCommunity), isTrue);
+  });
+}
